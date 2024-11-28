@@ -8,7 +8,8 @@ const UserSchema = new Schema(
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true},
     profile_picture: {type: String, required: false},
-    role: {type: String, required: true}
+    role: {type: String, required: true},
+    points: { type: Number, required: true,default: 0},
   },
   { timestamps: true }
 );
