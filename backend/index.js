@@ -1,24 +1,26 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const Post = require('./models/Post');
-const Post = require('./models/User');
-const multer = require('multer');
+import express from 'express';
+import mongoose from 'mongoose';
+//import Post from './models/Post.js';
+import dotenv from 'dotenv';
 
-
+dotenv.config();
 const app = express();
 
 
-//const port = 5000;
-//const mongourl='mongodb://localhost:0000/';
+// Connect to MongoDB
 
+const connectionString = process.env.MONGO_URL
 
-app.listen(port, () => {
-    console.log("Backend is running on port", port);
-});
+mongoose.connect(connectionString).then(
+    () => {
+        console.log('Connected to MongoDB');
+    }
+).catch(
+    (error) => {
+        console.error('Failed to connect to MongoDB', error);
+    }
+)
 
-
-mongoose.connect(mongourl).then(() => {
-    console.log('MongoDB Connected');
-}).catch((error) => {
-    console.log(error);
+app.listen(5000, () => {
+    console.log("Backend is running on port", 5000);
 });
