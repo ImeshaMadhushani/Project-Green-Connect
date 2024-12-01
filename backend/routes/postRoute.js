@@ -1,17 +1,54 @@
 const router = require("express").Router();
 const Post = require("../models/Post");
 
+const multer = require('multer');
+const path = require('path');
 
-router.post("/", async (req, res) => {
-    const newPost = new Post(req.body);
-    try {
-      const savedPost = await newPost.save();
-      req.session.username = req.body.username;
-      res.status(200).redirect('/home');
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  });
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+      cb(null, 'uploads/'); 
+  },
+  filename: (req, file, cb) => {
+      cb(null, Date.now() + path.extname(file.originalname)); 
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  const fileTypes = /jpeg|jpg|png|gif/;
+  const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
+  const mimeType = fileTypes.test(file.mimetype);
+
+  if (extname && mimeType) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only images are allowed!'));
+  }
+};
+
+
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
+
+
+router.post('/', upload.single('image'), async (req, res) => {
+  try {
+      const newPost = new Post({
+          title: req.body.title,
+          content: req.body.content,
+          username: req.body.username,
+          image: req.file ? req.file.filename : null,
+      });
+      await newPost.save();
+      res.redirect('/home');
+  } catch (err) {
+      console.error('Error creating post:', err);
+      res.status(500).send('Error creating post');
+  }
+});
+
   
   router.post('/:id/delete', async (req, res) => {
     try {
