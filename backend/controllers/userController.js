@@ -36,5 +36,33 @@ export async function register(req, res) {
 
 // Login
 
+export function login(req, res) {
+    const credentials = req.body;
+
+    User.findOne({ email: credentials.email }).then((user) => {
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        } else {
+            const isPasswordValid = bcrypt.compare(credentials.password, user.password)
+            if (!isPasswordValid) {
+                res.status(401).json({ message: "Invalid Password!" });
+            } else {
+                const payload = {
+                    id: user._id,
+                    name: user.name,
+                    username: user.username,
+                    email: user.email,
+                    role: user.role
+                }
+                const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '48h' });
+                return res.json({ message: "User logged in successfully!", user: user, token: token });
+            }
+        }
+    }).catch((error) => {
+        console.error("Error during login:", error);
+        return res.status(500).json({ message: "Server error" });
+    });
+}
+
    
 
