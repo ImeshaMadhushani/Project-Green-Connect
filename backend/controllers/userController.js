@@ -74,5 +74,14 @@ export function getUser(req, res) {
     res.status(200).json({ message: "User found", user: req.user });
 }
 
+// Get all users
+export function getAllUsers(req, res) {
+    User.find().then((users) => {
+        res.json({ message: "Users fetched successfully!", users: users });
+    }).catch((error) => {
+        res.status(500).json({ message: "Error fetching users!", error: error.message });
+    });
+}
+
 
 
