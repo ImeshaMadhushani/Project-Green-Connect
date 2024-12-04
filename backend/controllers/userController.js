@@ -1,5 +1,7 @@
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+//import dotenv from 'dotenv';
 
 
 // Register a new user
@@ -39,7 +41,7 @@ export async function register(req, res) {
 export function login(req, res) {
     const credentials = req.body;
 
-    User.findOne({ email: credentials.email }).then((user) => {
+    User.findOne({ username: credentials.username }).then((user) => {
         if (!user) {
             return res.status(401).json({ message: 'Invalid credentials' });
         } else {
