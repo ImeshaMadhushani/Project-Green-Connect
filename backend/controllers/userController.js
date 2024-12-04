@@ -66,5 +66,22 @@ export function login(req, res) {
     });
 }
 
-   
+// Get user
+export function getUser(req, res) {
+    if (!req.user) {
+        return res.status(403).json({ message: "User not authenticated" });
+    }
+    res.status(200).json({ message: "User found", user: req.user });
+}
+
+// Get all users
+export function getAllUsers(req, res) {
+    User.find().then((users) => {
+        res.json({ message: "Users fetched successfully!", users: users });
+    }).catch((error) => {
+        res.status(500).json({ message: "Error fetching users!", error: error.message });
+    });
+}
+
+
 

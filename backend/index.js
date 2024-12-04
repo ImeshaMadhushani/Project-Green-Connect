@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
 import bodyParser from 'body-parser';
 import userRouter from './routes/userRoute.js';
 
@@ -12,10 +13,10 @@ app.use(bodyParser.json());
 //Middleware to verify JWT
 
 app.use((req, res, next) => {
-    const token = req.headers['authorization']?.replace('Bearer', "")
+    const token = req.headers['authorization']?.replace('Bearer', "").trim();
     
     if (token) {
-        JsonWebTokenError.verify(token, process.env.JWT_KEY, (err, decoded) => {
+        jwt.verify(token, process.env.JWT_KEY, (err, decoded) => {
             if (err) {
                 if (err.name === "TokenExpiredError") {
                     console.warn("Token has expired:", err.expiredAt);
