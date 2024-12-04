@@ -66,5 +66,13 @@ export function login(req, res) {
     });
 }
 
-   
+// Get user
+export function getUser(req, res) {
+    if (!req.user) {
+        return res.status(403).json({ message: "User not authenticated" });
+    }
+    res.status(200).json({ message: "User found", user: req.user });
+}
+
+
 
