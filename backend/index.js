@@ -1,10 +1,13 @@
 import express from 'express';
 import mongoose from 'mongoose';
-//import Post from './models/Post.js';
 import dotenv from 'dotenv';
+import userRouter from './routes/userRoute.js';
 
 dotenv.config();
 const app = express();
+
+
+app.use("/api/user", userRouter);
 
 
 // Connect to MongoDB

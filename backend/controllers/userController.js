@@ -1,4 +1,5 @@
-import User from '../models/User';
+import User from '../models/User.js';
+
 
 // Register a new user
 export async function register(req, res) {
