@@ -2,7 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import Post from './models/Post.js';
 import dotenv from 'dotenv';
-const session = require('express-session');
+import session from 'express-session';
 
 dotenv.config();
 const app = express();
