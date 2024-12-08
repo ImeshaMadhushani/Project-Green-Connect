@@ -1,5 +1,6 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+import mongoose from 'mongoose';
+
+const { Schema } = mongoose;
 
 const CommentSchema = new Schema(
   {
@@ -11,15 +12,15 @@ const CommentSchema = new Schema(
 
 const PostSchema = new Schema(
   {
-    title: { type: String, required: true, unique: true },
+    title: { type: String, required: true },
     content: { type: String, required: true },
     username: { type: String, required: true },
-    image:{type: String, required: false},
-	likes: { type: Number, required: true,default: 0},
+    image: { type: String },
+    likes: { type: Number, default: 0 },
     comments: [CommentSchema],
   },
   { timestamps: true }
 );
 
 const Post = mongoose.model("Post", PostSchema);
-module.exports = Post;
+export default Post;
