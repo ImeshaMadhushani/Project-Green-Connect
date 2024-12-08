@@ -4,6 +4,8 @@ const Post = require("../models/Post");
 const multer = require('multer');
 const path = require('path');
 
+const fs = require('fs');
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
       cb(null, 'uploads/'); 
@@ -35,17 +37,25 @@ const upload = multer({
 
 router.post('/', upload.single('image'), async (req, res) => {
   try {
-      const newPost = new Post({
-          title: req.body.title,
-          content: req.body.content,
-          username: req.body.username,
-          image: req.file ? req.file.filename : null,
+      const { title, content } = req.body;
+      const username = req.session.username; // Retrieve username from session
+
+      if (!username) {
+          return res.status(400).send('User not authenticated');
+      }
+
+      const post = new Post({
+          title,
+          content,
+          username,
+          image: req.file ? req.file.filename : undefined // Set image if uploaded
       });
-      await newPost.save();
+
+      await post.save();
       res.redirect('/home');
   } catch (err) {
-      console.error('Error creating post:', err);
-      res.status(500).send('Error creating post');
+      console.error(err);
+      res.status(500).send('Server Error');
   }
 });
 
@@ -76,17 +86,40 @@ router.post('/', upload.single('image'), async (req, res) => {
     }
   });
   
-  router.post('/:id/update', async (req, res) => {
+  rrouter.post('/:id/update', upload.single('image'), async (req, res) => {
     try {
-      const { title, content } = req.body;
-      const post = await Post.findByIdAndUpdate(req.params.id, { title, content }, { new: true });
-      if (!post) {
-        return res.status(404).send('Post not found');
-      }
-      res.redirect('/account');
+        const { title, content, removeImage } = req.body;
+        const post = await Post.findById(req.params.id);
+  
+        if (!post) {
+            return res.status(404).send('Post not found');
+        }
+  
+        post.title = title;
+        post.content = content;
+  
+        if (removeImage === 'true' && post.image) {
+            const oldImagePath = path.join(__dirname, '..', 'uploads', post.image);
+            if (fs.existsSync(oldImagePath)) {
+                fs.unlinkSync(oldImagePath);
+            }
+            post.image = undefined; 
+        }
+        if (req.file) {
+            if (post.image) {
+                const oldImagePath = path.join(__dirname, '..', 'uploads', post.image);
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath);
+                }
+            }
+            post.image = req.file.filename;
+        }
+  
+        await post.save();
+        res.redirect('/home');
     } catch (err) {
-      console.error(err);
-      res.status(500).send('Server Error');
+        console.error(err);
+        res.status(500).send('Server Error');
     }
   });
   
@@ -135,3 +168,4 @@ router.post('/', upload.single('image'), async (req, res) => {
       }
   });
   
+  module.exports = router;
