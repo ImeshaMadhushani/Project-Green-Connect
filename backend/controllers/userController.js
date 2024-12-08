@@ -6,14 +6,18 @@ import jwt from 'jsonwebtoken';
 
 // Register a new user
 export async function register(req, res) {
-    const { name, username, email, password, profile_picture, role } = req.body;
+    const { name, username, email, password, profile_picture, role, legalDocument } = req.body;
     const saltRound = 10;
 
     try {
         const existingUser = await User.findOne({ email });
-        
         if (existingUser) {
-            return res.status(400).json({ message: 'Email already exists' });
+            return res.status(400).json({ message: "Email already exists" });
+        }
+
+        // Additional checks for organizations
+        if (role === "organization" && !legalDocument) {
+            return res.status(400).json({ message: "Legal document is required for organizations" });
         }
 
         const hashedPassword = bcrypt.hashSync(password, saltRound);
@@ -24,18 +28,24 @@ export async function register(req, res) {
             email,
             password: hashedPassword,
             profile_picture,
-            role
+            role,
+            legalDocument: role === "organization" ? legalDocument : undefined,
+            isApproved: role === "organization" ? false : undefined,
         });
 
-        await newUser.save()
-        console.log("Recieved new user : ", req.body);
-        
-        res.status(201).json({ message: 'User registered successfully' });
-    } catch (error) { 
+        await newUser.save();
+        console.log("Received new user:", req.body);
+
+        const message = role === "organization"
+            ? "Organization registered successfully. Awaiting admin approval."
+            : "User registered successfully";
+
+        res.status(201).json({ message });
+    } catch (error) {
+        console.error("Error during registration:", error);
         res.status(500).json({ message: "Error creating user!", error: error.message });
     }
 }
-
 // Login
 
 export function login(req, res) {
