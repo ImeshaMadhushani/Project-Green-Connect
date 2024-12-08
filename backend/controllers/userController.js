@@ -102,8 +102,11 @@ export async function approveOrganization(req, res) {
     const { userId } = req.params;
 
     try {
-        const user = await User.findById(userId);
+        if (req.user.role !== "superadmin" && req.user.role !== "admin") {
+            return res.status(403).json({ message: "Access denied. Admin or Superadmin only." });
+        }
 
+        const user = await User.findById(userId);
         if (!user || user.role !== "organization") {
             return res.status(404).json({ message: "Organization not found" });
         }
@@ -111,10 +114,59 @@ export async function approveOrganization(req, res) {
         user.isApproved = true;
         await user.save();
 
-        res.json({ message: "Organization approved successfully!", user });
+        res.status(200).json({ message: "Organization approved successfully!", user });
     } catch (error) {
         console.error("Error during approval:", error);
         res.status(500).json({ message: "Error approving organization", error: error.message });
     }
 }
 
+// Delete user (Admin and Superadmin only)
+export async function deleteUser(req, res) {
+    const { userId } = req.params;
+
+    try {
+        if (req.user.role !== "superadmin" && req.user.role !== "admin") {
+            return res.status(403).json({ message: "Access denied. Admin or Superadmin only." });
+        }
+
+        const user = await User.findByIdAndDelete(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({ message: "User deleted successfully!" });
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).json({ message: "Error deleting user", error: error.message });
+    }
+}
+
+// Assign admin role (Superadmin only)
+export async function assignAdmin(req, res) {
+    const { userId } = req.params;
+    const { role } = req.body;
+
+    try {
+        if (req.user.role !== "superadmin") {
+            return res.status(403).json({ message: "Access denied. Superadmin only." });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (role !== "admin" && role !== "volunteer") {
+            return res.status(400).json({ message: "Invalid role assignment" });
+        }
+
+        user.role = role;
+        await user.save();
+
+        res.status(200).json({ message: `User role updated to ${role} successfully!`, user });
+    } catch (error) {
+        console.error("Error updating user role:", error);
+        res.status(500).json({ message: "Error updating user role", error: error.message });
+    }
+}
