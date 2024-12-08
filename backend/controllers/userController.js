@@ -54,7 +54,11 @@ export function login(req, res) {
     User.findOne({ username: credentials.username }).then((user) => {
         if (!user) {
             return res.status(401).json({ message: 'Invalid credentials' });
-        } else {
+        } 
+        
+        if (user.role === "organization" && !user.isApproved) {
+            return res.status(403).json({ message: "Organization account is not approved yet." });
+        }
             const isPasswordValid = bcrypt.compare(credentials.password, user.password)
             if (!isPasswordValid) {
                 res.status(401).json({ message: "Invalid Password!" });
@@ -68,7 +72,7 @@ export function login(req, res) {
                 }
                 const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '48h' });
                 return res.json({ message: "User logged in successfully!", user: user, token: token });
-            }
+            
         }
     }).catch((error) => {
         console.error("Error during login:", error);
@@ -93,5 +97,24 @@ export function getAllUsers(req, res) {
     });
 }
 
+// Admin: Approve Organization
+export async function approveOrganization(req, res) {
+    const { userId } = req.params;
 
+    try {
+        const user = await User.findById(userId);
+
+        if (!user || user.role !== "organization") {
+            return res.status(404).json({ message: "Organization not found" });
+        }
+
+        user.isApproved = true;
+        await user.save();
+
+        res.json({ message: "Organization approved successfully!", user });
+    } catch (error) {
+        console.error("Error during approval:", error);
+        res.status(500).json({ message: "Error approving organization", error: error.message });
+    }
+}
 
