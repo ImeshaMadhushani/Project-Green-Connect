@@ -8,7 +8,9 @@ const UserSchema = mongoose.Schema(
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true},
     profile_picture: {type: String, required: false},
-    role: {type: String, required: true}
+    role: { type: String, required: true, enum: ["volunteer", "organization"] },
+    isApproved: { type: Boolean, required: function () { return this.role === "organization"; }, default: false },
+    legalDocument: { type: String, required: function () { return this.role === "organization"; } },
   },
   { timestamps: true }
 );
