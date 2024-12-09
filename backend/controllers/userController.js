@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 
 // Register a new user
 export async function register(req, res) {
-    const { name, username, email, password, profile_picture, role, legalDocument } = req.body;
+    const { name, username, email, password, profile_picture, role, legalDocument, registrationNumber, registrationDate } = req.body;
     const saltRound = 10;
 
     try {
@@ -16,9 +16,21 @@ export async function register(req, res) {
         }
 
         // Additional checks for organizations
-        if (role === "organization" && !legalDocument) {
-            return res.status(400).json({ message: "Legal document is required for organizations" });
+        if (role === "organization") {
+            // Check for required organization fields
+            if (!legalDocument) {
+                return res.status(400).json({ message: "Legal document is required for organizations" });
+            }
+
+            if (!registrationNumber) {
+                return res.status(400).json({ message: "Registration number is required for organizations" });
+            }
+
+            if (!registrationDate) {
+                return res.status(400).json({ message: "Registration date is required for organizations" });
+            }
         }
+
 
         const hashedPassword = bcrypt.hashSync(password, saltRound);
 
@@ -29,8 +41,16 @@ export async function register(req, res) {
             password: hashedPassword,
             profile_picture,
             role,
-            legalDocument: role === "organization" ? legalDocument : undefined,
+            ...(role === "organization" && {
+                legalDocument,
+                isApproved: false,
+                registrationNumber,
+                registrationDate
+            })
+           /*  legalDocument: role === "organization" ? legalDocument : undefined,
             isApproved: role === "organization" ? false : undefined,
+            registrationNumber,
+            registrationDate, */
         });
 
         await newUser.save();
@@ -46,12 +66,13 @@ export async function register(req, res) {
         res.status(500).json({ message: "Error creating user!", error: error.message });
     }
 }
+
 // Login
 
 export function login(req, res) {
     const credentials = req.body;
 
-    User.findOne({ username: credentials.username }).then((user) => {
+    User.findOne({ username: credentials.username }).then(async (user) => {
         if (!user) {
             return res.status(401).json({ message: 'Invalid credentials' });
         } 
@@ -59,7 +80,7 @@ export function login(req, res) {
         if (user.role === "organization" && !user.isApproved) {
             return res.status(403).json({ message: "Organization account is not approved yet." });
         }
-            const isPasswordValid = bcrypt.compare(credentials.password, user.password)
+            const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
             if (!isPasswordValid) {
                 res.status(401).json({ message: "Invalid Password!" });
             } else {
