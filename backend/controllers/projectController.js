@@ -28,3 +28,14 @@ export const createProject = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
+// Get all projects (only approved projects should be visible)
+export const getProjects = async (req, res) => {
+    try {
+        const projects = await Project.find({ isApproved: true }); // Only fetch approved projects
+        res.status(200).json(projects);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
