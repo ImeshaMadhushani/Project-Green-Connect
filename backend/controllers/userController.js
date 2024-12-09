@@ -102,7 +102,7 @@ export async function approveOrganization(req, res) {
     const { userId } = req.params;
 
     try {
-        if (req.user.role !== "superadmin" && req.user.role !== "admin") {
+        if (req.user.role !== "admin") {
             return res.status(403).json({ message: "Access denied. Admin or Superadmin only." });
         }
 
@@ -126,7 +126,7 @@ export async function deleteUser(req, res) {
     const { userId } = req.params;
 
     try {
-        if (req.user.role !== "superadmin" && req.user.role !== "admin") {
+        if (req.user.role !== "admin") {
             return res.status(403).json({ message: "Access denied. Admin or Superadmin only." });
         }
 
@@ -142,25 +142,29 @@ export async function deleteUser(req, res) {
     }
 }
 
-// Assign admin role (Superadmin only)
+// Assign admin role (Admin only)
 export async function assignAdmin(req, res) {
     const { userId } = req.params;
     const { role } = req.body;
 
     try {
-        if (req.user.role !== "superadmin") {
-            return res.status(403).json({ message: "Access denied. Superadmin only." });
+        // Check if the requesting user has the "admin" role
+        if (req.user.role !== "admin") {
+            return res.status(403).json({ message: "Access denied. Admins only." });
         }
 
+        // Find the target user by ID
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
+        // Validate the role being assigned
         if (role !== "admin" && role !== "volunteer") {
-            return res.status(400).json({ message: "Invalid role assignment" });
+            return res.status(400).json({ message: "Invalid role assignment. Allowed roles are 'admin' and 'volunteer'." });
         }
 
+        // Update the user's role
         user.role = role;
         await user.save();
 
