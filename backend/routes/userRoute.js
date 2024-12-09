@@ -8,7 +8,7 @@ userRouter.post('/login', login)
 userRouter.get('/getUser', getUser)
 userRouter.get('/getAllUsers', getAllUsers)
 userRouter.put('/approveOrganization/:userId', approveOrganization)
-userRouter.delete('delete/:id', deleteUser)
+userRouter.delete('/delete/:userId', deleteUser)
 userRouter.put('/assignAdmin/:userId',assignAdmin)
 
 
