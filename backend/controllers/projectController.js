@@ -106,3 +106,31 @@ export const deleteProject = async (req, res) => {
     }
 };
 
+
+// Approve a project (only admin can approve)
+export const approveProject = async (req, res) => {
+    try {
+        // Check if the user is an admin
+        const user = await User.findById(req.user.id);
+        if (user.role !== "admin") {
+            return res.status(403).json({ message: "Only admins can approve projects" });
+        }
+
+        // Check if the project exists
+        const project = await Project.findById(req.params.id);
+        if (!project) {
+            return res.status(404).json({ message: "Project not found" });
+        }
+
+        // Approve the project
+        project.isApproved = true;
+        project.approveDate = new Date();
+        project.endDate = new Date(project.approveDate);
+        project.endDate.setDate(project.endDate.getDate() + 14); // Set the end date 14 days from approval date
+
+        await project.save();
+        res.status(200).json(project);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
