@@ -82,3 +82,27 @@ export const updateProject = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// Delete a project (only an admin can delete a project)
+export const deleteProject = async (req, res) => {
+    try {
+        // Check if the user is an admin
+        const user = await User.findById(req.user.id);
+        if (user.role !== "admin") {
+            return res.status(403).json({ message: "Only admins can delete projects" });
+        }
+
+        // Check if the project exists
+        const project = await Project.findById(req.params.id);
+        if (!project) {
+            return res.status(404).json({ message: "Project not found" });
+        }
+
+        // Delete the project
+        await project.remove();
+        res.status(200).json({ message: "Project deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
