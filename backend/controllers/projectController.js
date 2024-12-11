@@ -1,5 +1,5 @@
-import Project from "../models/Project";
-import User from "../models/User";
+import Project from "../models/Project.js";
+import User from "../models/User.js";
 
 // Create a new project (only organization can create projects)
 export const createProject = async (req, res) => {
@@ -99,7 +99,9 @@ export const deleteProject = async (req, res) => {
         }
 
         // Delete the project
-        await project.remove();
+        //await project.remove();
+        
+        await Project.findByIdAndDelete(req.params.id);
         res.status(200).json({ message: "Project deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -108,7 +110,7 @@ export const deleteProject = async (req, res) => {
 
 
 // Approve a project (only admin can approve)
-export const approveProject = async (req, res) => {
+export const updateProjectStatus = async (req, res) => {
     try {
         // Check if the user is an admin
         const user = await User.findById(req.user.id);
@@ -118,15 +120,37 @@ export const approveProject = async (req, res) => {
 
         // Check if the project exists
         const project = await Project.findById(req.params.id);
+        console.log('Project ID:', req.params.id);
+
         if (!project) {
             return res.status(404).json({ message: "Project not found" });
         }
 
+        // Check for status parameter and update project
+        const { status } = req.body;
+
+        // Only "approved" or "rejected" statuses are valid
+        if (status !== "approved" && status !== "rejected") {
+            return res.status(400).json({ message: "Invalid status, must be 'approved' or 'rejected'" });
+        }
+
         // Approve the project
-        project.isApproved = true;
+       /*  project.isApproved = true;
         project.approveDate = new Date();
         project.endDate = new Date(project.approveDate);
         project.endDate.setDate(project.endDate.getDate() + 14); // Set the end date 14 days from approval date
+ */
+        // Update project status and set appropriate fields
+        project.status = status;
+        project.isApproved = status === "approved";
+
+        if (status === "approved") {
+            project.approveDate = new Date();
+            project.endDate = new Date(project.approveDate);
+            project.endDate.setDate(project.endDate.getDate() + 14); // Set the end date 14 days from approval date
+        } else if (status === "rejected") {
+            project.rejectionDate = new Date();  // Optionally, you can track the rejection date
+        }
 
         await project.save();
         res.status(200).json(project);

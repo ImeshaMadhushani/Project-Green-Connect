@@ -1,4 +1,4 @@
-import User from '../models/User.js';
+import User from "../models/User.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 //import dotenv from 'dotenv';
@@ -142,7 +142,7 @@ export async function approveOrganization(req, res) {
     }
 }
 
-// Delete user (Admin and Superadmin only)
+// Delete user (Admin only)
 export async function deleteUser(req, res) {
     const { userId } = req.params;
 

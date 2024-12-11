@@ -1,5 +1,5 @@
 import express from "express";
-import { createProject, getProjects, getProjectById, updateProject, deleteProject, approveProject } from "../controllers/projectController";
+import { createProject, getProjects, getProjectById, updateProject, deleteProject, updateProjectStatus } from "../controllers/projectController.js";
 
 const projectRouter = express.Router();
 
@@ -10,15 +10,15 @@ projectRouter.post("/", createProject);
 projectRouter.get("/", getProjects);
 
 // Get a specific project by ID
-projectRouter.get("/:projectId", getProjectById);
+projectRouter.get("/:id", getProjectById);
 
 // Update project (only the organization that created the project can update)
-projectRouter.put("/:projectId", updateProject);
+projectRouter.put("/:id", updateProject);
 
 // Delete project (only admins can delete projects)
-projectRouter.delete("/:projectId", deleteProject);
+projectRouter.delete("/:id", deleteProject);
 
 // Approve project (only admins can approve)
-projectRouter.patch("/:projectId/approve", approveProject);
+projectRouter.put("/:id/status", updateProjectStatus);
 
 export default projectRouter;

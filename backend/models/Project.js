@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
-
-// Assuming you already have the User model imported
-import User from "./User";
+import User from "../models/User.js";
 
 const ProjectSchema = mongoose.Schema(
     {
