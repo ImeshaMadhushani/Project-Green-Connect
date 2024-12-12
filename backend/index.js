@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import bodyParser from 'body-parser';
 import userRouter from './routes/userRoute.js';
+import projectRouter from './routes/projectRoute.js';
 
 dotenv.config();
 const app = express();
@@ -49,6 +50,7 @@ app.use((req, res, next) => {
 
 
 app.use("/api/user", userRouter);
+app.use("/api/project", projectRouter);
 
 
 
