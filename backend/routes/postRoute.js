@@ -165,4 +165,37 @@ router.post("/:postId/comment/:commentId/delete", async (req, res) => {
   }
 });
 
+router.post('/:postId/like', async (req, res) => {
+  try {
+      const postId = req.params.postId;
+      const username = req.session.username;
+
+      if (!username) {
+          return res.status(401).json({ error: 'User not authenticated' });
+      }
+
+      const post = await Post.findById(postId);
+
+      if (post) {
+          const hasLiked = post.likedBy.includes(username);
+
+          if (hasLiked) {
+              post.likes -= 1;
+              post.likedBy = post.likedBy.filter(user => user !== username);
+          } else {
+              post.likes += 1;
+              post.likedBy.push(username);
+          }
+
+          await post.save();
+          res.json({ likes: post.likes, liked: !hasLiked });
+      } else {
+          res.status(404).json({ error: 'Post not found' });
+      }
+  } catch (error) {
+      console.error('Error toggling like:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 export default router;

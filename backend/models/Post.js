@@ -17,6 +17,7 @@ const PostSchema = new Schema(
     username: { type: String, required: true },
     image: { type: String },
     likes: { type: Number, default: 0 },
+    likedBy: { type: [String], default: [] },
     comments: [CommentSchema],
   },
   { timestamps: true }
