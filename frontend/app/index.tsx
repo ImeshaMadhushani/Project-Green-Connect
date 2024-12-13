@@ -1,14 +1,21 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ImageBackground } from "react-native";
+const bgImage = require("../assets/images/bg.jpg");
 
 const Index = () => {
   return (
-    <View style={styles.container}>
-      <Text>Landing Page</Text>
-    </View>
+    <ImageBackground style={styles.background} source={bgImage}>
+      <View style={styles.container}>
+        <Text>Landing Page</Text>
+      </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    width: "100%",
+    height: "100%",
+  },
   container: {
     flex: 1,
     alignItems: "center",
