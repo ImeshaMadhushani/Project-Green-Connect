@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, ImageBackground } from "react-native";
 const bgImage = require("../assets/images/bg.jpg");
+import Button from "@/components/button-login";
 
 const Index = () => {
   return (
