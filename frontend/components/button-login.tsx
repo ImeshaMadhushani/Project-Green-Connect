@@ -30,16 +30,40 @@ const Button = ({ label, onPress }: Props) => {
   };
 
   return (
-    
+    <Animated.View style={[styles.buttonContainer, { transform: [{ scale: scaleValue }] }]}>
       <Pressable
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        
+        style={styles.button}
       >
-        
+       <Text style={styles.buttonLabel}>{label}</Text> 
       </Pressable>
-    
+      </Animated.View>
   );
 };
+const styles = StyleSheet.create({
+    buttonContainer: {
+      width: 280,
+      height: 68,
+      marginHorizontal: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      margin: 25,
+    },
+    button: {
+      borderRadius: 10,
+      width: '100%',
+      height: '100%',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'row',
+      backgroundColor: "#ffffff70",
+    },
+    buttonLabel: {
+      color: 'white',
+      fontSize: 20,
+    },
+  });
+  
 
 export default Button;
