@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { StyleSheet, View, Pressable, Text, StyleProp, ViewStyle } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 type Props = {
   label: string;
@@ -11,7 +12,14 @@ const ButtonSuccess = ({ label, onPress, style }: Props) => {
   return (
     <View style={[styles.buttonContainer, style]}>
       <Pressable onPress={onPress} style={styles.button}>
-        <Text style={styles.buttonLabel}>{label}</Text>
+        <LinearGradient
+            colors={['#0D7C66', '#1BA37D']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.button}
+            >
+            <Text style={styles.buttonLabel}>{label}</Text>
+        </LinearGradient>
       </Pressable>
     </View>
   );
