@@ -1,5 +1,5 @@
 import React, { forwardRef, useState } from "react";
-import { TextInput, TextInputProps, StyleSheet, Text } from "react-native";
+import { TextInput, TextInputProps, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 type Props = TextInputProps & {
   value?: string;
@@ -8,12 +8,17 @@ type Props = TextInputProps & {
 };
 
 const TextInputStyled = forwardRef<TextInput, Props>(({ password = false, placeholder, text, ...props }, ref) => {
+    const [showPassword, setShowPassword] = useState(false);
+    const togglePasswordVisibility = () => {
+        setShowPassword(prevState => !prevState);
+    };
     return (
     <>
     <Text style={{textAlign:'left',fontSize:15,width:"100%"}}>{text}</Text>
     <TextInput 
       ref={ref}
       placeholder={placeholder}
+      secureTextEntry={password && !showPassword}
       {...props}  
       style={styles.input}
     />
