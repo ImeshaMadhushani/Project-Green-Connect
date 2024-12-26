@@ -12,6 +12,7 @@ const TextInputStyled = forwardRef<TextInput, Props>(({ password = false, placeh
     const togglePasswordVisibility = () => {
         setShowPassword(prevState => !prevState);
     };
+
     return (
     <>
     <Text style={{textAlign:'left',fontSize:15,width:"100%"}}>{text}</Text>
@@ -22,8 +23,8 @@ const TextInputStyled = forwardRef<TextInput, Props>(({ password = false, placeh
         secureTextEntry={password && !showPassword}
         {...props}  
         style={styles.input}
-    />
-     {password && (
+      />
+      {password && (
         <TouchableOpacity onPress={togglePasswordVisibility} style={styles.iconContainer}>
           <Text>{showPassword ? "Hide" : "Show"}</Text>
         </TouchableOpacity>
