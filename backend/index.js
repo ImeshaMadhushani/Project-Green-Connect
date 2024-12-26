@@ -1,13 +1,23 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import session from 'express-session';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import bodyParser from 'body-parser';
 import userRouter from './routes/userRoute.js';
+import projectRouter from './routes/projectRoute.js';
 
 dotenv.config();
 const app = express();
 
+
+app.use(session({
+    secret: 'yourSecretKey', 
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } 
+  }));
+=======
 app.use(bodyParser.json());
 
 //Middleware to verify JWT
@@ -40,6 +50,8 @@ app.use((req, res, next) => {
 
 
 app.use("/api/user", userRouter);
+app.use("/api/project", projectRouter);
+
 
 
 // Connect to MongoDB
