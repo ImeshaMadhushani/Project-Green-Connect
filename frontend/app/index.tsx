@@ -17,11 +17,7 @@ const Index = () => {
             <Button onPress={()=>{
              
             }} label="Volunteer" />
-            <Text style={
-              {
-                color:"white"
-              }
-            }>OR</Text>
+            <Text style={styles.orText}>OR</Text>
             <Button label="Organization" />
       </View>
     </ImageBackground>
