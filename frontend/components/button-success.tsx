@@ -30,8 +30,14 @@ const styles = StyleSheet.create({
     width: 300,
     height: 70,
     margin: 20,
+    marginHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4, 
   },
   button: {
     borderRadius: 15,
@@ -39,7 +45,6 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0D7C66',
   },
   buttonLabel: {
     color: 'white',
