@@ -35,8 +35,8 @@ const upload = multer({
 
 router.post("/", upload.single("image"), async (req, res) => {
   try {
-    const { title, content } = req.body;
-    const username = req.session.username;
+    const { title, content,username } = req.body;
+ 
 
     if (!username) {
       return res.status(400).send("User not authenticated");
@@ -50,7 +50,11 @@ router.post("/", upload.single("image"), async (req, res) => {
     });
 
     await post.save();
-    res.redirect("/home");
+    //res.redirect("/home");
+    res.status(200).send({
+      post,
+      message: "Post created successfully!",
+    })
   } catch (err) {
     console.error(err);
     res.status(500).send("Server Error");

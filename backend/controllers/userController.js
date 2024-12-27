@@ -1,10 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-//import dotenv from 'dotenv';
 
-
-// Register a new user
 export async function register(req, res) {
     const { name, username, email, password, profile_picture, role, legalDocument, registrationNumber, registrationDate } = req.body;
     const saltRound = 10;
