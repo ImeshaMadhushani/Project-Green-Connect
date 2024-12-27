@@ -2,13 +2,22 @@ import { Slot } from "expo-router";
 import { Image, StyleSheet, ScrollView, View } from "react-native";
 
 const topImage = require("../../assets/images/login-template-top.jpg");
+const logo = require("../../assets/images/logo1.png");
 
 const SignLayout = () => {
   return (
     <ScrollView contentContainerStyle={styles.content}>
       <View style={styles.imageContainer}>
         <Image source={topImage} resizeMode="cover" style={styles.image} />
+        <View style={styles.overlay} />
       </View>
+      <Image
+        style={{
+            height: 200,
+        }}
+        resizeMode="contain"
+        source={logo}
+        />
       <View style={styles.container}>
         <Slot />
       </View>
@@ -36,6 +45,10 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
   },
 });
 
