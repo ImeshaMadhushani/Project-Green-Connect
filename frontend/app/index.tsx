@@ -9,8 +9,6 @@ const logo = require("../assets/images/logo1.png");
 const Index = () => {
   return (
     <ImageBackground style={styles.background} source={bgImage}>
-      <StatusBar backgroundColor="#0B3D2E" style="light" />
-
       <View style={styles.container}>
         <Image style={styles.logo} resizeMode="contain" source={logo} />
         <Text style={styles.tagline}>Together We Can Make a Difference</Text>

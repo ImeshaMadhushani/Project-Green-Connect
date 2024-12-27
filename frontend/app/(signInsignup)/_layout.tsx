@@ -1,9 +1,8 @@
 import { Slot } from "expo-router";
-import { Image, StyleSheet, ScrollView, View } from "react-native";
-
+import { Image, StyleSheet, ScrollView, View, Dimensions } from "react-native";
 const topImage = require("../../assets/images/login-template-top.jpg");
 const logo = require("../../assets/images/logo1.png");
-
+const { width } = Dimensions.get("window");
 const SignLayout = () => {
   return (
     <ScrollView contentContainerStyle={styles.content}>
@@ -45,10 +44,14 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+    borderBottomLeftRadius: width,
+    borderBottomRightRadius: width,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    borderBottomLeftRadius: width,
+    borderBottomRightRadius: width,
   },
 });
 
