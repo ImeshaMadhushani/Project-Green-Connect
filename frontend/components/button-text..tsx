@@ -1,5 +1,6 @@
 import { StyleSheet, View, Pressable, Text,Animated, StyleProp, ViewStyle } from "react-native";
 import { useRef } from "react";
+import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 
 type Props = {
   label: string;
@@ -14,7 +15,11 @@ const ButtonText = ({ label, onPress, style }: Props) => {
     Animated.spring(scaleValue, {
       toValue: 0.85,
       useNativeDriver: true,
-    }).start();
+    }).start(() => {
+        if (onPress) {
+          onPress();
+        }
+    });
   };
   const handlePressOut = () => {
     Animated.spring(scaleValue, {
@@ -27,7 +32,10 @@ const ButtonText = ({ label, onPress, style }: Props) => {
   return (
     <Animated.View 
          style={[styles.buttonContainer, { transform: [{ scale: scaleValue }] }, style]}>
-      <Pressable onPress={onPress} style={styles.button}>
+      <Pressable         
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        style={styles.button}>
         <Text style={styles.buttonLabel}>{label}</Text>
       </Pressable>
     </Animated.View>
