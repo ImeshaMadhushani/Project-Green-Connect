@@ -2,6 +2,8 @@ import { useRef, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import TextInputStyled from "@/components/text-input";
+import { router } from "expo-router";
+import ButtonSuccess from "@/components/button-success";
 
 const First = () => {
   const [ngoname, setNgoname] = useState("");
@@ -88,6 +90,41 @@ const First = () => {
   
   return ui;
   
+<View style={{ flex: 1, flexDirection: "row" }}>
+  <ButtonSuccess
+    style={{ width: 100 }}
+    label="Back"
+    onPress={() => {
+      router.navigate("/", { relativeToDirectory: true });
+    }}
+  />
+  <ButtonSuccess
+    label="Next"
+    style={{ width: 100 }}
+    onPress={() => {
+      //router.navigate("/secondPage", { relativeToDirectory: true });
+    }}
+  />
+</View>
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    paddingHorizontal: 16,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#ccc",
+  },
+  text: {
+    marginHorizontal: 8,
+    fontSize: 16,
+    color: "#555",
+  },
+});
 
 
 };
