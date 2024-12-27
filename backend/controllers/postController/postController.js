@@ -1,4 +1,4 @@
-import Post from "../../models/Post";
+import Post from "../../models/Post.js";
 import path from "path";
 import fs from "fs";
 

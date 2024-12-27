@@ -1,9 +1,9 @@
 import { Router } from "express";
 
 import multer from "multer";
-import { createPost, deletePost, updatePost } from "../controllers/postController/postController";
-import { addComment, deleteComment } from "../controllers/postController/commentController";
-import { likeController } from "../controllers/postController/likeController";
+import { createPost, deletePost, updatePost } from "../controllers/postController/postController.js";
+import { addComment, deleteComment } from "../controllers/postController/commentController.js";
+import { likeController } from "../controllers/postController/likeController.js";
 
 
 const upload = multer({ dest: "uploads/" });
