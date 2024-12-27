@@ -3,6 +3,7 @@ import { Router } from "express";
 import multer from "multer";
 import { createPost, deletePost, updatePost } from "../controllers/postController/postController";
 import { addComment, deleteComment } from "../controllers/postController/commentController";
+import { likeController } from "../controllers/postController/likeController";
 
 
 const upload = multer({ dest: "uploads/" });
@@ -13,5 +14,6 @@ router.post("/:id/delete", deletePost);
 router.post("/:id/update", upload.single("image"), updatePost);
 router.post("/:id/comment", addComment);
 router.post("/:postId/comment/:commentId/delete", deleteComment);
+router.post("/:id/like", likeController);
 
 export default router;
