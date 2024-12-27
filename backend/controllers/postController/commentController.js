@@ -1,4 +1,4 @@
-import Post from "../models/Post.js";
+import Post from "../../models/Post";
 
 export const addComment = async (req, res) => {
   const { content,username } = req.body;
