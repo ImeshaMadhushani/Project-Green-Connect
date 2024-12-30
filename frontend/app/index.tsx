@@ -15,7 +15,11 @@ const Index = () => {
             <Button label="Volunteer" />
 
             <Text style={styles.orText}>OR</Text>
-            <Button label="Organization" />
+
+            <Button label="Organization" onPress={()=>{
+              router.navigate("/firstPage", { relativeToDirectory: true })
+            }}/>
+            
       </View>
     </ImageBackground>
   );
