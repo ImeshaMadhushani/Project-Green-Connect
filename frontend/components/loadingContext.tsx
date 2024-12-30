@@ -1,4 +1,5 @@
 import React, { useContext, ReactNode, createContext, useState } from 'react';
+import Loader from './loader';
 
 interface LoadingContextType {
   showLoader: () => void;
@@ -15,7 +16,11 @@ export const useLoading = (): LoadingContextType => {
   return context;
 };
 
-export const LoadingProvider: React.FC = () => {
+interface LoadingProviderProps {
+    children: ReactNode; 
+  }  
+
+export const LoadingProvider: React.FC<LoadingProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const showLoader = () => setIsLoading(true);
@@ -23,7 +28,8 @@ export const LoadingProvider: React.FC = () => {
 
   return (
     <LoadingContext.Provider value={{ showLoader, hideLoader }}>
-    
+        {children}
+        {isLoading && <Loader />} 
     </LoadingContext.Provider>
   );
 };
