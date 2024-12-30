@@ -1,4 +1,4 @@
-import React, { useContext, ReactNode, createContext } from 'react';
+import React, { useContext, ReactNode, createContext, useState } from 'react';
 
 interface LoadingContextType {
   showLoader: () => void;
@@ -13,4 +13,17 @@ export const useLoading = (): LoadingContextType => {
     throw new Error('useLoading must be used within a LoadingProvider');
   }
   return context;
+};
+
+export const LoadingProvider: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const showLoader = () => setIsLoading(true);
+  const hideLoader = () => setIsLoading(false);
+
+  return (
+    <LoadingContext.Provider value={{ showLoader, hideLoader }}>
+    
+    </LoadingContext.Provider>
+  );
 };
