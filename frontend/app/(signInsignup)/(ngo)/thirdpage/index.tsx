@@ -18,3 +18,103 @@ const Third = () => {
   const input2Ref = useRef<TextInput>(null);
   const input3Ref = useRef<TextInput>(null);
 };
+const ui = (
+    <View
+      style={{
+        flex: 1,
+        width: "100%",
+        padding: 20,
+        alignItems: "center",
+      }}
+    >
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          gap: 10,
+          margin: 10,
+        }}
+      >
+        <View
+          style={{
+            width: 15,
+            height: 15,
+            borderColor: "#0D7C66",
+            borderWidth: 2,
+            borderRadius: "100%",
+          }}
+        />
+        <View
+          style={{
+            width: 15,
+            height: 15,
+            borderColor: "#0D7C66",
+            borderWidth: 2,
+            borderRadius: "100%",
+          }}
+        />
+        <View
+          style={{
+            width: 15,
+            height: 15,
+            borderColor: "#0D7C66",
+            borderWidth: 2,
+            borderRadius: "100%",
+            backgroundColor: "#0D7C66",
+          }}
+        />
+      </View>
+      <TextInputStyled
+        ref={input1Ref}
+        returnKeyType="next"
+        text="E-mail"
+        onChangeText={setEmail}
+        value={email}
+        placeholder={"Enter E-mail"}
+      />
+      <TextInputStyled
+        ref={input2Ref}
+        password={true}
+        returnKeyType="next"
+        text="Password"
+        onChangeText={setPassword}
+        value={password}
+        placeholder={"Enter password"}
+      />
+      <TextInputStyled
+        ref={input3Ref}
+        password={true}
+        returnKeyType="next"
+        text="Confirm Password"
+        onChangeText={setPassword2}
+        value={password2}
+        placeholder={"Enter password"}
+      />
+      <CheckBox
+        iconType="material-community"
+        checkedIcon="checkbox-marked"
+        uncheckedIcon="checkbox-blank-outline"
+        checkedColor="green"
+        title="by Signing up you agree to our terms & conditions of use and privacy policy"
+        checked={isChecked}
+        onPress={() => setIsChecked(!isChecked)}
+      />
+      <View style={{ flex: 1, flexDirection: "row" }}>
+        <ButtonSuccess
+          style={{ width: 100 }}
+          label="Back"
+          onPress={() => {
+            router.navigate("/secondPage", { relativeToDirectory: true });
+          }}
+        />
+        <ButtonSuccess
+          label="Finish"
+          style={{ width: 100 }}
+          onPress={() => {
+            router.navigate("/home", { relativeToDirectory: true });
+          }}
+        />
+      </View>
+    </View>
+  );
+  
