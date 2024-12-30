@@ -91,3 +91,19 @@ const ui = (
   value={pinCode}
   placeholder={"Enter the pin code"}
 />
+<View style={{ flex: 1, flexDirection: "row" }}>
+  <ButtonSuccess
+    style={{ width: 100 }}
+    label="Back"
+    onPress={() => {
+      router.navigate("/firstPage", { relativeToDirectory: true });
+    }}
+  />
+  <ButtonSuccess
+    label="Next"
+    style={{ width: 100 }}
+    onPress={() => {
+      router.navigate("/thirdPage", { relativeToDirectory: true });
+    }}
+  />
+</View>
