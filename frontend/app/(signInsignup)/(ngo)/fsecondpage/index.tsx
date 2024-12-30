@@ -17,9 +17,7 @@ const Second = () => {
   const input2Ref = useRef<TextInput>(null);
   const input3Ref = useRef<TextInput>(null);
 
-  return null;
-};
-const ui = (
+  return (
     <View
       style={{
         flex: 1,
@@ -28,6 +26,7 @@ const ui = (
         alignItems: "center",
       }}
     >
+      {/* Progress Indicators */}
       <View
         style={{
           display: "flex",
@@ -65,66 +64,71 @@ const ui = (
           }}
         />
       </View>
+
+      {/* Text Inputs */}
+      <TextInputStyled
+        ref={input1Ref}
+        returnKeyType="next"
+        text="E-mail"
+        onChangeText={setEmail}
+        value={email}
+        placeholder={"Enter E-mail"}
+      />
+      <TextInputStyled
+        ref={input2Ref}
+        returnKeyType="next"
+        text="Phone Number"
+        onChangeText={setPhoneNo}
+        value={phoneNo}
+        placeholder={"Enter the phone number"}
+      />
+      <TextInputStyled
+        ref={input3Ref}
+        returnKeyType="next"
+        text="Pin Code"
+        onChangeText={setPinCode}
+        value={pinCode}
+        placeholder={"Enter the pin code"}
+      />
+
+      {/* Navigation Buttons */}
+      <View style={{ flex: 1, flexDirection: "row" }}>
+        <ButtonSuccess
+          style={{ width: 100 }}
+          label="Back"
+          onPress={() => {
+            router.navigate("/firstPage", { relativeToDirectory: true });
+          }}
+        />
+        <ButtonSuccess
+          label="Next"
+          style={{ width: 100 }}
+          onPress={() => {
+            router.navigate("/thirdPage", { relativeToDirectory: true });
+          }}
+        />
+      </View>
     </View>
   );
-  <TextInputStyled
-  ref={input1Ref}
-  returnKeyType="next"
-  text="E-mail"
-  onChangeText={setEmail}
-  value={email}
-  placeholder={"Enter E-mail"}
-/>
-<TextInputStyled
-  ref={input2Ref}
-  returnKeyType="next"
-  text="Phone Number"
-  onChangeText={setPhoneNo}
-  value={phoneNo}
-  placeholder={"Enter the phone number"}
-/>
-<TextInputStyled
-  ref={input3Ref}
-  returnKeyType="next"
-  text="Pin Code"
-  onChangeText={setPinCode}
-  value={pinCode}
-  placeholder={"Enter the pin code"}
-/>
-<View style={{ flex: 1, flexDirection: "row" }}>
-  <ButtonSuccess
-    style={{ width: 100 }}
-    label="Back"
-    onPress={() => {
-      router.navigate("/firstPage", { relativeToDirectory: true });
-    }}
-  />
-  <ButtonSuccess
-    label="Next"
-    style={{ width: 100 }}
-    onPress={() => {
-      router.navigate("/thirdPage", { relativeToDirectory: true });
-    }}
-  />
-</View>
+};
+
 const styles = StyleSheet.create({
-    container: {
-      flexDirection: "row",
-      alignItems: "center",
-      width: "100%",
-      paddingHorizontal: 16,
-    },
-    divider: {
-      flex: 1,
-      height: 1,
-      backgroundColor: "#ccc",
-    },
-    text: {
-      marginHorizontal: 8,
-      fontSize: 16,
-      color: "#555",
-    },
-  });
-  
-  return ui;
-  
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    paddingHorizontal: 16,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#ccc",
+  },
+  text: {
+    marginHorizontal: 8,
+    fontSize: 16,
+    color: "#555",
+  },
+});
+
+export default Second;
