@@ -61,51 +61,52 @@ const First = () => {
         />
       </View>
       <TextInputStyled
-  ref={input1Ref}
-  returnKeyType="next"
-  text="NGO NAME"
-  onChangeText={setNgoname}
-  value={ngoname}
-  placeholder={"Enter the name of your NGO"}
-/>
-<TextInputStyled
-  ref={input2Ref}
-  returnKeyType="next"
-  text="Uniqur ID"
-  onChangeText={setUniqueId}
-  value={uniqueId}
-  placeholder={"Enter the id"}
-/>
-<TextInputStyled
-  ref={input3Ref}
-  returnKeyType="next"
-  text="Type"
-  onChangeText={setType}
-  value={type}
-  placeholder={"Enter type of your NGO"}
-/>
-
+          ref={input1Ref}
+          returnKeyType="next"
+          text="NGO NAME"
+          onChangeText={setNgoname}
+          value={ngoname}
+          placeholder={"Enter the name of your NGO"}
+        />
+      <TextInputStyled
+        ref={input2Ref}
+        returnKeyType="next"
+        text="Uniqur ID"
+        onChangeText={setUniqueId}
+        value={uniqueId}
+        placeholder={"Enter the id"}
+      />
+      <TextInputStyled
+        ref={input3Ref}
+        returnKeyType="next"
+        text="Type"
+        onChangeText={setType}
+        value={type}
+        placeholder={"Enter type of your NGO"}
+      />
+  
+      <View style={{ flex: 1, flexDirection: "row" }}>
+        <ButtonSuccess
+          style={{ width: 100 }}
+          label="Back"
+          onPress={() => {
+            router.navigate("/", { relativeToDirectory: true });
+          }}
+        />
+      <ButtonSuccess
+        label="Next"
+        style={{ width: 100 }}
+        onPress={() => {
+          router.navigate("/secondPage", { relativeToDirectory: true });
+        }}
+      />
+    </View>
     </View>
   );
   
   return ui;
-  
-<View style={{ flex: 1, flexDirection: "row" }}>
-  <ButtonSuccess
-    style={{ width: 100 }}
-    label="Back"
-    onPress={() => {
-      router.navigate("/", { relativeToDirectory: true });
-    }}
-  />
-  <ButtonSuccess
-    label="Next"
-    style={{ width: 100 }}
-    onPress={() => {
-      //router.navigate("/secondPage", { relativeToDirectory: true });
-    }}
-  />
-</View>
+
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -125,8 +126,5 @@ const styles = StyleSheet.create({
     color: "#555",
   },
 });
-
-
-};
 
 export default First;
