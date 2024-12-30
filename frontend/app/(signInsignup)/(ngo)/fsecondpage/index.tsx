@@ -67,4 +67,27 @@ const ui = (
       </View>
     </View>
   );
-  
+  <TextInputStyled
+  ref={input1Ref}
+  returnKeyType="next"
+  text="E-mail"
+  onChangeText={setEmail}
+  value={email}
+  placeholder={"Enter E-mail"}
+/>
+<TextInputStyled
+  ref={input2Ref}
+  returnKeyType="next"
+  text="Phone Number"
+  onChangeText={setPhoneNo}
+  value={phoneNo}
+  placeholder={"Enter the phone number"}
+/>
+<TextInputStyled
+  ref={input3Ref}
+  returnKeyType="next"
+  text="Pin Code"
+  onChangeText={setPinCode}
+  value={pinCode}
+  placeholder={"Enter the pin code"}
+/>
