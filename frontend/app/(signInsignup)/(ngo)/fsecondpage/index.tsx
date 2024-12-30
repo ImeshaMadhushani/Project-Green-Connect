@@ -107,3 +107,24 @@ const ui = (
     }}
   />
 </View>
+const styles = StyleSheet.create({
+    container: {
+      flexDirection: "row",
+      alignItems: "center",
+      width: "100%",
+      paddingHorizontal: 16,
+    },
+    divider: {
+      flex: 1,
+      height: 1,
+      backgroundColor: "#ccc",
+    },
+    text: {
+      marginHorizontal: 8,
+      fontSize: 16,
+      color: "#555",
+    },
+  });
+  
+  return ui;
+  
