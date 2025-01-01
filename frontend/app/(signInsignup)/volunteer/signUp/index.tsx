@@ -8,9 +8,6 @@ import { Alert, StyleSheet, Text, View } from "react-native";
 import { CheckBox } from "react-native-elements/dist/checkbox/CheckBox";
 import { TextInput } from "react-native-gesture-handler";
 
-import { useState, useRef } from "react";
-import { TextInput } from "react-native-gesture-handler";
-
 const SignUpState = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,5 +22,24 @@ const SignUpState = () => {
     email, setEmail, password, setPassword, password2, setPassword2, isChecked, setIsChecked, input1Ref, input2Ref, input3Ref
   };
 };
+
+export const styles = StyleSheet.create({
+    container: {
+      flexDirection: "row",
+      alignItems: "center",
+      width: "100%",
+      paddingHorizontal: 16,
+    },
+    divider: {
+      flex: 1,
+      height: 1,
+      backgroundColor: "#ccc",
+    },
+    text: {
+      marginHorizontal: 8,
+      fontSize: 16,
+      color: "#555",
+    },
+  });
 
 export default SignUpState;
