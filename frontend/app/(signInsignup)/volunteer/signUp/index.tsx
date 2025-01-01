@@ -8,18 +8,3 @@ import { Alert, StyleSheet, Text, View } from "react-native";
 import { CheckBox } from "react-native-elements/dist/checkbox/CheckBox";
 import { TextInput } from "react-native-gesture-handler";
 
-export {
-  ButtonGoogle,
-  ButtonSuccess,
-  ButtonText,
-  TextInputStyled,
-  router,
-  useRef,
-  useState,
-  Alert,
-  StyleSheet,
-  Text,
-  View,
-  CheckBox,
-  TextInput,
-};
