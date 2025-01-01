@@ -1,12 +1,29 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import session from 'express-session';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import bodyParser from 'body-parser';
 import userRouter from './routes/userRoute.js';
+import projectRouter from './routes/projectRoute.js';
+
+import postRoute from './routes/postRoute.js';
+
+import cors from 'cors'; 
+
 
 dotenv.config();
 const app = express();
+
+app.use(cors()); 
+
+
+app.use(session({
+    secret: 'yourSecretKey', 
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } 
+  }));
 
 app.use(bodyParser.json());
 
@@ -40,6 +57,9 @@ app.use((req, res, next) => {
 
 
 app.use("/api/user", userRouter);
+app.use("/api/project", projectRouter);
+app.use('/api/post', postRoute)
+
 
 
 // Connect to MongoDB

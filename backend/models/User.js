@@ -1,5 +1,6 @@
-import mongoose from "mongoose";
-//const Schema = mongoose.Schema;
+
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
 
 const UserSchema = mongoose.Schema(
   {
@@ -13,6 +14,7 @@ const UserSchema = mongoose.Schema(
     registrationDate: {type: Date,required: function () { return this.role === "organization"; }},
     isApproved: { type: Boolean, required: function () { return this.role === "organization"; }, default: false },
     legalDocument: { type: String, required: function () { return this.role === "organization"; } },
+    
   },
   { timestamps: true }
 );
