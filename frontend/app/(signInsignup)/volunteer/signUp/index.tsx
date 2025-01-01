@@ -8,6 +8,24 @@ import { Alert, StyleSheet, Text, View } from "react-native";
 import { CheckBox } from "react-native-elements/dist/checkbox/CheckBox";
 import { TextInput } from "react-native-gesture-handler";
 
+export const markError = (inputRef: React.RefObject<TextInput>) => {
+  inputRef.current?.setNativeProps({
+    style: {
+      borderColor: "tomato",
+      borderWidth: 2,
+    },
+  });
+};
+
+export const markOk = (inputRef: React.RefObject<TextInput>) => {
+  inputRef.current?.setNativeProps({
+    style: {
+      borderColor: "green",
+      borderWidth: 2,
+    },
+  });
+};
+
 const SignUpState = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
