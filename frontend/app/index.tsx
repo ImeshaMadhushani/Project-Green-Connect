@@ -1,40 +1,29 @@
-import { View, Text, StyleSheet, ImageBackground } from "react-native";
-const bgImage = require("../assets/images/bg.jpg");
+import { View, Text, StyleSheet, ImageBackground, Image } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import Button from "@/components/button-login";
-const logo = require("../assets/images/logo1.png");
 import { router } from "expo-router";
 
+const bgImage = require("../assets/images/bg.jpg");
+const logo = require("../assets/images/logo1.png");
+
 const Index = () => {
-  const ui = (
+  return (
     <ImageBackground style={styles.background} source={bgImage}>
-      
-        <View
-          style={{
-            width: "100%",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-       
-          <Text style={{ color: "white" }}>
-            Together We Can Make a Difference
-          </Text>
-            <Button onPress={()=>{
-             
-            }} label="Volunteer" />
-            <Text style={
-              {
-                color:"white"
-              }
-            }>OR</Text>
-            <Button label="Organization" />
-        </View>
-      
+      <View style={styles.container}>
+        <Image style={styles.logo} resizeMode="contain" source={logo} />
+        <Text style={styles.tagline}>Together We Can Make a Difference</Text>
+            <Button label="Volunteer" />
+
+            <Text style={styles.orText}>OR</Text>
+
+            <Button label="Organization" onPress={()=>{
+              router.navigate("/firstPage", { relativeToDirectory: true })
+            }}/>
+            
+      </View>
     </ImageBackground>
   );
-  return ui;
 };
-  
 
 const styles = StyleSheet.create({
   background: {
@@ -45,6 +34,22 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  logo: {
+    width: "60%",
+    height: 250,
+    marginBottom: 20,
+  },
+  tagline: {
+    color: "white",
+    fontSize: 20,
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  orText: {
+    color: "white",
+    fontSize: 16,
+    marginVertical: 10,
   },
 });
 

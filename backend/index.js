@@ -6,10 +6,16 @@ import jwt from 'jsonwebtoken';
 import bodyParser from 'body-parser';
 import userRouter from './routes/userRoute.js';
 import projectRouter from './routes/projectRoute.js';
+
 import postRoute from './routes/postRoute.js';
+
+import cors from 'cors'; 
+
 
 dotenv.config();
 const app = express();
+
+app.use(cors()); 
 
 
 app.use(session({

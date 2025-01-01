@@ -2,8 +2,11 @@ import User from "../models/User.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+
+// Register a new user
+
 export async function register(req, res) {
-    const { name, username, email, password, profile_picture, role, legalDocument, registrationNumber, registrationDate } = req.body;
+    const { name, username, email, password, /* profile_picture, */ role, /* legalDocument, */ registrationNumber, registrationDate } = req.body;
     const saltRound = 10;
 
     try {
@@ -11,6 +14,11 @@ export async function register(req, res) {
         if (existingUser) {
             return res.status(400).json({ message: "Email already exists" });
         }
+
+        // Get uploaded files
+        const profile_picture = req.files?.profile_picture?.[0]?.path || null;
+        const legalDocument = req.files?.legalDocument?.[0]?.path || req.body.legalDocument || null;
+
 
         // Additional checks for organizations
         if (role === "organization") {
@@ -36,7 +44,7 @@ export async function register(req, res) {
             username,
             email,
             password: hashedPassword,
-            profile_picture,
+            profile_picture: profile_picture,
             role,
             ...(role === "organization" && {
                 legalDocument,

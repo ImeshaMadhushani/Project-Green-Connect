@@ -1,6 +1,11 @@
-const { getDefaultConfig } = require("expo/metro-config");
-const { withNativeWind } = require('nativewind/metro');
+const { getDefaultConfig } = require('@expo/metro-config');
 
-const config = getDefaultConfig(__dirname, { isCSSEnabled: true })
+const defaultConfig = getDefaultConfig(__dirname);
 
-module.exports = withNativeWind(config, { input: './global.css' })
+module.exports = {
+  ...defaultConfig,
+  transformer: {
+    assetPlugins: ['expo-asset/tools'],
+    ...defaultConfig.transformer,
+  },
+};
