@@ -1,4 +1,3 @@
-// SignUp.js
 import ButtonGoogle from "@/components/button-google";
 import ButtonSuccess from "@/components/button-success";
 import ButtonText from "@/components/button-text";
@@ -8,7 +7,6 @@ import { useRef, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { CheckBox } from "react-native-elements/dist/checkbox/CheckBox";
 import { TextInput } from "react-native-gesture-handler";
-import { markError, markOk } from "./SignUpUtils";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -20,7 +18,24 @@ const SignUp = () => {
   const input2Ref = useRef<TextInput>(null);
   const input3Ref = useRef<TextInput>(null);
 
-  return (
+  const markError = (inputRef: React.RefObject<TextInput>) => {
+    inputRef.current?.setNativeProps({
+      style: {
+        borderColor: "tomato",
+        borderWidth: 2,
+      },
+    });
+  };
+  const markOk = (inputRef: React.RefObject<TextInput>) => {
+    inputRef.current?.setNativeProps({
+      style: {
+        borderColor: "green",
+        borderWidth: 2,
+      },
+    });
+  };
+  
+ const ui = (
     <View
       style={{
         flex: 1,
@@ -119,6 +134,7 @@ const SignUp = () => {
         </View>
     </View>
   );
+  return ui;
 };
 
 const styles = StyleSheet.create({
