@@ -1,18 +1,44 @@
-import { StyleSheet, View, Pressable, Text } from "react-native";
+import { StyleSheet, View, Pressable, Text, Animated } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
+import { useRef } from "react";
 
 type Props = {
   onPress?: () => void;
 };
 
 const ButtonGoogle = ({ onPress }: Props) => {
+    const scaleValue = useRef(new Animated.Value(1)).current;
+
+    const handlePressIn = () => {
+        Animated.spring(scaleValue, {
+        toValue: 0.95,
+        useNativeDriver: true,
+        }).start(() => {
+        if (onPress) {
+            onPress();
+        }
+        });
+    };
+
+    const handlePressOut = () => {
+        Animated.spring(scaleValue, {
+          toValue: 1,
+          friction: 5,
+          tension: 60,
+          useNativeDriver: true,
+        }).start();
+      };
+
+
   return (
-    <View style={styles.buttonContainer}>
+    <Animated.View
+      style={[styles.buttonContainer, { transform: [{ scale: scaleValue }] }]}
+    >
       <Pressable style={styles.button} onPress={onPress}>
         <FontAwesome name="google" size={30} color="black" />
         <Text style={styles.buttonLabel}>Continue with Google</Text>
       </Pressable>
-    </View>
+      </Animated.View>
   );
 };
 
