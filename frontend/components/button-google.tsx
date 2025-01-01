@@ -34,8 +34,8 @@ const ButtonGoogle = ({ onPress }: Props) => {
     <Animated.View
       style={[styles.buttonContainer, { transform: [{ scale: scaleValue }] }]}
     >
-      <Pressable style={styles.button} onPress={onPress}>
-        <FontAwesome name="google" size={30} color="black" />
+      <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} style={styles.button}>
+        <FontAwesome name="google" size={28} color="#EA4335" />
         <Text style={styles.buttonLabel}>Continue with Google</Text>
       </Pressable>
       </Animated.View>
@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: 300,
     height: 60,
+    marginHorizontal: 20,
     alignItems: "center",
     justifyContent: "center",
     marginVertical: 15,
@@ -70,6 +71,7 @@ const styles = StyleSheet.create({
     color: "#3C4043",
     fontSize: 18,
     fontWeight: "600",
+    marginLeft: 10,
   },
 });
 
