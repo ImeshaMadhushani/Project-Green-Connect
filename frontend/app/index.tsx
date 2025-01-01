@@ -19,7 +19,7 @@ const Index = () => {
             <Button label="Organization" onPress={()=>{
               router.navigate("/firstPage", { relativeToDirectory: true })
             }}/>
-
+            
       </View>
     </ImageBackground>
   );
