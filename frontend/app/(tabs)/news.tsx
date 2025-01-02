@@ -23,4 +23,14 @@ const News = () => {
           <View style={styles.container}>
             <View style={{ width: "100%", padding: 10 }}>
               <Text style={{ fontSize: 25 }}>Articles/News</Text>
-  
+              
+              <View style={searchBarStyle}>
+              <TextInput
+                placeholder="Search"
+                style={{ flex: 1, borderWidth: 0 }}
+              />
+              <Pressable onPress={() => router.navigate('/user')}>
+                <Image source={scope} style={{ width: 30, height: 30 }} />
+              </Pressable>
+            </View>
+          </View>
