@@ -24,7 +24,6 @@ app.use(session({
     saveUninitialized: true,
     cookie: { secure: false } 
   }));
-
 app.use(bodyParser.json());
 
 //Middleware to verify JWT
