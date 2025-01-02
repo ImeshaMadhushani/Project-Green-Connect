@@ -65,7 +65,11 @@
         placeholder={"Enter Password"}
       />
       <View style={{width:"100%",alignItems:"flex-end"}}>
+<<<<<<< Updated upstream
       <ButtonText label="Foget Password?" style={{
+=======
+      <ButtonText label="Forget Password?" style={{
+>>>>>>> Stashed changes
         marginTop:5,
       }} onPress={() => {
         router.navigate("/forgetPassword", { relativeToDirectory: true });
