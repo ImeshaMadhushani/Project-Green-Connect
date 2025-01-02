@@ -2,15 +2,11 @@ import express from "express";
 import multer from "multer";
 import path from 'path';
 
-import {
-  createPost,
-  deletePost,
-  updatePost,
-  addComment,
-  deleteComment,
-  toggleLike,
-  updateExPost,
-} from "../controllers/postController.js";
+import { createPost, deletePost, updatePost, } from "../controllers/postController/postController.js";
+import { addComment, deleteComment } from "../controllers/postController/commentController.js";
+import { likeController, toggleLike } from "../controllers/postController/likeController.js";
+import { getLeaderboard } from "../controllers/postController/leaderboardController.js";
+
 
 const router = express.Router();
 
@@ -48,17 +44,8 @@ router.delete("/:id/delete", deletePost);
 router.post("/:id/update", upload.single("image"), updatePost);
 router.post("/:id/comment", addComment);
 router.delete("/:postId/comment/:commentId/delete", deleteComment);
-router.post("/:postId/like", toggleLike);
-router.put("/:id/update", updateExPost);
+router.post("/:postId/like", likeController);
 router.get('/leaderboard',getLeaderboard);
-
-import { Router } from "express";
-
-import multer from "multer";
-import { createPost, deletePost, updatePost, updateExPost } from "../controllers/postController/postController.js";
-import { addComment, deleteComment } from "../controllers/postController/commentController.js";
-import { toggleLike } from "../controllers/postController/likeController.js";
-import { getLeaderboard } from "../controllers/postController/leaderboardController.js";
 
 
 export default router;
