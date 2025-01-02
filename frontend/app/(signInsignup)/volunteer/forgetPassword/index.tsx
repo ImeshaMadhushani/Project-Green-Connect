@@ -11,6 +11,24 @@ const FogetPassword = () => {
   const [email, setEmail] = useState("");
   const input1Ref = useRef<TextInput>(null);
 
+  const markError = (inputRef: React.RefObject<TextInput>) => {
+    inputRef.current?.setNativeProps({
+      style: {
+        borderColor: "tomato",
+        borderWidth: 2,
+      },
+    });
+  };
+
+  const markOk = (inputRef: React.RefObject<TextInput>) => {
+    inputRef.current?.setNativeProps({
+      style: {
+        borderColor: "green",
+        borderWidth: 2,
+      },
+    });
+  };
+
   const ui = (
     <View
       style={{
@@ -33,26 +51,6 @@ const FogetPassword = () => {
     </View>
   );
 
-  return ui;
-};
-
-const markError = (inputRef: React.RefObject<TextInput>) => {
-    inputRef.current?.setNativeProps({
-      style: {
-        borderColor: "tomato",
-        borderWidth: 2,
-      },
-    });
-  };
-  const markOk = (inputRef: React.RefObject<TextInput>) => {
-    inputRef.current?.setNativeProps({
-      style: {
-        borderColor: "green",
-        borderWidth: 2,
-      },
-    });
-  };
-
   const updatedUI = (
     <View
       style={{
@@ -71,7 +69,7 @@ const markError = (inputRef: React.RefObject<TextInput>) => {
         returnKeyType="next"
         text="E-mail"
         onSubmitEditing={() => {
-          if (email == null || email == "") {
+          if (email == null || email === "") {
             markError(input1Ref);
             Alert.alert("Error", "Enter Email");
             input1Ref.current?.focus();
@@ -110,5 +108,8 @@ const markError = (inputRef: React.RefObject<TextInput>) => {
       color: "#555",
     },
   });
-  
+
+  return ui;
+};
+
 export default FogetPassword;
