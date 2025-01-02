@@ -80,3 +80,14 @@ const News = () => {
         </View>
       </ScrollView>
 
+        {/* Floating add button */}
+        <View style={floatingButtonStyle}>
+          <Pressable onPress={() => Alert.alert("Alert", "add")}>
+            <Image source={plus} style={{ width: "100%", height: "100%" }} />
+          </Pressable>
+        </View>
+    </>
+  );
+  return ui;
+};
+
