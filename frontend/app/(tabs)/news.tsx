@@ -23,7 +23,7 @@ const News = () => {
           <View style={styles.container}>
             <View style={{ width: "100%", padding: 10 }}>
               <Text style={{ fontSize: 25 }}>Articles/News</Text>
-              
+
               <View style={searchBarStyle}>
               <TextInput
                 placeholder="Search"
@@ -34,3 +34,49 @@ const News = () => {
               </Pressable>
             </View>
           </View>
+
+                    {/* Card components for different news articles */}
+                    <Card
+            heading="Energy - Saving Tips for an eco-Friendly Home"
+            bgColor="#d6e4e8"
+            content={newsContent("Reducing energy consumption at home not only lowers utility bills but also helps protect the environment. Simple changes...")}
+          />
+          
+          <Card
+            heading="Energy - Saving Tips for an eco-Friendly Home"
+            bgColor="#FFFDEC"
+            content={newsContent("Reducing energy consumption at home not only lowers utility bills but also helps protect the environment. Simple changes...")}
+          />
+          
+          <Card
+            heading="Energy - Saving Tips for an eco-Friendly Home"
+            bgColor="#F9E6CF"
+            content={newsContent("Reducing energy consumption at home not only lowers utility bills but also helps protect the environment. Simple changes...")}
+          />
+          
+          <Card
+            heading="Energy - Saving Tips for an eco-Friendly Home"
+            bgColor="#E4F1AC"
+            content={newsContent("Reducing energy consumption at home not only lowers utility bills but also helps protect the environment. Simple changes...")}
+          />
+          
+          <Card
+            heading="Energy - Saving Tips for an eco-Friendly Home"
+            bgColor="#E1AFD1"
+            content={newsContent("Reducing energy consumption at home not only lowers utility bills but also helps protect the environment. Simple changes...")}
+          />
+          
+          <Card
+            heading="Energy - Saving Tips for an eco-Friendly Home"
+            bgColor="#F4D9D0"
+            content={newsContent("Reducing energy consumption at home not only lowers utility bills but also helps protect the environment. Simple changes...")}
+          />
+          
+          <Card
+            heading="Energy - Saving Tips for an eco-Friendly Home"
+            bgColor="#F7F9F2"
+            content={newsContent("Reducing energy consumption at home not only lowers utility bills but also helps protect the environment. Simple changes...")}
+          />
+        </View>
+      </ScrollView>
+
