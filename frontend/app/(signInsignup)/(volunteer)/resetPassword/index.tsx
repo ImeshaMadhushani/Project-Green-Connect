@@ -34,13 +34,10 @@ const ResetPassword = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Reset Password</Text>
-      <TextInput
+      <TextInputStyled
         ref={input1Ref}
         password={true}
         returnKeyType="next"
-        style={styles.input}
-        placeholder="Enter Password"
-        secureTextEntry
         text="Password"
         onSubmitEditing={() => {
           if (password == null || password == "") {
@@ -53,10 +50,11 @@ const ResetPassword = () => {
         }}
         onChangeText={setPassword}
         value={password}
+        placeholder={"Enter Password"}
       />
-      <TextInput
+      <TextInputStyled
         ref={input2Ref}
-        style={styles.input}
+        password={true}
         returnKeyType="next"
         text="Confirm Password"
         onSubmitEditing={() => {
@@ -67,12 +65,11 @@ const ResetPassword = () => {
             markOk(input2Ref);
           }
         }}
-        placeholder="Confirm Password"
-        secureTextEntry
         onChangeText={setPassword2}
         value={password2}
+        placeholder={"Enter Password"}
       />
-
+      
         <ButtonSuccess
             label="Confirm"
             onPress={() => {
