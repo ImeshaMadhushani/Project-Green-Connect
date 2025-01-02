@@ -1,30 +1,30 @@
-import Card from "../../components/Card";  
-import Title from "../../components/Title";  // Ensure the path is correct
+import Card from "@/components/Card";
+import Title from "@/components/Title";
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
-import { Image } from 'react-native';  // Use built-in Image from 'react-native' instead of 'react-native-elements'
+import { Image } from "react-native-elements";
 import MapView from "react-native-maps";
 
-const calender = require("../../assets/images/calender.png");  // Ensure the path to image is correct
-const clock = require("../../assets/images/clock.png");  // Ensure the path to image is correct
-const pin = require("../../assets/images/pin.png");  // Ensure the path to image is correct
+const calender = require("../../assets/images/calender.png");
+const clock = require("../../assets/images/clock.png");
+const pin = require("../../assets/images/pin.png");
 
 const Home = () => {
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
       <View style={styles.container}>
         
-        {/* Map Section */}
+        
         <View
           style={{
             width: "100%",
             height: 350,
-            marginBottom: 10
+            marginBottom:10
           }}
         >
             <MapView style={styles.map} />
         </View>
 
-        {/* Upcoming Events Section */}
+
         <Title
           title="Upcoming Events"
           onClick={() => {
@@ -32,7 +32,6 @@ const Home = () => {
           }}
         />
 
-        {/* Card for Plastic-Free Market Campaign */}
         <Card
           bgColor="#dce8d6"
           heading="Plastic - free market campaign"
@@ -55,11 +54,7 @@ const Home = () => {
             </View>
           }
         />
-        
-        {/* What's New Section */}
         <Title title="What's New" />
-
-        {/* Card for Energy Saving Tips */}
         <Card
           heading="Energy - Saving Tips for an eco-Friendly Home"
           bgColor="#d6e4e8"
@@ -74,6 +69,7 @@ const Home = () => {
         />
       </View>
     </ScrollView>
+    
   );
 };
 
