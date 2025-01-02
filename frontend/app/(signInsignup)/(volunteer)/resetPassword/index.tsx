@@ -1,7 +1,9 @@
-import { useState } from "react";
-import { TextInput } from "react-native";
-import { Alert } from "react-native";
-import { Text, View, StyleSheet } from "react-native";
+import ButtonSuccess from "@/components/button-success";
+import TextInputStyled from "@/components/text-input";
+import { router } from "expo-router";
+import { useRef, useState } from "react";
+import { Alert, Text, View, StyleSheet } from "react-native";
+import { TextInput } from "react-native-gesture-handler";
 
 const ResetPassword = () => {
 
@@ -11,15 +13,20 @@ const ResetPassword = () => {
   const input1Ref = useRef<TextInput>(null);
   const input2Ref = useRef<TextInput>(null);
 
-  const markError = (inputRef) => {
+  const markError = (inputRef: React.RefObject<TextInput>) => {
     inputRef.current?.setNativeProps({
-      style: { borderColor: "red", borderWidth: 2 },
+      style: {
+        borderColor: "tomato",
+        borderWidth: 2,
+      },
     });
   };
-  
-  const markOk = (inputRef) => {
+  const markOk = (inputRef: React.RefObject<TextInput>) => {
     inputRef.current?.setNativeProps({
-      style: { borderColor: "green", borderWidth: 2 },
+      style: {
+        borderColor: "green",
+        borderWidth: 2,
+      },
     });
   };
   
@@ -65,6 +72,19 @@ const ResetPassword = () => {
         onChangeText={setPassword2}
         value={password2}
       />
+
+        <ButtonSuccess
+            label="Confirm"
+            onPress={() => {
+            router.navigate("/home", { relativeToDirectory: true });
+            }}
+        />
+        <View
+        style={{
+          flexDirection: "row",
+        }}
+      >
+        </View>
     </View>
   );
 };
