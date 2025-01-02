@@ -12,6 +12,10 @@ import postRoute from './routes/postRoute.js';
 import cors from 'cors'; 
 
 
+import methodOverride from 'method-override';
+app.use(methodOverride('_method'));
+
+
 dotenv.config();
 const app = express();
 
