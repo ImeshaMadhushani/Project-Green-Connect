@@ -12,6 +12,10 @@ import postRoute from './routes/postRoute.js';
 import cors from 'cors'; 
 
 
+import methodOverride from 'method-override';
+app.use(methodOverride('_method'));
+
+
 dotenv.config();
 const app = express();
 
@@ -24,7 +28,6 @@ app.use(session({
     saveUninitialized: true,
     cookie: { secure: false } 
   }));
-
 app.use(bodyParser.json());
 
 //Middleware to verify JWT

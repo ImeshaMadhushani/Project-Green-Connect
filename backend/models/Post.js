@@ -15,10 +15,12 @@ const PostSchema = new Schema(
     username: { type: String, required: true },
     image: { type: String },
     likes: { type: Number, default: 0 },
+
     shares: { type: Number, default: 0 },
     points: { type: Number, default: 0 },
     likedBy: [{ type: String }],
     comments: [CommentSchema], 
+
   },
   { timestamps: true }
 );
