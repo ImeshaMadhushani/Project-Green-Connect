@@ -20,6 +20,11 @@ export async function register(req, res) {
         const legalDocument = req.files?.legalDocument?.[0]?.path || req.body.legalDocument || null;
 
 
+        console.log("Uploaded files:", req.files);
+        console.log("Profile Picture Path:", profile_picture);
+        console.log("Legal Document Path:", legalDocument);
+
+
         // Additional checks for organizations
         if (role === "organization") {
             // Check for required organization fields
