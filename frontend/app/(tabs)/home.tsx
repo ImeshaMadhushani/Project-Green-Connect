@@ -1,7 +1,8 @@
-import { ScrollView, StyleSheet, View } from "react-native";
-import MapView from "react-native-maps";
 import Card from "@/components/Card";
-import { Image, Text, View } from "react-native-elements";
+import Title from "@/components/Title";
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image } from "react-native-elements";
+import MapView from "react-native-maps";
 
 const calender = require("../../assets/images/calender.png");
 const clock = require("../../assets/images/clock.png");
@@ -10,9 +11,10 @@ const pin = require("../../assets/images/pin.png");
 const Home = () => {
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
-      <View style={styles.container}></View>
-     
-      <View
+      <View style={styles.container}>
+        
+        
+        <View
           style={{
             width: "100%",
             height: 350,
@@ -67,20 +69,11 @@ const Home = () => {
         />
       </View>
     </ScrollView>
+    
   );
 };
 
- 
-
-
-
-
-
 const styles = StyleSheet.create({
-  map: {
-    width: "100%",
-    height: "100%",
-  },
   container: {
     width: "100%",
     alignItems: "center",
@@ -88,8 +81,30 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingBottom: 20,
-  }
+  },
+  cardContent: {
+    margin: 15,
+  },
+  map: {
+    width: '100%',
+    height: '100%',
+  },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  icon: {
+    width: 30,
+    height: 30,
+    marginRight: 10,
+  },
+  cardTextContent: {
+    marginTop: 10,
+  },
+  cardText: {
+    fontSize: 16,
+  },
 });
-
 
 export default Home;
