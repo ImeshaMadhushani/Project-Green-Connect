@@ -61,3 +61,4 @@ const Card = ({ image, heading, bgColor, content }: Props) => (
     </View>
   );
   
+  export default Card;
