@@ -92,7 +92,7 @@ const Second = () => {
       {/* Navigation Buttons */}
       <View style={{ flex: 1, flexDirection: "row" }}>
         <ButtonSuccess
-          style={{ width: 100 }}
+          style={{ width: 100, height:45}}
           label="Back"
           onPress={() => {
             router.navigate("/firstPage", { relativeToDirectory: true });
@@ -100,9 +100,9 @@ const Second = () => {
         />
         <ButtonSuccess
           label="Next"
-          style={{ width: 100 }}
+          style={{ width: 100, height:45}}
           onPress={() => {
-            router.navigate("/thirdPage", { relativeToDirectory: true });
+            router.navigate("/thirdpage", { relativeToDirectory: true });
           }}
         />
       </View>
