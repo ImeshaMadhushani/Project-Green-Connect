@@ -6,7 +6,15 @@ import jwt from 'jsonwebtoken';
 import bodyParser from 'body-parser';
 import userRouter from './routes/userRoute.js';
 import projectRouter from './routes/projectRoute.js';
+
+import postRoute from './routes/postRoute.js';
+
 import cors from 'cors'; 
+
+
+import methodOverride from 'method-override';
+app.use(methodOverride('_method'));
+
 
 dotenv.config();
 const app = express();
@@ -20,7 +28,6 @@ app.use(session({
     saveUninitialized: true,
     cookie: { secure: false } 
   }));
-
 app.use(bodyParser.json());
 
 //Middleware to verify JWT
@@ -54,6 +61,7 @@ app.use((req, res, next) => {
 
 app.use("/api/user", userRouter);
 app.use("/api/project", projectRouter);
+app.use('/api/post', postRoute)
 
 
 

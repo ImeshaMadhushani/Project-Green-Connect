@@ -82,7 +82,7 @@ const Third = () => {
     </View>
   );
 
-  return ui; 
+  return ui; // Return the UI
 };
 
 const styles = StyleSheet.create({
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     height: 15,
     borderColor: "#0D7C66",
     borderWidth: 2,
-    borderRadius: "100%",
+    borderRadius: 100,
   },
   activeDot: {
     backgroundColor: "#0D7C66",

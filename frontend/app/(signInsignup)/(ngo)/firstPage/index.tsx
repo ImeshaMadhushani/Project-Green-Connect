@@ -8,7 +8,7 @@ import ButtonSuccess from "@/components/button-success";
 const First = () => {
   const [ngoname, setNgoname] = useState("");
   const [uniqueId, setUniqueId] = useState("");
-  const [type, setType] = useState("");
+  const [registrationDate, setRegistrationDate] = useState("");
 
   const input1Ref = useRef<TextInput>(null);
   const input2Ref = useRef<TextInput>(null);
@@ -61,51 +61,55 @@ const First = () => {
         />
       </View>
       <TextInputStyled
-  ref={input1Ref}
-  returnKeyType="next"
-  text="NGO NAME"
-  onChangeText={setNgoname}
-  value={ngoname}
-  placeholder={"Enter the name of your NGO"}
-/>
-<TextInputStyled
-  ref={input2Ref}
-  returnKeyType="next"
-  text="Uniqur ID"
-  onChangeText={setUniqueId}
-  value={uniqueId}
-  placeholder={"Enter the id"}
-/>
-<TextInputStyled
-  ref={input3Ref}
-  returnKeyType="next"
-  text="Type"
-  onChangeText={setType}
-  value={type}
-  placeholder={"Enter type of your NGO"}
-/>
-
+          ref={input1Ref}
+          returnKeyType="next"
+          text="Organization Name"
+          onChangeText={setNgoname}
+          value={ngoname}
+          placeholder={"Enter the name of your NGO"}
+        />
+      <TextInputStyled
+        ref={input2Ref}
+        returnKeyType="next"
+        text="Registration No"
+        onChangeText={setUniqueId}
+        value={uniqueId}
+        placeholder={"Enter the reg no"}
+      />
+      <TextInputStyled
+        ref={input3Ref}
+        returnKeyType="done"
+        text="Registration Date"
+        onChangeText={setRegistrationDate}
+        value={registrationDate}
+        placeholder="Enter the reg date"
+      />
+  
+      <View style={{ flex: 1, flexDirection: "row",
+          justifyContent: "space-between",
+          marginTop: 20,
+          width: "100%", }}>
+        <ButtonSuccess
+          style={{ width: 100, height: 45,}}
+          label="Back"
+          onPress={() => {
+            router.navigate("/", { relativeToDirectory: true });
+          }}
+        />
+      <ButtonSuccess
+        label="Next"
+        style={{ width: 100, height: 45,}}
+        onPress={() => {
+          router.navigate("/secondPage", { relativeToDirectory: true });
+        }}
+      />
+    </View>
     </View>
   );
   
   return ui;
-  
-<View style={{ flex: 1, flexDirection: "row" }}>
-  <ButtonSuccess
-    style={{ width: 100 }}
-    label="Back"
-    onPress={() => {
-      router.navigate("/", { relativeToDirectory: true });
-    }}
-  />
-  <ButtonSuccess
-    label="Next"
-    style={{ width: 100 }}
-    onPress={() => {
-      //router.navigate("/secondPage", { relativeToDirectory: true });
-    }}
-  />
-</View>
+
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -125,8 +129,5 @@ const styles = StyleSheet.create({
     color: "#555",
   },
 });
-
-
-};
 
 export default First;
