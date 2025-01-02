@@ -12,14 +12,16 @@ const Index = () => {
       <View style={styles.container}>
         <Image style={styles.logo} resizeMode="contain" source={logo} />
         <Text style={styles.tagline}>Together We Can Make a Difference</Text>
-            <Button label="Volunteer" />
+            <Button onPress={()=>{
+              router.navigate("/signUp", { relativeToDirectory: true })
+            }} label="Volunteer" />
 
             <Text style={styles.orText}>OR</Text>
 
             <Button label="Organization" onPress={()=>{
               router.navigate("/firstPage", { relativeToDirectory: true })
             }}/>
-
+            
       </View>
     </ImageBackground>
   );
