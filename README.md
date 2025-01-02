@@ -8,7 +8,6 @@ With features like resource sharing, article publishing, and a robust admin syst
 ## 💡 **Key Features**  
 
 - 🌍 **Environmental Collaboration**: Empower communities to create and collaborate on eco-friendly projects.  
-- 📤 **Resource Sharing**: Share and access resources to support environmental initiatives.  
 - 📝 **Article Publishing**: Publish articles about sustainability under admin supervision.  
 - 👥 **Connect Communities**: Build bridges between communities, NGOs, and local governments.  
 - 📊 **Admin Oversight**: Admins can review, approve, and track projects for quality assurance.  
