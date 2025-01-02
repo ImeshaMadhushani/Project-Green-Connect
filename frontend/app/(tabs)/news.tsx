@@ -11,12 +11,12 @@ import {
   View,
 } from "react-native";
 
-const plus = require("../../assets/images/icon.png");
-const scope = require("../../assets/images/logo1.png");
+const plus = require("../../assets/images/plus.png");
+const scope = require("../../assets/images/scope.png");
 
 const News = () => {
     const ui = (
-      <div>
+      <View>
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <View style={styles.container}>
             <View style={{ 
@@ -179,7 +179,7 @@ const News = () => {
                  />
           </Pressable>
         </View>
-    </div>
+    </View>
   );
   return ui;
 };
