@@ -36,4 +36,60 @@ const FogetPassword = () => {
   return ui;
 };
 
+const markError = (inputRef: React.RefObject<TextInput>) => {
+    inputRef.current?.setNativeProps({
+      style: {
+        borderColor: "tomato",
+        borderWidth: 2,
+      },
+    });
+  };
+  const markOk = (inputRef: React.RefObject<TextInput>) => {
+    inputRef.current?.setNativeProps({
+      style: {
+        borderColor: "green",
+        borderWidth: 2,
+      },
+    });
+  };
+
+  const updatedUI = (
+    <View
+      style={{
+        flex: 1,
+        width: "100%",
+        padding: 20,
+        alignItems: "center",
+      }}
+    >
+      <Text style={{ fontSize: 50, marginBottom: 10 }}>Foget Password</Text>
+      <Text style={{ fontSize: 20, marginBottom: 60 }}>
+        Enter Your Email Address To Reset Password
+      </Text>
+      <TextInputStyled
+        ref={input1Ref}
+        returnKeyType="next"
+        text="E-mail"
+        onSubmitEditing={() => {
+          if (email == null || email == "") {
+            markError(input1Ref);
+            Alert.alert("Error", "Enter Email");
+            input1Ref.current?.focus();
+          } else {
+            markOk(input1Ref);
+          }
+        }}
+        onChangeText={setEmail}
+        value={email}
+        placeholder={"Enter E-mail"}
+      />
+      <ButtonSuccess
+        label="NEXT"
+        onPress={() => {
+          router.navigate("/resetPassword", { relativeToDirectory: true });
+        }}
+      />
+    </View>
+  );
+
 export default FogetPassword;
