@@ -1,12 +1,12 @@
 import User from "../models/User.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-//import dotenv from 'dotenv';
 
 
 // Register a new user
+
 export async function register(req, res) {
-    const { name, username, email, password, profile_picture, role, legalDocument, registrationNumber, registrationDate } = req.body;
+    const { name, username, email, password, /* profile_picture, */ role, /* legalDocument, */ registrationNumber, registrationDate } = req.body;
     const saltRound = 10;
 
     try {
@@ -14,6 +14,11 @@ export async function register(req, res) {
         if (existingUser) {
             return res.status(400).json({ message: "Email already exists" });
         }
+
+        // Get uploaded files
+        const profile_picture = req.files?.profile_picture?.[0]?.path || null;
+        const legalDocument = req.files?.legalDocument?.[0]?.path || req.body.legalDocument || null;
+
 
         // Additional checks for organizations
         if (role === "organization") {
@@ -39,7 +44,7 @@ export async function register(req, res) {
             username,
             email,
             password: hashedPassword,
-            profile_picture,
+            profile_picture: profile_picture,
             role,
             ...(role === "organization" && {
                 legalDocument,
@@ -163,8 +168,26 @@ export async function deleteUser(req, res) {
     }
 }
 
+// Get counts of volunteers and organizations
+export async function getCounts(req, res) {
+    try {
+        const volunteerCount = await User.countDocuments({ role: 'volunteer' });
+        const organizationCount = await User.countDocuments({ role: 'organization' });
+
+        res.status(200).json({
+            message: "Counts fetched successfully!",
+            volunteerCount,
+            organizationCount
+        });
+    } catch (error) {
+        console.error("Error fetching counts:", error);
+        res.status(500).json({ message: "Error fetching counts", error: error.message });
+    }
+}
+
+
 // Assign admin role (Admin only)
-export async function assignAdmin(req, res) {
+/* export async function assignAdmin(req, res) {
     const { userId } = req.params;
     const { role } = req.body;
 
@@ -195,3 +218,4 @@ export async function assignAdmin(req, res) {
         res.status(500).json({ message: "Error updating user role", error: error.message });
     }
 }
+ */

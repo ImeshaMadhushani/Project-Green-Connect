@@ -8,7 +8,6 @@ With features like resource sharing, article publishing, and a robust admin syst
 ## 💡 **Key Features**  
 
 - 🌍 **Environmental Collaboration**: Empower communities to create and collaborate on eco-friendly projects.  
-- 📤 **Resource Sharing**: Share and access resources to support environmental initiatives.  
 - 📝 **Article Publishing**: Publish articles about sustainability under admin supervision.  
 - 👥 **Connect Communities**: Build bridges between communities, NGOs, and local governments.  
 - 📊 **Admin Oversight**: Admins can review, approve, and track projects for quality assurance.  
@@ -70,7 +69,7 @@ npm start
 ```  
 
 ### 4️⃣ **Test with Expo Go**  
-1. Download the **Expo Go** app from the [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) or [Apple App Store](https://apps.apple.com/app/expo-go/id982107779).  
+1. Download the **Expo Go** app from the [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent)
 2. Scan the QR code displayed in your terminal or browser after running `npm start`.  
 3. The app will open in Expo Go on your mobile device.  
 

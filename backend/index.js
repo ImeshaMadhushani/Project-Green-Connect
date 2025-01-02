@@ -7,8 +7,15 @@ import bodyParser from 'body-parser';
 import userRouter from './routes/userRoute.js';
 import projectRouter from './routes/projectRoute.js';
 
+import postRoute from './routes/postRoute.js';
+
+import cors from 'cors'; 
+
+
 dotenv.config();
 const app = express();
+
+app.use(cors()); 
 
 
 app.use(session({
@@ -50,6 +57,7 @@ app.use((req, res, next) => {
 
 app.use("/api/user", userRouter);
 app.use("/api/project", projectRouter);
+app.use('/api/post', postRoute)
 
 
 
