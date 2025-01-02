@@ -4,7 +4,7 @@ import path from 'path';
 
 import { createPost, deletePost, updatePost, } from "../controllers/postController/postController.js";
 import { addComment, deleteComment } from "../controllers/postController/commentController.js";
-import { likeController, toggleLike } from "../controllers/postController/likeController.js";
+import { likeController, /* toggleLike */ } from "../controllers/postController/likeController.js";
 import { getLeaderboard } from "../controllers/postController/leaderboardController.js";
 
 
