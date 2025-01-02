@@ -5,7 +5,7 @@ import { Image } from "react-native-elements";
 
 const leftArrow = require("../assets/images/leftarrow.png");
 
-const logo = require("../assets/images/logoLong.png");
+const logo = require("../assets/images/logo2.png");
 const bell = require("../assets/images/bell.png");
 
 type props = {
