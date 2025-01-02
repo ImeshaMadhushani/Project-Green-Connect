@@ -1,7 +1,10 @@
+import { router } from "expo-router";
 import React, { useRef, useState } from "react";
-import { Alert, View, Text } from "react-native";
+import { Alert, View, Text, StyleSheet } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import TextInputStyled from "@/components/text-input";
+import ButtonSuccess from "@/components/button-success";
+import ButtonText from "@/components/button-text";
 
 const LogIn: React.FC = () => {
     const [email, setEmail] = useState<string>("");
@@ -24,7 +27,7 @@ const LogIn: React.FC = () => {
 
   return (
     <View style={{ flex: 1, width: "100%", padding: 20, alignItems: "center" }}>
-    <Text style={{ fontSize: 50, marginBottom: 60 }}>Welcome Back</Text>
+    <Text style={{ fontSize: 40, marginBottom: 60, fontWeight: "bold"}}>Welcome Back</Text>
     <TextInputStyled
       ref={input1Ref}
       returnKeyType="next"
@@ -61,6 +64,13 @@ const LogIn: React.FC = () => {
       value={password}
       placeholder={"Enter Password"}
     />
+    <View style={{width:"100%",alignItems:"flex-end"}}>
+<ButtonText label="Foget Password?" style={{
+  marginTop:5,
+}} onPress={() => {
+  router.navigate("/forgetPassword", { relativeToDirectory: true });
+}} />
+</View>
     </View>
   );
 };
