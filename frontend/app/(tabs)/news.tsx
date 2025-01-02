@@ -11,8 +11,8 @@ import {
   View,
 } from "react-native";
 
-const plus = require("../../assets/images/plus.png");
-const scope = require("../../assets/images/scope.png");
+const plus = require("../../assets/images/icon.png");
+const scope = require("../../assets/images/logo1.png");
 
 const News = () => {
     const ui = (
