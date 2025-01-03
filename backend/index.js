@@ -13,14 +13,15 @@ import cors from 'cors';
 
 
 import methodOverride from 'method-override';
-app.use(methodOverride('_method'));
+
+
 
 
 dotenv.config();
 const app = express();
 
 app.use(cors()); 
-
+app.use(methodOverride('_method'));
 
 app.use(session({
     secret: 'yourSecretKey', 
