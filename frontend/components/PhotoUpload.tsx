@@ -5,7 +5,7 @@ import * as ImagePicker from "expo-image-picker";
 const PhotoUploadStyled = ({ onImageSelect, label }) => {
   const [image, setImage] = useState(null);
 
-  const pickImage = async () => {
+   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
       Alert.alert(
