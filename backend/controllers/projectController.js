@@ -40,6 +40,16 @@ export const getProjects = async (req, res) => {
     }
 };
 
+// Get all projects that are not approved
+export const getNotApprovedProjects = async (req, res) => {
+    try {
+        const projects = await Project.find({ isApproved: false }); // Fetch only projects that are not approved
+        res.status(200).json(projects);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // Get a single project
 export const getProjectById = async (req, res) => {
     try {
