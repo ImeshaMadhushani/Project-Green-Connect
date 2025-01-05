@@ -45,6 +45,34 @@ const PhotoUploadStyled = ({ onImageSelect, label }) => {
   );
 };
 
-
+const styles = StyleSheet.create({
+    container: {
+      width: "100%",
+      marginBottom: 20,
+    },
+    label: {
+      textAlign: "left",
+      fontSize: 15,
+      marginBottom: 5,
+    },
+    imageContainer: {
+      borderRadius: 5,
+      borderColor: "#ccc",
+      borderWidth: 2,
+      height: 100,
+      justifyContent: "center",
+      alignItems: "center",
+      overflow: "hidden",
+      backgroundColor: "#f9f9f9",
+    },
+    image: {
+      width: "100%",
+      height: "100%",
+    },
+    placeholder: {
+      color: "#aaa",
+      fontSize: 16,
+    },
+  });
 
 export default PhotoUploadStyled;
