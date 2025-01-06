@@ -7,12 +7,16 @@ import { useRef, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { CheckBox } from "react-native-elements/dist/checkbox/CheckBox";
 import { TextInput } from "react-native-gesture-handler";
+import PhotoUploadStyled from "@/components/PhotoUpload";
 
 const SignUp = () => {
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
   const [isChecked, setIsChecked] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState(null);
 
   const input1Ref = useRef<TextInput>(null);
   const input2Ref = useRef<TextInput>(null);
@@ -45,6 +49,48 @@ const SignUp = () => {
         justifyContent: "center",
       }}
     >
+      <PhotoUploadStyled
+        label="Profile Photo"
+        onImageSelect={setProfilePhoto}
+      />
+
+<TextInputStyled
+        ref={input1Ref}
+        returnKeyType="next"
+        text="Name"
+        onSubmitEditing={() => {
+          if (name == null || name == "") {
+            markError(input1Ref);
+            Alert.alert("Error", "Please Enter Your Name");
+            input1Ref.current?.focus();
+          } else {
+            markOk(input1Ref);
+            input2Ref.current?.focus();
+          }
+        }}
+        onChangeText={setName}
+        value={name}
+        placeholder={"Enter Your Name"}
+      />
+      <TextInputStyled
+        ref={input1Ref}
+        returnKeyType="next"
+        text="UserName"
+        onSubmitEditing={() => {
+          if (username == null || username == "") {
+            markError(input1Ref);
+            Alert.alert("Error", "Please Enter A UserName");
+            input1Ref.current?.focus();
+          } else {
+            markOk(input1Ref);
+            input2Ref.current?.focus();
+          }
+        }}
+        onChangeText={setUsername}
+        value={username}
+        placeholder={"Enter Your Username"}
+      />
+      
       <TextInputStyled
         ref={input1Ref}
         returnKeyType="next"
@@ -123,7 +169,7 @@ const SignUp = () => {
       </View>
 
       <ButtonGoogle onPress={() => {
-          router.navigate("/home", { relativeToDirectory: true })
+          router.navigate("/logIn", { relativeToDirectory: true })
         }} />
         <View style={{
           flexDirection:'row',
