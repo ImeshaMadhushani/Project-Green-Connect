@@ -10,6 +10,8 @@ import { TextInput } from "react-native-gesture-handler";
 import PhotoUploadStyled from "@/components/PhotoUpload";
 
 const SignUp = () => {
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
@@ -50,6 +52,43 @@ const SignUp = () => {
       <PhotoUploadStyled
         label="Profile Photo"
         onImageSelect={setProfilePhoto}
+      />
+
+<TextInputStyled
+        ref={input1Ref}
+        returnKeyType="next"
+        text="Name"
+        onSubmitEditing={() => {
+          if (name == null || name == "") {
+            markError(input1Ref);
+            Alert.alert("Error", "Please Enter Your Name");
+            input1Ref.current?.focus();
+          } else {
+            markOk(input1Ref);
+            input2Ref.current?.focus();
+          }
+        }}
+        onChangeText={setName}
+        value={name}
+        placeholder={"Enter Your Name"}
+      />
+      <TextInputStyled
+        ref={input1Ref}
+        returnKeyType="next"
+        text="UserName"
+        onSubmitEditing={() => {
+          if (username == null || username == "") {
+            markError(input1Ref);
+            Alert.alert("Error", "Please Enter A UserName");
+            input1Ref.current?.focus();
+          } else {
+            markOk(input1Ref);
+            input2Ref.current?.focus();
+          }
+        }}
+        onChangeText={setUsername}
+        value={username}
+        placeholder={"Enter Your Username"}
       />
 
       <TextInputStyled
