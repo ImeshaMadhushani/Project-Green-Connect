@@ -7,12 +7,14 @@ import { useRef, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { CheckBox } from "react-native-elements/dist/checkbox/CheckBox";
 import { TextInput } from "react-native-gesture-handler";
+import PhotoUploadStyled from "@/components/PhotoUpload";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
   const [isChecked, setIsChecked] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState(null);
 
   const input1Ref = useRef<TextInput>(null);
   const input2Ref = useRef<TextInput>(null);
@@ -45,6 +47,11 @@ const SignUp = () => {
         justifyContent: "center",
       }}
     >
+      <PhotoUploadStyled
+        label="Profile Photo"
+        onImageSelect={setProfilePhoto}
+      />
+
       <TextInputStyled
         ref={input1Ref}
         returnKeyType="next"
