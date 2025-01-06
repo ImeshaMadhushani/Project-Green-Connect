@@ -90,7 +90,7 @@ const SignUp = () => {
         value={username}
         placeholder={"Enter Your Username"}
       />
-
+      
       <TextInputStyled
         ref={input1Ref}
         returnKeyType="next"
@@ -169,7 +169,7 @@ const SignUp = () => {
       </View>
 
       <ButtonGoogle onPress={() => {
-          router.navigate("/home", { relativeToDirectory: true })
+          router.navigate("/logIn", { relativeToDirectory: true })
         }} />
         <View style={{
           flexDirection:'row',
