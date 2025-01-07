@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, View, Text, StyleSheet } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 
 const ProjectModalt = ({
   visible,
