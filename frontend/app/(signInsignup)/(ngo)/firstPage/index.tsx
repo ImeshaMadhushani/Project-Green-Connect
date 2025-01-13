@@ -4,6 +4,7 @@ import { TextInput } from "react-native-gesture-handler";
 import TextInputStyled from "@/components/text-input";
 import { router } from "expo-router";
 import ButtonSuccess from "@/components/button-success";
+import FileInput from "@/components/FileInput";
 
 const First = () => {
   const [ngoname, setNgoname] = useState("");
