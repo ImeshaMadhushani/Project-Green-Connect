@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import { ScrollView, StyleSheet, Text, View, Pressable } from "react-native";
+import {Alert, ScrollView, StyleSheet, Text, View, Pressable } from "react-native";
 import Card from "@/components/Card";
+import ModalComponent from "@/components/ProjectModal";
+import { useNavigation } from '@react-navigation/native';
 
 const Projects = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -10,9 +12,27 @@ const Projects = () => {
     description: "",
   });
 
+  const handleFieldChange = (key: string, value: string) => {
+    setFields((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleAddProject = () => {
+    if (Object.values(fields).some((value) => !value)) {
+      Alert.alert("Error", "All fields are required.");
+      return;
+    }
+    Alert.alert("Success", "Project added successfully!");
+    setModalVisible(false);
+    setFields({
+      volunteers: "",
+      duration:"",
+      description: "",
+    });
+  };
+
   return (
     <>
-        <ScrollView contentContainerStyle={styles.contentContainer}>
+    <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.container}>
             <Text style={styles.heading}>Projects</Text>
             <Card
@@ -41,6 +61,14 @@ const Projects = () => {
             <Text style={styles.addButton}>+</Text>
         </Pressable>
         </View>
+        
+        <ModalComponent
+            visible={modalVisible}
+            onClose={() => setModalVisible(false)}
+            onSave={handleAddProject}
+            fields={fields}
+            setFields={handleFieldChange}
+        />
 
     </>
   );
