@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View, Pressable } from "react-native";
 import Card from "@/components/Card";
 
 const Projects = () => {
@@ -11,29 +11,38 @@ const Projects = () => {
   });
 
   return (
-    <ScrollView contentContainerStyle={styles.contentContainer}>
-      <View style={styles.container}>
-        <Text style={styles.heading}>Projects</Text>
-        <Card
-            bgColor="#dce8d6"
-            heading="Plastic-Free Market Campaign"
-            content={
-                <View style={styles.cardContent}>
-                <View style={styles.infoRow}>
-                    <Text>November 10, 2024</Text>
-                </View>
-                <View style={styles.infoRow}>
-                    <Text>9:00 a.m.</Text>
-                </View>
-                <View style={styles.infoRow}>
-                    <Text>Vavuniya, Market</Text>
-                </View>
-                </View>
-            }
-         />
+    <>
+        <ScrollView contentContainerStyle={styles.contentContainer}>
+        <View style={styles.container}>
+            <Text style={styles.heading}>Projects</Text>
+            <Card
+                bgColor="#dce8d6"
+                heading="Plastic-Free Market Campaign"
+                content={
+                    <View style={styles.cardContent}>
+                    <View style={styles.infoRow}>
+                        <Text>November 10, 2024</Text>
+                    </View>
+                    <View style={styles.infoRow}>
+                        <Text>9:00 a.m.</Text>
+                    </View>
+                    <View style={styles.infoRow}>
+                        <Text>Vavuniya, Market</Text>
+                    </View>
+                    </View>
+                }
+            />
 
-      </View>
-    </ScrollView>
+        </View>
+        </ScrollView>
+
+        <View style={styles.addButtonContainer}>
+        <Pressable onPress={() => setModalVisible(true)}>
+            <Text style={styles.addButton}>+</Text>
+        </Pressable>
+        </View>
+
+    </>
   );
 };
 
@@ -57,6 +66,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
+  },
+  addButtonContainer: {
+    width: 60,
+    height: 60,
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+  },
+  addButton: {
+    width: "100%",
+    height: "100%",
   },
 });
 
