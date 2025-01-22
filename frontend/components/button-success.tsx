@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   },
   buttonLabel: {
     color: 'white',
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '600',
   },
 });
