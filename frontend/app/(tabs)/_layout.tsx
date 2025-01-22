@@ -23,7 +23,7 @@ const RootLayout = () => {
               style={{
                 width: 30,
                 height: 30,
-                tintColor: focused ? color : "gray",
+                tintColor: focused ? "#0D986A" : "#024320",
               }}
             />
           ),
@@ -45,7 +45,7 @@ const RootLayout = () => {
               style={{
                 width: 30,
                 height: 30,
-                tintColor: focused ? color : "gray",
+                tintColor: focused ? "#0D986A" : "#024320",
               }}
             />
           ),
@@ -67,7 +67,7 @@ const RootLayout = () => {
               style={{
                 width: 30,
                 height: 30,
-                tintColor: focused ? color : "gray",
+                tintColor: focused ? "#0D986A" : "#024320",
               }}
             />
           ),
@@ -77,7 +77,7 @@ const RootLayout = () => {
           },
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="authorities"
         options={{
           headerShown: true,
@@ -89,7 +89,7 @@ const RootLayout = () => {
               style={{
                 width: 30,
                 height: 30,
-                tintColor: focused ? color : "gray",
+                tintColor: focused ? "#0D986A" : "#024320",
               }}
             />
           ),
@@ -98,7 +98,7 @@ const RootLayout = () => {
             borderTopStartRadius: 20,
           },
         }}
-      />
+      /> */}
       <Tabs.Screen
         name="user"
         options={{
@@ -111,7 +111,7 @@ const RootLayout = () => {
               style={{
                 width: 30,
                 height: 30,
-                tintColor: focused ? color : "gray",
+                tintColor: focused ? "#0D986A" : "#024320",
               }}
             />
           ),
@@ -119,6 +119,15 @@ const RootLayout = () => {
             borderTopEndRadius: 20,
             borderTopStartRadius: 20,
           },
+        }}
+      />
+      <Tabs.Screen
+        name="createArticles"
+        options={{
+          headerShown: true,
+          header: () => <CustomHeader/>,
+          tabBarShowLabel: false,
+          tabBarItemStyle: { display: "none" },
         }}
       />
     </Tabs>

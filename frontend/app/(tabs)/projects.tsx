@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 25,
     padding: 10,
+    fontWeight: "bold",
   },
   cardContent: {
     margin: 15,
