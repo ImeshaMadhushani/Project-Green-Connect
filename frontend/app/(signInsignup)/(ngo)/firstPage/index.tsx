@@ -4,7 +4,7 @@ import { TextInput } from "react-native-gesture-handler";
 import TextInputStyled from "@/components/text-input";
 import { router } from "expo-router";
 import ButtonSuccess from "@/components/button-success";
-import FileInput from "@/components/FileInput";
+import ButtonText from "@/components/button-text";
 
 const First = () => {
   // const [ngoname, setNgoname] = useState("");
@@ -18,9 +18,7 @@ const First = () => {
   const input3Ref = useRef<TextInput>(null);
 
   const ui = (
-    <View
-      style={styles.container}
-    >
+    <View style={styles.container}>
       {/* <TextInputStyled
           ref={input1Ref}
           returnKeyType="next"
@@ -64,25 +62,22 @@ const First = () => {
         placeholder={"Enter password"}
       />
   
-      <View style={{ flex: 1, flexDirection: "row",
-          justifyContent: "space-between",
-          marginTop: 20,
-          width: "100%", }}>
+    
         <ButtonSuccess
-          style={{ width: 100, height: 45,}}
-          label="Back"
+          label="SIGN UP"
           onPress={() => {
-            router.navigate("/", { relativeToDirectory: true });
+            router.navigate("/logIn", { relativeToDirectory: true });
           }}
         />
-      <ButtonSuccess
-        label="Next"
-        style={{ width: 100, height: 45,}}
-        onPress={() => {
-          router.navigate("/logIn", { relativeToDirectory: true });
-        }}
-      />
-    </View>
+      
+        <View style={{
+          flexDirection:'row',
+          marginTop: 10,
+        }}>
+        <Text style={{fontSize: 20,}}> Alredy Have An Account? </Text><ButtonText label="Login"  onPress={()=>{
+          router.navigate("/logIn", { relativeToDirectory: true })
+        }}/> 
+        </View>
     </View>
   );
   
@@ -92,21 +87,18 @@ const First = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    paddingHorizontal: 16,
-  },
-  divider: {
     flex: 1,
-    height: 1,
-    backgroundColor: "#ccc",
+    width: "100%",
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "center",
   },
   text: {
     marginHorizontal: 8,
     fontSize: 16,
     color: "#555",
   },
+  
 });
 
 export default First;

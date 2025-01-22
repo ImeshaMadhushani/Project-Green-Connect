@@ -27,8 +27,8 @@ const ButtonSuccess = ({ label, onPress, style }: Props) => {
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    width: 300,
-    height: 70,
+    width: 250,
+    height: 50,
     margin: 20,
     marginHorizontal: 20,
     alignItems: 'center',
