@@ -23,7 +23,7 @@ const RootLayout = () => {
               style={{
                 width: 30,
                 height: 30,
-                tintColor: focused ? color : "gray",
+                tintColor: focused ? "#0D986A" : "#024320",
               }}
             />
           ),
@@ -45,7 +45,7 @@ const RootLayout = () => {
               style={{
                 width: 30,
                 height: 30,
-                tintColor: focused ? color : "gray",
+                tintColor: focused ? "#0D986A" : "#024320",
               }}
             />
           ),
@@ -67,7 +67,7 @@ const RootLayout = () => {
               style={{
                 width: 30,
                 height: 30,
-                tintColor: focused ? color : "gray",
+                tintColor: focused ? "#0D986A" : "#024320",
               }}
             />
           ),
@@ -89,7 +89,7 @@ const RootLayout = () => {
               style={{
                 width: 30,
                 height: 30,
-                tintColor: focused ? color : "gray",
+                tintColor: focused ? "#0D986A" : "#024320",
               }}
             />
           ),
@@ -111,7 +111,7 @@ const RootLayout = () => {
               style={{
                 width: 30,
                 height: 30,
-                tintColor: focused ? color : "gray",
+                tintColor: focused ? "#0D986A" : "#024320",
               }}
             />
           ),
@@ -119,6 +119,15 @@ const RootLayout = () => {
             borderTopEndRadius: 20,
             borderTopStartRadius: 20,
           },
+        }}
+      />
+      <Tabs.Screen
+        name="createArticle"
+        options={{
+          headerShown: true,
+          header: () => <CustomHeader/>,
+          tabBarShowLabel: false,
+          tabBarItemStyle: { display: "none" },
         }}
       />
     </Tabs>
