@@ -5,7 +5,6 @@ import TextInputStyled from "@/components/text-input";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
-import { CheckBox } from "react-native-elements/dist/checkbox/CheckBox";
 import { TextInput } from "react-native-gesture-handler";
 import PhotoUploadStyled from "@/components/PhotoUpload";
 
@@ -15,7 +14,6 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
-  const [isChecked, setIsChecked] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
 
   const input1Ref = useRef<TextInput>(null);
@@ -146,15 +144,7 @@ const SignUp = () => {
         value={password2}
         placeholder={"Enter Password"}
       />
-      <CheckBox
-        iconType="material-community"
-        checkedIcon="checkbox-marked"
-        uncheckedIcon="checkbox-blank-outline"
-        checkedColor="green"
-        title="by Signing up you agree to our terms & conditions of use and privacy policy"
-        checked={isChecked}
-        onPress={() => setIsChecked(!isChecked)}
-      />
+      
       <ButtonSuccess
         label="SIGN UP"
         onPress={() => {

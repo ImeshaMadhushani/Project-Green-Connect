@@ -7,9 +7,11 @@ import ButtonSuccess from "@/components/button-success";
 import FileInput from "@/components/FileInput";
 
 const First = () => {
-  const [ngoname, setNgoname] = useState("");
-  const [uniqueId, setUniqueId] = useState("");
-  const [registrationDate, setRegistrationDate] = useState("");
+  // const [ngoname, setNgoname] = useState("");
+  // const [uniqueId, setUniqueId] = useState("");
+  const [regNo, setRegno] = useState("");
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
 
   const input1Ref = useRef<TextInput>(null);
   const input2Ref = useRef<TextInput>(null);
@@ -17,51 +19,9 @@ const First = () => {
 
   const ui = (
     <View
-      style={{
-        flex: 1,
-        width: "100%",
-        padding: 20,
-        alignItems: "center",
-      }}
+      style={styles.container}
     >
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          gap: 10,
-          margin: 10,
-        }}
-      >
-        <View
-          style={{
-            width: 15,
-            height: 15,
-            borderColor: "#0D7C66",
-            borderWidth: 2,
-            borderRadius: "100%",
-            backgroundColor: "#0D7C66",
-          }}
-        />
-        <View
-          style={{
-            width: 15,
-            height: 15,
-            borderColor: "#0D7C66",
-            borderWidth: 2,
-            borderRadius: "100%",
-          }}
-        />
-        <View
-          style={{
-            width: 15,
-            height: 15,
-            borderColor: "#0D7C66",
-            borderWidth: 2,
-            borderRadius: "100%",
-          }}
-        />
-      </View>
-      <TextInputStyled
+      {/* <TextInputStyled
           ref={input1Ref}
           returnKeyType="next"
           text="Organization Name"
@@ -76,14 +36,32 @@ const First = () => {
         onChangeText={setUniqueId}
         value={uniqueId}
         placeholder={"Enter the reg no"}
+      /> */}
+      <TextInputStyled
+        ref={input1Ref}
+        returnKeyType="done"
+        text="Registration Date"
+        onChangeText={setRegno}
+        value={regNo}
+        placeholder="Enter the reg date"
+      />
+       <TextInputStyled
+        ref={input2Ref}
+        password={true}
+        returnKeyType="next"
+        text="Password"
+        onChangeText={setPassword}
+        value={password}
+        placeholder={"Enter password"}
       />
       <TextInputStyled
         ref={input3Ref}
-        returnKeyType="done"
-        text="Registration Date"
-        onChangeText={setRegistrationDate}
-        value={registrationDate}
-        placeholder="Enter the reg date"
+        password={true}
+        returnKeyType="next"
+        text="Confirm Password"
+        onChangeText={setPassword2}
+        value={password2}
+        placeholder={"Enter password"}
       />
   
       <View style={{ flex: 1, flexDirection: "row",
@@ -101,7 +79,7 @@ const First = () => {
         label="Next"
         style={{ width: 100, height: 45,}}
         onPress={() => {
-          router.navigate("/secondPage", { relativeToDirectory: true });
+          router.navigate("/logIn", { relativeToDirectory: true });
         }}
       />
     </View>
