@@ -3,12 +3,23 @@ import Title from "@/components/Title";
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Image } from "react-native-elements";
 import MapView from "react-native-maps";
+import { useNavigation } from '@react-navigation/native';
 
 const calender = require("../../assets/images/calender.png");
 const clock = require("../../assets/images/clock.png");
 const pin = require("../../assets/images/pin.png");
 
 const Home = () => {
+  const navigation = useNavigation();
+
+  // Example user data (This can come from your global state or API)
+  const loginData = {
+    userType: "Volunteer", // Change to "Organization" to test
+    userName: "Anderson Jon",
+    userEmail: "anderson2@gmail.com",
+  };
+
+
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
       <View style={styles.container}>
