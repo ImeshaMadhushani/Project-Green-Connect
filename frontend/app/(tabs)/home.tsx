@@ -1,121 +1,128 @@
-import Card from "@/components/Card";
-import Title from "@/components/Title";
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
-import { Image } from "react-native-elements";
-import MapView from "react-native-maps";
-import { useNavigation } from '@react-navigation/native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { RouteProp } from '@react-navigation/native';
+import { RootStackParamList } from '../types'; // Assuming you have a types file
 
-const calender = require("../../assets/images/calender.png");
-const clock = require("../../assets/images/clock.png");
-const pin = require("../../assets/images/pin.png");
+type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'Profile'>;
 
-const Home = () => {
-  const navigation = useNavigation();
-
-  // Example user data (This can come from your global state or API)
-  const loginData = {
-    userType: "Volunteer", // Change to "Organization" to test
-    userName: "Anderson Jon",
-    userEmail: "anderson2@gmail.com",
-  };
-
+const ProfileScreen = ({ route }: { route: ProfileScreenRouteProp }) => {
+  const { userType, userName, userEmail } = route.params;
 
   return (
-    <ScrollView contentContainerStyle={styles.contentContainer}>
-      <View style={styles.container}>
-        
-        
-        <View
-          style={{
-            width: "100%",
-            height: 350,
-            marginBottom:10
-          }}
-        >
-            <MapView style={styles.map} />
-        </View>
-
-
-        <Title
-          title="Upcoming Events"
-          onClick={() => {
-            Alert.alert("Alert", "working...");
-          }}
-        />
-
-        <Card
-          bgColor="#dce8d6"
-          heading="Plastic - free market campaign"
-          content={
-            <View style={styles.cardContent}>
-              <View style={styles.infoRow}>
-                <Image source={calender} style={styles.icon} />
-                <Text>November 10, 2024</Text>
-              </View>
-
-              <View style={styles.infoRow}>
-                <Image source={clock} style={styles.icon} />
-                <Text>9.00 a.m.</Text>
-              </View>
-
-              <View style={styles.infoRow}>
-                <Image source={pin} style={styles.icon} />
-                <Text>Vavunia, Market</Text>
-              </View>
-            </View>
-          }
-        />
-        <Title title="What's New" />
-        <Card
-          heading="Energy - Saving Tips for an eco-Friendly Home"
-          bgColor="#d6e4e8"
-          content={
-            <View style={styles.cardTextContent}>
-              <Text style={styles.cardText}>
-                Reducing energy consumption at home not only lowers utility
-                bills but also helps protect the environment. Simple changes...
-              </Text>
-            </View>
-          }
-        />
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Ionicons name="arrow-back" size={24} color="black" />
+        <Text style={styles.title}>GreenConnect</Text>
+        <Ionicons name="notifications" size={24} color="black" />
       </View>
-    </ScrollView>
-    
+
+      {/* Profile Section */}
+      <View style={styles.profileSection}>
+        <Image
+          source={{ uri: 'https://via.placeholder.com/80' }} // Placeholder profile image
+          style={styles.profileImage}
+        />
+        <Text style={styles.userName}>{userName}</Text>
+        <Text style={styles.userEmail}>{userEmail}</Text>
+        <TouchableOpacity style={styles.roleButton}>
+          <Text style={styles.roleButtonText}>{userType}</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Options */}
+      <View style={styles.options}>
+        <TouchableOpacity style={styles.option}>
+          <Ionicons name="folder-open-outline" size={20} color="black" />
+          <Text style={styles.optionText}>My Projects</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.option}>
+          <Ionicons name="document-text-outline" size={20} color="black" />
+          <Text style={styles.optionText}>My Articles</Text>
+        </TouchableOpacity>
+        {userType === 'Volunteer' && (
+          <TouchableOpacity style={styles.option}>
+            <Ionicons name="trophy-outline" size={20} color="black" />
+            <Text style={styles.optionText}>Leaderboard</Text>
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity style={styles.option}>
+          <Ionicons name="information-circle-outline" size={20} color="black" />
+          <Text style={styles.optionText}>About</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.option}>
+          <Ionicons name="chatbubble-ellipses-outline" size={20} color="black" />
+          <Text style={styles.optionText}>Feedback</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.option}>
+          <Ionicons name="log-out-outline" size={20} color="black" />
+          <Text style={styles.optionText}>Log out</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
-    alignItems: "center",
-    paddingVertical: 10,
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
   },
-  contentContainer: {
-    paddingBottom: 20,
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 10,
   },
-  cardContent: {
-    margin: 15,
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
-  map: {
-    width: '100%',
-    height: '100%',
+  profileSection: {
+    alignItems: 'center',
+    marginVertical: 20,
   },
-  infoRow: {
-    flexDirection: "row",
-    alignItems: "center",
+  profileImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     marginBottom: 10,
   },
-  icon: {
-    width: 30,
-    height: 30,
-    marginRight: 10,
+  userName: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
-  cardTextContent: {
-    marginTop: 10,
+  userEmail: {
+    fontSize: 16,
+    color: 'gray',
+    marginBottom: 10,
   },
-  cardText: {
+  roleButton: {
+    backgroundColor: '#4CAF50',
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+  },
+  roleButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  options: {
+    marginTop: 20,
+  },
+  option: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  optionText: {
+    marginLeft: 10,
     fontSize: 16,
   },
 });
 
-export default Home;
+export default ProfileScreen;
