@@ -4,64 +4,22 @@ import { TextInput } from "react-native-gesture-handler";
 import TextInputStyled from "@/components/text-input";
 import { router } from "expo-router";
 import ButtonSuccess from "@/components/button-success";
-import FileInput from "@/components/FileInput";
+import ButtonText from "@/components/button-text";
 
 const First = () => {
-  const [ngoname, setNgoname] = useState("");
-  const [uniqueId, setUniqueId] = useState("");
-  const [registrationDate, setRegistrationDate] = useState("");
+  // const [ngoname, setNgoname] = useState("");
+  // const [uniqueId, setUniqueId] = useState("");
+  const [regNo, setRegno] = useState("");
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
 
   const input1Ref = useRef<TextInput>(null);
   const input2Ref = useRef<TextInput>(null);
   const input3Ref = useRef<TextInput>(null);
 
   const ui = (
-    <View
-      style={{
-        flex: 1,
-        width: "100%",
-        padding: 20,
-        alignItems: "center",
-      }}
-    >
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          gap: 10,
-          margin: 10,
-        }}
-      >
-        <View
-          style={{
-            width: 15,
-            height: 15,
-            borderColor: "#0D7C66",
-            borderWidth: 2,
-            borderRadius: "100%",
-            backgroundColor: "#0D7C66",
-          }}
-        />
-        <View
-          style={{
-            width: 15,
-            height: 15,
-            borderColor: "#0D7C66",
-            borderWidth: 2,
-            borderRadius: "100%",
-          }}
-        />
-        <View
-          style={{
-            width: 15,
-            height: 15,
-            borderColor: "#0D7C66",
-            borderWidth: 2,
-            borderRadius: "100%",
-          }}
-        />
-      </View>
-      <TextInputStyled
+    <View style={styles.container}>
+      {/* <TextInputStyled
           ref={input1Ref}
           returnKeyType="next"
           text="Organization Name"
@@ -76,35 +34,50 @@ const First = () => {
         onChangeText={setUniqueId}
         value={uniqueId}
         placeholder={"Enter the reg no"}
+      /> */}
+      <TextInputStyled
+        ref={input1Ref}
+        returnKeyType="done"
+        text="Registration Date"
+        onChangeText={setRegno}
+        value={regNo}
+        placeholder="Enter the reg date"
+      />
+       <TextInputStyled
+        ref={input2Ref}
+        password={true}
+        returnKeyType="next"
+        text="Password"
+        onChangeText={setPassword}
+        value={password}
+        placeholder={"Enter password"}
       />
       <TextInputStyled
         ref={input3Ref}
-        returnKeyType="done"
-        text="Registration Date"
-        onChangeText={setRegistrationDate}
-        value={registrationDate}
-        placeholder="Enter the reg date"
+        password={true}
+        returnKeyType="next"
+        text="Confirm Password"
+        onChangeText={setPassword2}
+        value={password2}
+        placeholder={"Enter password"}
       />
   
-      <View style={{ flex: 1, flexDirection: "row",
-          justifyContent: "space-between",
-          marginTop: 20,
-          width: "100%", }}>
+    
         <ButtonSuccess
-          style={{ width: 100, height: 45,}}
-          label="Back"
+          label="SIGN UP"
           onPress={() => {
-            router.navigate("/", { relativeToDirectory: true });
+            router.navigate("/logIn", { relativeToDirectory: true });
           }}
         />
-      <ButtonSuccess
-        label="Next"
-        style={{ width: 100, height: 45,}}
-        onPress={() => {
-          router.navigate("/secondPage", { relativeToDirectory: true });
-        }}
-      />
-    </View>
+      
+        <View style={{
+          flexDirection:'row',
+          marginTop: 10,
+        }}>
+        <Text style={{fontSize: 20,}}> Alredy Have An Account? </Text><ButtonText label="Login"  onPress={()=>{
+          router.navigate("/logIn", { relativeToDirectory: true })
+        }}/> 
+        </View>
     </View>
   );
   
@@ -114,21 +87,18 @@ const First = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    paddingHorizontal: 16,
-  },
-  divider: {
     flex: 1,
-    height: 1,
-    backgroundColor: "#ccc",
+    width: "100%",
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "center",
   },
   text: {
     marginHorizontal: 8,
     fontSize: 16,
     color: "#555",
   },
+  
 });
 
 export default First;
