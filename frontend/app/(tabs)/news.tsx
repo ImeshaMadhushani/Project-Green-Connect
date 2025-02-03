@@ -25,7 +25,9 @@ const News = () => {
                 }}
                 >
               <Text style={{ 
-                fontSize: 25 
+                fontSize: 25,
+                textAlign: "center",
+                fontWeight: "bold",
                 }}
                 >
                     Articles/News
@@ -78,20 +80,6 @@ const News = () => {
           <Card
             heading="Energy - Saving Tips for an eco-Friendly Home"
             bgColor="#FFFDEC"
-            content={
-              <View style={styles.cardTextContent}>
-                <Text style={styles.cardText}>
-                  Reducing energy consumption at home not only lowers utility
-                  bills but also helps protect the environment. Simple
-                  changes...
-                </Text>
-              </View>
-            }
-          />
-
-          <Card
-            heading="Energy - Saving Tips for an eco-Friendly Home"
-            bgColor="#F9E6CF"
             content={
               <View style={styles.cardTextContent}>
                 <Text style={styles.cardText}>
@@ -163,15 +151,17 @@ const News = () => {
       </ScrollView>
 
         <View style={{
-            width: 80,
-            height: 80,
+            width: 75,
+            height: 75,
             position: "absolute",
             bottom: 0,
             right: 0,
-            padding: 10,
+            padding: 8,
         }}
         >
-          <Pressable onPress={() => Alert.alert("Alert", "add")}>
+          <Pressable onPress={() => {
+            router.navigate("/createArticles", { relativeToDirectory: true })
+          }}>
             <Image source={plus} style={{
                  width: "100%", 
                  height: "100%" 

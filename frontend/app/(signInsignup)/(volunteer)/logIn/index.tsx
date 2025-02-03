@@ -73,7 +73,7 @@
       }} />
   </View>
       <ButtonSuccess
-          label="Confirm"
+          label="LOG IN"
           onPress={() => {
             router.navigate("/home", { relativeToDirectory: true });
           }}
