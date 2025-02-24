@@ -58,7 +58,7 @@ const FogetPassword = () => {
         label="NEXT"
         style={styles.button}
         onPress={() => {
-          router.navigate("/resetPassword", { relativeToDirectory: true });
+          router.navigate("/otpPage", { relativeToDirectory: true });
         }}
       />
     </View>

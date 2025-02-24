@@ -62,3 +62,9 @@ const Card = ({ image, heading, bgColor, content }: Props) => (
   );
   
   export default Card;
+
+ 
+
+
+  
+  
