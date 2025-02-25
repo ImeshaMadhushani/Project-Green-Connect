@@ -23,9 +23,54 @@ const fetchArticle = async (articleId) => {
 };
 
 
-const ArticleView = () => {
+const ArticleView = ({ route }) => {
 
     const theme = useTheme();
+    const articleId = route?.params?.articleId || '1';
+    const [article, setArticle] = React.useState(null);
+    const [loading, setLoading] = React.useState(true);
+    const { width } = useWindowDimensions();
+
+    React.useEffect(() => {
+        const loadArticle = async () => {
+            try {
+                const data = await fetchArticle(articleId);
+                setArticle(data);
+            } catch (error) {
+                console.error('Failed to load article:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadArticle();
+    }, [articleId]);
+
+    const handleLike = async () => {
+        setArticle((prev) => ({
+            ...prev,
+            likeCount: prev.isLiked ? prev.likeCount - 1 : prev.likeCount + 1,
+            isLiked: !prev.isLiked,
+        }));
+    };
+
+    if (loading) {
+        return (
+            <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+                <Text style={styles.loadingText}>Loading article...</Text>
+            </SafeAreaView>
+        );
+    }
+
+    if (!article) {
+        return (
+            <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+                <Text style={styles.errorText}>Article not found</Text>
+            </SafeAreaView>
+        );
+    }
+
+    const paragraphs = article.content.split('\n\n');
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -63,7 +108,7 @@ const ArticleView = () => {
                         </View>
 
                         <Divider style={styles.divider} />
-                       
+
                         <View style={styles.engagementRow}>
                             <View style={styles.engagementItem}>
                                 <IconButton
