@@ -16,6 +16,7 @@ const scope = require("../../assets/images/scope.png");
 
 const News = () => {
     const ui = (
+      <>
       <View>
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <View style={styles.container}>
@@ -172,6 +173,7 @@ const News = () => {
           </Pressable>
         </View>
     </View>
+    </>
   );
   return ui;
 };
