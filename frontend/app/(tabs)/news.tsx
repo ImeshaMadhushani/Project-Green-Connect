@@ -16,6 +16,7 @@ const scope = require("../../assets/images/scope.png");
 
 const News = () => {
     const ui = (
+      <>
       <View>
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <View style={styles.container}>
@@ -61,9 +62,11 @@ const News = () => {
               </Pressable>
             </View>
           </View>
-
-                   
+    
           <Card
+          onPress={()=>{
+            router.navigate("/view/articleView");
+          }}
             heading="Energy - Saving Tips for an eco-Friendly Home"
             bgColor="#d6e4e8"
             content={
@@ -170,6 +173,7 @@ const News = () => {
           </Pressable>
         </View>
     </View>
+    </>
   );
   return ui;
 };
