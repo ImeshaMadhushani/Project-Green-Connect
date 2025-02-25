@@ -61,9 +61,11 @@ const News = () => {
               </Pressable>
             </View>
           </View>
-
-                   
+    
           <Card
+          onPress={()=>{
+            router.navigate("/view/articleView");
+          }}
             heading="Energy - Saving Tips for an eco-Friendly Home"
             bgColor="#d6e4e8"
             content={
