@@ -1,6 +1,6 @@
 import CustomHeader from "@/components/header";
 import { Ionicons } from "@expo/vector-icons";
-import { Stack, Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import { Image } from "react-native-elements";
 const homeIcon = require("../../assets/images/homeIcon.png");
 const projectsIcon = require("../../assets/images/projectIcon.png");
@@ -15,7 +15,7 @@ const RootLayout = () => {
         name="home"
         options={{
           headerShown: true,
-          header: () => <CustomHeader noBack={true} />,
+          header: () => <CustomHeader noBack={true} notificationOnPress={()=>router.navigate("/notificattion")}/>,
           tabBarShowLabel: false,
           tabBarIcon: ({ color, focused }) => (
             <Image
@@ -37,7 +37,7 @@ const RootLayout = () => {
         name="projects"
         options={{
           headerShown: true,
-          header: () => <CustomHeader />,
+          header: () => <CustomHeader notificationOnPress={()=>router.navigate("/notificattion")}/>,
           tabBarShowLabel: false,
           tabBarIcon: ({ color, focused }) => (
             <Image
@@ -59,7 +59,7 @@ const RootLayout = () => {
         name="news"
         options={{
           headerShown: true,
-          header: () => <CustomHeader />,
+          header: () => <CustomHeader notificationOnPress={()=>router.navigate("/notificattion")}/>,
           tabBarShowLabel: false,
           tabBarIcon: ({ color, focused }) => (
             <Image
@@ -81,7 +81,7 @@ const RootLayout = () => {
         name="authorities"
         options={{
           headerShown: true,
-          header: () => <CustomHeader />,
+          header: () => <CustomHeader notificationOnPress={()=>router.navigate("/notificattion")}/>,
           tabBarShowLabel: false,
           tabBarIcon: ({ color, focused }) => (
             <Image
@@ -103,7 +103,7 @@ const RootLayout = () => {
         name="profile"
         options={{
           headerShown: true,
-          header: () => <CustomHeader />,
+          header: () => <CustomHeader notificationOnPress={()=>router.navigate("/notificattion")}/>,
           tabBarShowLabel: false,
           tabBarIcon: ({ color, focused }) => (
             <Image

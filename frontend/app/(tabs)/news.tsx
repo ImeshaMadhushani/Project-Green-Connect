@@ -52,7 +52,7 @@ const News = () => {
                 }}
               />
               <Pressable onPress={() => {
-                router.navigate('/user')
+                //router.navigate('')
               }}>
                 <Image source={scope} style={{ 
                     width: 30, 
