@@ -14,6 +14,49 @@ const First = () => {
   const input2Ref = useRef<TextInput>(null);
   const input3Ref = useRef<TextInput>(null);
 
+ const handleNext = async () => {
+  // Trimmed input values
+  const trimmedNgoName = ngoname?.trim();
+  const trimmedUniqueId = uniqueId?.trim();
+  const trimmedRegistrationDate = registrationDate?.trim();
+
+  // Basic validation
+  if (!trimmedNgoName || !trimmedUniqueId || !trimmedRegistrationDate) {
+    Alert.alert("Error", "Please fill all fields");
+    return;
+  }
+
+  // Unique ID validation (alphanumeric check)
+  const idRegex = /^[a-zA-Z0-9_-]+$/;
+  if (!idRegex.test(trimmedUniqueId)) {
+    Alert.alert("Error", "Unique ID must be alphanumeric and can include _ or -");
+    return;
+  }
+
+  // Registration Date validation //YYYY-MM-DD format
+  const date = new Date(trimmedRegistrationDate);
+  const today = new Date();
+  
+  if (isNaN(date.getTime())) {
+    Alert.alert("Error", "Invalid date format");
+    return;
+  }
+
+  if (date > today) {
+    Alert.alert("Error", "Registration date cannot be in the future");
+    return;
+  }
+
+  // Navigate to next page with validated parameters
+  router.push({
+    pathname: "./secondPage",
+    params: { ngoname: trimmedNgoName, uniqueId: trimmedUniqueId, registrationDate: trimmedRegistrationDate },
+  });
+};
+
+
+  
+
   const ui = (
     <View
       style={{
@@ -100,7 +143,8 @@ const First = () => {
         label="Next"
         style={{ width: 100, height: 45,}}
         onPress={() => {
-          router.navigate("/secondPage", { relativeToDirectory: true });
+          /* router.navigate("/secondPage", { relativeToDirectory: true }); */
+          handleNext();
         }}
       />
     </View>
