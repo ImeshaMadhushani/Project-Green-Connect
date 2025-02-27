@@ -7,9 +7,10 @@ type Props = {
   heading: string;
   bgColor: string;
   content: React.JSX.Element;
+  onPress?:()=>void;
 };
 
-const Card = ({ image, heading, bgColor, content }: Props) => (
+const Card = ({ image, heading, bgColor, content,onPress }: Props) => (
     <View
       style={{
         width: "100%",
@@ -62,3 +63,9 @@ const Card = ({ image, heading, bgColor, content }: Props) => (
   );
   
   export default Card;
+
+ 
+
+
+  
+  

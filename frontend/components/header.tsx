@@ -1,5 +1,5 @@
 import { router, Stack } from "expo-router";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Alert } from "react-native";
 import { TouchableOpacity } from "react-native";
 import { Image } from "react-native-elements";
 
@@ -11,9 +11,10 @@ const bell = require("../assets/images/bell.png");
 type props = {
   onBackPress?: () => void;
   noBack?: boolean;
+  notificationOnPress?:()=>void;
 };
 
-const CustomHeader = ({ onBackPress, noBack }: props) => (
+const CustomHeader = ({ onBackPress, noBack, notificationOnPress }: props) => (
   <View style={styles.headerContainer}>
     {!noBack ? (<TouchableOpacity
       onPress={() => {
@@ -25,8 +26,8 @@ const CustomHeader = ({ onBackPress, noBack }: props) => (
       <Image
         source={leftArrow}
         style={{
-          width: 30,
-          height: 30,
+          width: 25,
+          height: 25,
         }}
       />
     </TouchableOpacity>):null}
@@ -37,13 +38,16 @@ const CustomHeader = ({ onBackPress, noBack }: props) => (
         height: 50,
       }}
     />
-    <Image
-      source={bell}
-      style={{
-        width: 30,
-        height: 30,
-      }}
-    />
+    <TouchableOpacity onPress={() => notificationOnPress?notificationOnPress():""}>
+      <Image
+        source={bell}
+        style={{
+          width: 25,
+          height: 25,
+          marginRight: 10,
+        }}
+      />
+    </TouchableOpacity>
   </View>
 );
 
