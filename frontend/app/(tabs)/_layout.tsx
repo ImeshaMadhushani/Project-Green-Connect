@@ -100,7 +100,7 @@ const RootLayout = () => {
         }}
       /> */}
       <Tabs.Screen
-        name="user"
+        name="profile"
         options={{
           headerShown: true,
           header: () => <CustomHeader />,
@@ -130,7 +130,44 @@ const RootLayout = () => {
           tabBarItemStyle: { display: "none" },
         }}
       />
+       <Tabs.Screen
+        name="notification"
+        options={{
+          headerShown: true,
+          header: () => <CustomHeader/>,
+          tabBarShowLabel: false,
+          tabBarItemStyle: { display: "none" },
+          tabBarStyle: {
+            borderTopEndRadius: 20,
+            borderTopStartRadius: 20,
+          },
+        }}
+      />
+       <Tabs.Screen
+        name="leaderBoard"
+        options={{
+          headerShown: true,
+          header: () => <CustomHeader/>,
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color, focused }) => (
+            <Image
+              source={homeIcon}
+              style={{
+                width: 30,
+                height: 30,
+                tintColor: focused ? "#0D986A" : "#024320",
+              }}
+            />
+          ),
+          tabBarItemStyle: { display: "none" },
+          tabBarStyle: {
+            borderTopEndRadius: 20,
+            borderTopStartRadius: 20,
+          },
+        }}
+      />
     </Tabs>
+    
   );
   return ui;
 };
