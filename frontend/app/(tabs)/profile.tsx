@@ -1,15 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router'; // Ensure Expo Router is correctly used
-
 
 const ProfileScreen = () => {
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Ionicons name="arrow-back" size={24} color="black" />
+        <Ionicons name="arrow-back" size={24} color="black" style={styles.arrowIcon} />
         <Text style={styles.title}>GreenConnect</Text>
         <Ionicons name="notifications-outline" size={24} color="black" />
       </View>
@@ -71,14 +69,18 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 10,
     marginBottom: 20,
   },
+  arrowIcon: {
+    marginRight: 10, // Adds space between the arrow and the logo
+  },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
+    flex: 1, // Makes the title take up remaining space
+    textAlign: 'left', // Aligns the title to the left
   },
   profileSection: {
     alignItems: 'center',
