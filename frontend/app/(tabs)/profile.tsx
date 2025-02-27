@@ -77,14 +77,18 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 10,
     marginBottom: 20,
   },
+  arrowIcon: {
+    marginRight: 10, // Adds space between the arrow and the logo
+  },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
+    flex: 1, // Makes the title take up remaining space
+    textAlign: 'left', // Aligns the title to the left
   },
   profileSection: {
     display: "flex",
