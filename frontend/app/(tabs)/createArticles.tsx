@@ -125,8 +125,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   imageBox: {
-    width: 250,
-    height: 150,
+    width: 300,
+    height: 200,
     backgroundColor: "#f0f0f0",
     justifyContent: "center",
     alignItems: "center",
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   },
   postButton: {
     flex: 1,
-    backgroundColor: "#008000",
+    backgroundColor: "#0D986A",
     padding: 10,
     borderRadius: 5,
     alignItems: "center",

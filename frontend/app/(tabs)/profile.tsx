@@ -2,8 +2,19 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router'; // Ensure Expo Router is correctly used
+import AsyncStorage from "@react-native-async-storage/async-storage"; 
 const user = require("@/assets/images/user.png");
 const pen = require("@/assets/images/pen.png");
+
+const handleLogout = async () => {
+  try {
+    await AsyncStorage.clear(); // Clear stored user session
+    router.replace("/"); // Redirect to index (home screen)
+  } catch (error) {
+    console.error("Logout Error:", error);
+  }
+};
+
 
 const ProfileScreen = () => {
   return (
@@ -25,7 +36,7 @@ const ProfileScreen = () => {
         <Pressable onPress={()=>router.navigate("/view/editProfile")}>
           <Image
             style={{
-              width: 50,
+              width: 40,
               aspectRatio: 1,
             }}
             source={pen}
@@ -60,7 +71,7 @@ const ProfileScreen = () => {
           <Text style={styles.optionText}>Feedback</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity style={styles.option} onPress={handleLogout} >
           <Ionicons name="log-out-outline" size={20} color="black" />
           <Text style={styles.optionText}>Log out</Text>
         </TouchableOpacity>
@@ -95,30 +106,31 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: 'center',
     marginVertical: 20,
+    gap: 15,
   },
   profileImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 10,
+    width: 120,
+    aspectRatio: 1,
   },
   userName: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   userEmail: {
-    fontSize: 14,
+    fontSize: 16,
     color: 'gray',
     marginBottom: 10,
   },
   roleButton: {
-    backgroundColor: '#4CAF50',
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    padding: 10,
+    marginTop: 5,
+    borderRadius: 10,
+    backgroundColor: "#7eb20b",
+    alignSelf: "flex-start",
   },
   roleButtonText: {
     color: '#fff',
+    fontSize: 18,
     fontWeight: 'bold',
   },
   optionsSection: {
