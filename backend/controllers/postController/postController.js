@@ -53,6 +53,31 @@ export const createPost = async (req, res) => {
   }
 };
 
+
+export const getPost = async(req,res)=>{
+  try {
+    const post  = await Post.find({});
+   
+    if(!post){
+      return res.status(404).send({
+        success: false,
+        message: "No posts found",
+      })
+    }else{
+      res.status(200).send({
+        success: true,
+        message: "Posts fetched successfully",
+        posts: post,
+      })
+    }
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: "Server Error",
+    })
+  }
+}
+
 export const deletePost = async (req, res) => {
   try {
     const post = await Post.findByIdAndDelete(req.params.id);
