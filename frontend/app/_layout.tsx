@@ -12,7 +12,7 @@ const RootLayout = () => {
         <Stack.Screen name="(ngo)" options={{ headerShown: false, statusBarHidden: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false, statusBarHidden: false  }} />
         <Stack.Screen name="view/articleView" options={{ headerShown: false, statusBarHidden: false  }} />
-        <Stack.Screen name="view/editProfile" options={{ headerShown: false, statusBarHidden: false  }} />
+        <Stack.Screen name="/view/editProfile" options={{ headerShown: false, statusBarHidden: false  }} />
       </Stack>
     </LoadingProvider>
   );
