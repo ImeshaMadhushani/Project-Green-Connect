@@ -77,7 +77,7 @@ const RootLayout = () => {
           },
         }}
       />
-      {/* <Tabs.Screen
+      { <Tabs.Screen
         name="authorities"
         options={{
           headerShown: true,
@@ -98,7 +98,7 @@ const RootLayout = () => {
             borderTopStartRadius: 20,
           },
         }}
-      /> */}
+      /> }
       <Tabs.Screen
         name="profile"
         options={{
