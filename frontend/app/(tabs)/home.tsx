@@ -1,10 +1,8 @@
 import Card from "@/components/Card";
 import Title from "@/components/Title";
-import { router } from "expo-router";
-import { Alert, ScrollView, StyleSheet, Text, View, Pressable } from "react-native";
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Image } from "react-native-elements";
 import MapView from "react-native-maps";
-import { Ionicons } from "@expo/vector-icons";
 
 const calender = require("../../assets/images/calender.png");
 const clock = require("../../assets/images/clock.png");
@@ -14,25 +12,25 @@ const Home = () => {
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
       <View style={styles.container}>
-
+        
+        
         <View
           style={{
             width: "100%",
             height: 350,
-            marginBottom: 10
+            marginBottom:10
           }}
         >
-          <MapView style={styles.map} />
+            <MapView style={styles.map} />
         </View>
 
 
-        <Pressable
-          onPress={() => router.push("/projects")}
-          style={styles.sectionHeader}
-        >
-          <Text style={styles.sectionTitle}>Upcoming Events</Text>
-          <Ionicons name="chevron-forward-outline" size={24} color="#333" />
-        </Pressable>
+        <Title
+          title="Upcoming Events"
+          onClick={() => {
+            Alert.alert("Alert", "working...");
+          }}
+        />
 
         <Card
           bgColor="#dce8d6"
@@ -56,15 +54,7 @@ const Home = () => {
             </View>
           }
         />
-        
-        <Pressable 
-          onPress={() => router.push("/news")} 
-          style={styles.sectionHeader}
-        >
-          <Text style={styles.sectionTitle}>What's New</Text>
-          <Ionicons name="chevron-forward-outline" size={24} color="#333" />
-        </Pressable>
-
+        <Title title="What's New" />
         <Card
           heading="Energy - Saving Tips for an eco-Friendly Home"
           bgColor="#d6e4e8"
@@ -79,7 +69,7 @@ const Home = () => {
         />
       </View>
     </ScrollView>
-
+    
   );
 };
 
@@ -98,22 +88,6 @@ const styles = StyleSheet.create({
   map: {
     width: '100%',
     height: '100%',
-  },
-  sectionHeader: {
-    width: "95%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "lightgray",
-    paddingVertical: 13,
-    paddingHorizontal: 15,
-    borderRadius: 15,
-    marginVertical: 10,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 600,
-    color: "#333",
   },
   infoRow: {
     flexDirection: "row",
