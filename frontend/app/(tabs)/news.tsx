@@ -16,6 +16,7 @@ const scope = require("../../assets/images/scope.png");
 
 const News = () => {
     const ui = (
+      <>
       <View>
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <View style={styles.container}>
@@ -51,7 +52,7 @@ const News = () => {
                 }}
               />
               <Pressable onPress={() => {
-                router.navigate('/user')
+                //router.navigate('')
               }}>
                 <Image source={scope} style={{ 
                     width: 30, 
@@ -61,9 +62,20 @@ const News = () => {
               </Pressable>
             </View>
           </View>
-
-                   
+    
           <Card
+          onPress={() => {
+            router.push({
+              pathname: "/view/articleView",
+              params: {
+                title: "Beach Cleanup: Taking Action to Protect Our Oceans",
+                image: "https://example.com/beach-cleanup.jpg",
+                author: "Hazel Kris",
+                time: "1hr",
+                content: "Plastic pollution is one of the most severe environmental issues affecting our oceans..."
+              },
+            });
+          }}
             heading="Energy - Saving Tips for an eco-Friendly Home"
             bgColor="#d6e4e8"
             content={
@@ -170,6 +182,7 @@ const News = () => {
           </Pressable>
         </View>
     </View>
+    </>
   );
   return ui;
 };

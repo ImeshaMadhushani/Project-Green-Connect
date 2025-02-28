@@ -11,9 +11,10 @@ const bell = require("../assets/images/bell.png");
 type props = {
   onBackPress?: () => void;
   noBack?: boolean;
+  notificationOnPress?:()=>void;
 };
 
-const CustomHeader = ({ onBackPress, noBack }: props) => (
+const CustomHeader = ({ onBackPress, noBack, notificationOnPress }: props) => (
   <View style={styles.headerContainer}>
     {!noBack ? (<TouchableOpacity
       onPress={() => {
@@ -37,11 +38,7 @@ const CustomHeader = ({ onBackPress, noBack }: props) => (
         height: 50,
       }}
     />
-    <TouchableOpacity
-      onPress={() => {
-        Alert.alert("Alert", "notifications...");
-      }}
-    >
+    <TouchableOpacity onPress={() => notificationOnPress?notificationOnPress():""}>
       <Image
         source={bell}
         style={{

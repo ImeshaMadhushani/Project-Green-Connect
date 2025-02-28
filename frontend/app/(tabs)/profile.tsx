@@ -1,30 +1,36 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router'; // Ensure Expo Router is correctly used
-
+import { router } from 'expo-router'; // Ensure Expo Router is correctly used
+const user = require("@/assets/images/user.png");
+const pen = require("@/assets/images/pen.png");
 
 const ProfileScreen = () => {
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Ionicons name="arrow-back" size={24} color="black" />
-        <Text style={styles.title}>GreenConnect</Text>
-        <Ionicons name="notifications-outline" size={24} color="black" />
-      </View>
 
       {/* Profile Section */}
       <View style={styles.profileSection}>
         <Image
-          source={{ uri: 'https://via.placeholder.com/80' }} // Placeholder image
+          source={user}
           style={styles.profileImage}
         />
+        <View>
         <Text style={styles.userName}>Anderson Jon</Text>
         <Text style={styles.userEmail}>anderson2@gmail.com</Text>
         <TouchableOpacity style={styles.roleButton}>
           <Text style={styles.roleButtonText}>Volunteer</Text>
         </TouchableOpacity>
+        </View>
+        <Pressable onPress={()=>router.navigate("/view/editProfile")}>
+          <Image
+            style={{
+              width: 50,
+              aspectRatio: 1,
+            }}
+            source={pen}
+          />
+        </Pressable>
       </View>
 
       {/* Options Section */}
@@ -39,7 +45,7 @@ const ProfileScreen = () => {
           <Text style={styles.optionText}>My Articles</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity style={styles.option} onPress={()=>router.navigate("/leaderBoard")}>
           <Ionicons name="trophy-outline" size={20} color="black" />
           <Text style={styles.optionText}>Leaderboard</Text>
         </TouchableOpacity>
@@ -71,16 +77,22 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 10,
     marginBottom: 20,
   },
+  arrowIcon: {
+    marginRight: 10, // Adds space between the arrow and the logo
+  },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
+    flex: 1, // Makes the title take up remaining space
+    textAlign: 'left', // Aligns the title to the left
   },
   profileSection: {
+    display: "flex",
+    flexDirection: "row",
     alignItems: 'center',
     marginVertical: 20,
   },

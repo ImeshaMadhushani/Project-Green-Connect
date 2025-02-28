@@ -1,6 +1,6 @@
 import CustomHeader from "@/components/header";
 import { Ionicons } from "@expo/vector-icons";
-import { Stack, Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import { Image } from "react-native-elements";
 const homeIcon = require("../../assets/images/homeIcon.png");
 const projectsIcon = require("../../assets/images/projectIcon.png");
@@ -15,7 +15,7 @@ const RootLayout = () => {
         name="home"
         options={{
           headerShown: true,
-          header: () => <CustomHeader noBack={true} />,
+          header: () => <CustomHeader noBack={true} notificationOnPress={()=>router.navigate("/notificattion")}/>,
           tabBarShowLabel: false,
           tabBarIcon: ({ color, focused }) => (
             <Image
@@ -37,7 +37,7 @@ const RootLayout = () => {
         name="projects"
         options={{
           headerShown: true,
-          header: () => <CustomHeader />,
+          header: () => <CustomHeader notificationOnPress={()=>router.navigate("/notificattion")}/>,
           tabBarShowLabel: false,
           tabBarIcon: ({ color, focused }) => (
             <Image
@@ -59,7 +59,7 @@ const RootLayout = () => {
         name="news"
         options={{
           headerShown: true,
-          header: () => <CustomHeader />,
+          header: () => <CustomHeader notificationOnPress={()=>router.navigate("/notificattion")}/>,
           tabBarShowLabel: false,
           tabBarIcon: ({ color, focused }) => (
             <Image
@@ -77,11 +77,11 @@ const RootLayout = () => {
           },
         }}
       />
-      {/* <Tabs.Screen
+      { <Tabs.Screen
         name="authorities"
         options={{
           headerShown: true,
-          header: () => <CustomHeader />,
+          header: () => <CustomHeader notificationOnPress={()=>router.navigate("/notificattion")}/>,
           tabBarShowLabel: false,
           tabBarIcon: ({ color, focused }) => (
             <Image
@@ -98,12 +98,12 @@ const RootLayout = () => {
             borderTopStartRadius: 20,
           },
         }}
-      /> */}
+      /> }
       <Tabs.Screen
-        name="user"
+        name="profile"
         options={{
           headerShown: true,
-          header: () => <CustomHeader />,
+          header: () => <CustomHeader notificationOnPress={()=>router.navigate("/notificattion")}/>,
           tabBarShowLabel: false,
           tabBarIcon: ({ color, focused }) => (
             <Image
@@ -130,7 +130,44 @@ const RootLayout = () => {
           tabBarItemStyle: { display: "none" },
         }}
       />
+       <Tabs.Screen
+        name="notification"
+        options={{
+          headerShown: true,
+          header: () => <CustomHeader/>,
+          tabBarShowLabel: false,
+          tabBarItemStyle: { display: "none" },
+          tabBarStyle: {
+            borderTopEndRadius: 20,
+            borderTopStartRadius: 20,
+          },
+        }}
+      />
+       <Tabs.Screen
+        name="leaderBoard"
+        options={{
+          headerShown: true,
+          header: () => <CustomHeader/>,
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color, focused }) => (
+            <Image
+              source={homeIcon}
+              style={{
+                width: 30,
+                height: 30,
+                tintColor: focused ? "#0D986A" : "#024320",
+              }}
+            />
+          ),
+          tabBarItemStyle: { display: "none" },
+          tabBarStyle: {
+            borderTopEndRadius: 20,
+            borderTopStartRadius: 20,
+          },
+        }}
+      />
     </Tabs>
+    
   );
   return ui;
 };
