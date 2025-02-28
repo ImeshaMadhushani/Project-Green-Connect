@@ -9,6 +9,23 @@ import Icon from "react-native-vector-icons/FontAwesome";
 const user = require("@/assets/images/user.png");
 
 const EditProfile = () => {
+  
+  const handleImagePick = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      alert("Permission to access gallery is required!");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+  };
+
   const ui = (
     <ScrollView contentContainerStyle={style.container}>
       <View
@@ -31,7 +48,7 @@ const EditProfile = () => {
             padding: 10,
           }}
         >
-         <TouchableOpacity style={style.imageContainer}>
+         <TouchableOpacity onPress={handleImagePick} style={style.imageContainer}>
           <Image
             style={style.profileImage}
             source={ user}
