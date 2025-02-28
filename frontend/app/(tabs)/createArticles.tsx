@@ -1,136 +1,192 @@
-// import React, { useState, useRef } from "react";
-// import { StyleSheet, ScrollView, View, Alert } from "react-native";
-// import TextInputStyled from "@/components/text-input";
-// import PhotoUploadStyled from "@/components/PhotoUpload";
-// import ButtonSuccess from "@/components/button-success"; // Custom Button Component
-// import { Text, useTheme } from "react-native-paper";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Image,
+  Pressable,
+  StyleSheet,
+  ScrollView,
+  Alert,
+} from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import { Picker } from "@react-native-picker/picker"; // Importing Picker component
+import { useNavigation } from "@react-navigation/native"; // Importing useNavigation hook
+import { useRouter } from "expo-router";
 
-// const CreateArticle = () => {
-//   const [form, setForm] = useState({
-//     title: "",
-//     tag: "",
-//     category : "",
-//     article: "",
-//   });
+const CreateArticle = () => {
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
+  const [article, setArticle] = useState("");
+  const [image, setImage] = useState<string | null>(null);
+  const navigation = useNavigation(); // Using the navigation hook
+  const router = useRouter();
 
-//   const [postPhoto, setPostPhoto] = useState(null);
+  // Function to pick an image
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
 
-//   // Refs for navigation between inputs
-//   const input1Ref = useRef(null);
-//   const input2Ref = useRef(null);
-//   const input3Ref = useRef(null);
-//   const input4Ref = useRef(null);
+    if (!result.canceled && result.assets?.length > 0) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
-//   const theme = useTheme();
+  // Function to handle form submission
+  const handleSubmit = () => {
+    if (!title || !category || !article) {
+      Alert.alert("Error", "Please fill all fields.");
+      return;
+    }
+    Alert.alert("Success", "Article Posted Successfully!", [
+        { text: "OK", onPress: () => router.push("/view/articleView") }, // Navigate to 'ArticleView' after OK button press
+      ]);
+  };
 
-//   const handleChange = (field, value) => {
-//     setForm((prev) => ({
-//       ...prev,
-//       [field]: value,
-//     }));
-//   };
+  // Function to reset form fields
+  const handleDiscard = () => {
+    setTitle("");
+    setCategory("");
+    setArticle("");
+    setImage(null);
+  };
 
-//   const handleDiscard = () => {
-//     setForm({
-//       title: "",
-//       tag: "",
-//       category: "",
-//       article: "",
-//     });
-//     if (postPhoto !== null) {
-//       setPostPhoto(null);
-//     }
-//   };
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+        {/* <Pressable onPress={() => router.push("/news")}>
+      </Pressable> */}
+      <Text style={styles.heading}>Create an article</Text>
 
-//   const handleSubmit = () => {
-//     if (!form.title || !form.article) {
-//       Alert.alert("Error", "Please fill all required fields.");
-//     } else {
-//       console.log("Form Submitted:", form);
-//       console.log("Uploaded Photo:", postPhoto);
-//     }
-//   };
+      {/* Image Upload Box */}
+      <Pressable style={styles.imageBox} onPress={pickImage}>
+        {image ? (
+          <Image source={{ uri: image }} style={styles.uploadedImage} />
+        ) : (
+          <Text style={styles.imageText}>+ Add post images</Text>
+        )}
+      </Pressable>
 
-//   const renderTextInput = (ref, text, value, placeholder, onChangeText, onSubmitEditing) => {
-//     return (
-//       <TextInputStyled
-//         ref={ref}
-//         text={text}
-//         value={value}
-//         placeholder={placeholder}
-//         onChangeText={onChangeText}
-//         onSubmitEditing={() => {
-//           if (onSubmitEditing && ref.current) {
-//             onSubmitEditing();
-//           }
-//         }}
-//       />
-//     );
-//   };
+      {/* Input Fields */}
+      <TextInput
+        style={styles.input}
+        placeholder="Add Heading"
+        value={title}
+        onChangeText={setTitle}
+      />
+      <View style = {styles.input}>
+      <Picker
+        selectedValue={category}
+        onValueChange={(itemValue) => setCategory(itemValue)}
+        style={styles.picker}
+      >
+        <Picker.Item label="Select Category" value="" style={styles.imageText}/>
+        <Picker.Item label="Climate Action" value="Climate Action" />
+        <Picker.Item label="Sustainable Living" value="Sustainable Living" />
+        <Picker.Item label="Conservation" value="Conservation" />
+        <Picker.Item label="Clean Energy" value="Clean Energy" />
+        <Picker.Item label="Environmental Justice" value="Environmental Justice" />
+        <Picker.Item label="Green Innovation" value="Green Innovation" />
+        <Picker.Item label="Policy & Advocacy" value="Policy & Advocacy" />
+      </Picker>
+      </View>
+      <TextInput
+        style={[styles.input, styles.textArea]}
+        placeholder="Write Article"
+        value={article}
+        onChangeText={setArticle}
+        multiline
+      />
 
-//   return (
-//     <ScrollView contentContainerStyle={styles.contentContainer}>
-//       <View style={styles.container}>
-//         <Text style={styles.heading}>Create an Article</Text>
+      {/* Buttons */}
+      <View style={styles.buttonContainer}>
+        <Pressable style={styles.discardButton} onPress={handleDiscard}>
+          <Text style={styles.buttonText}>Discard</Text>
+        </Pressable>
+        <Pressable style={styles.postButton} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>Post</Text>
+        </Pressable>
+      </View>
+    </ScrollView>
+  );
+};
 
-//         {/* Image Upload */}
-//         <PhotoUploadStyled style={{ height: 100 }} label="Add post image" onImageSelect={setPostPhoto} />
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    alignItems: "center",
+  },
+  heading: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  imageBox: {
+    width: 250,
+    height: 150,
+    backgroundColor: "#f0f0f0",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    marginBottom: 15,
+  },
+  imageText: {
+    fontSize: 16,
+    color: "#888",
+  },
+  uploadedImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 10,
+  },
+  input: {
+    width: "100%",
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  picker: {
+    width: "100%",
+    height: 60,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  textArea: {
+    height: 100,
+    textAlignVertical: "top",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginTop: 10,
+  },
+  discardButton: {
+    flex: 1,
+    backgroundColor: "#ccc",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    marginRight: 10,
+  },
+  postButton: {
+    flex: 1,
+    backgroundColor: "#008000",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+  },
+});
 
-//         {/* Form Inputs */}
-//         {renderTextInput(input1Ref, "Add Heading", form.title, "Enter article heading", 
-//           (text) => handleChange("title", text), 
-//           () => {
-//             if (!form.title.trim()) {
-//               Alert.alert("Error", "Please enter a title.");
-//               input1Ref.current?.focus();
-//             } else {
-//               input2Ref.current?.focus();
-//             }
-//           }
-//         )}
-
-//         {renderTextInput(input2Ref, "Add Tag", form.tag, "Enter a tag", 
-//           (text) => handleChange("tag", text), 
-//           () => input3Ref.current?.focus()
-//         )}
-
-//         {renderTextInput(input3Ref, "Category", form.category, "Enter a category", 
-//           (text) => handleChange("category", text), 
-//           () => input4Ref.current?.focus()
-//         )}
-
-//         {renderTextInput(input4Ref, "Write Article", form.article, "Write your article here", 
-//           (text) => handleChange("article", text), 
-//           null
-//         )}
-
-//         {/* Buttons */}
-//         <View style={styles.buttonContainer}>
-//           <ButtonSuccess style={{ width: 120, height: 60}} label="DISCARD" onPress={handleDiscard} />
-//           <ButtonSuccess style={{ width: 120, height: 60}} label="POST" onPress={handleSubmit} />
-//         </View>
-//       </View>
-//     </ScrollView>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   contentContainer: {
-//     padding: 20,
-//   },
-//   container: {
-//     flex: 1,
-//   },
-//   heading: {
-//     fontSize: 24,
-//     fontWeight: "bold",
-//     marginBottom: 20,
-//   },
-//   buttonContainer: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     marginTop: 15,
-//   },
-// });
-
-// export default CreateArticle;
+export default CreateArticle;
