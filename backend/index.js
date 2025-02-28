@@ -13,6 +13,9 @@ import cors from 'cors';
 
 
 import methodOverride from 'method-override';
+import  path  from 'path';
+import { fileURLToPath } from 'url';
+import morgan from 'morgan';
 
 
 
@@ -22,15 +25,20 @@ const app = express();
 
 app.use(cors()); 
 app.use(methodOverride('_method'));
-
+app.use(morgan("dev"));
 app.use(session({
     secret: 'yourSecretKey', 
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false } 
   }));
-app.use(bodyParser.json());
 
+  
+  const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve static files from uploads folder
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 //Middleware to verify JWT
 
 app.use((req, res, next) => {

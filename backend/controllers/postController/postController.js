@@ -1,29 +1,36 @@
 import Post from "../../models/Post.js";
 import path from "path";
 import fs from "fs";
+import User from "../../models/User.js";
 
 export const createPost = async (req, res) => {
   try {
     const { title, content, username } = req.body;
+    const imagePath = req.file ? `uploads/${req.file.filename}` : null; // Save file path
 
-    if (!username) {
-      return res.status(400).send("User not authenticated");
+    if (!title || !content || !username) {
+      return res.status(400).send("All fields are required");
+    }
+
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(400).send("User not found");
     }
 
     const post = new Post({
       title,
       content,
       username,
-      image: req.file ? req.file.filename : undefined,
+      image: imagePath,
     });
 
     await post.save();
+
     res.status(200).send({
-        message: "Post created successfully",
-        post,
-      });
-    
-    // res.redirect("/home");
+      message: "Post created successfully",
+      post,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server Error");

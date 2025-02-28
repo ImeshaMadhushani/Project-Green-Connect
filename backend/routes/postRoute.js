@@ -39,7 +39,7 @@ const upload = multer({
 });
 
 // Routes
-router.post("/", upload.single("image"), createPost);
+router.post("/create-post", upload.single("image"), createPost);
 router.delete("/:id/delete", deletePost);
 router.post("/:id/update", upload.single("image"), updatePost);
 router.post("/:id/comment", addComment);
