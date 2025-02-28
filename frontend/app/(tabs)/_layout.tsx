@@ -130,8 +130,9 @@ const RootLayout = () => {
           tabBarItemStyle: { display: "none" },
         }}
       />
+      
        <Tabs.Screen
-        name="notification"
+        name="notificattion"
         options={{
           headerShown: true,
           header: () => <CustomHeader/>,
