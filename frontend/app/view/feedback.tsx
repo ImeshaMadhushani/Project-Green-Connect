@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert,Pressable, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
+import { router } from "expo-router";
+import { FontAwesome } from "@expo/vector-icons";
 
 const FeedbackScreen = () => {
   const [rating, setRating] = useState(0);
@@ -34,6 +36,12 @@ const FeedbackScreen = () => {
   };
 
   return (
+    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.header}>
+        <Pressable onPress={() => router.back()}>
+          <FontAwesome name="arrow-left" size={20} color="#000" />
+        </Pressable>
+      </View>
     <View style={{ flex: 1, padding: 20 }}>
       <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>Rate Our App</Text>
 
@@ -76,7 +84,21 @@ const FeedbackScreen = () => {
         <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>Submit Feedback</Text>
       </TouchableOpacity>
     </View>
+    </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    paddingBottom: 20,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 15,
+    backgroundColor: "#f8f8f8",
+  },
+});
 
 export default FeedbackScreen;
