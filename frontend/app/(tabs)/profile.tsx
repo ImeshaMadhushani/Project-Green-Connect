@@ -60,10 +60,12 @@ const ProfileScreen = () => {
           <Text style={styles.optionText}>Leaderboard</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
-          <Ionicons name="information-circle-outline" size={20} color="black" />
-          <Text style={styles.optionText}>About</Text>
-        </TouchableOpacity>
+
+<TouchableOpacity style={styles.option} onPress={() => router.push("../view/about")}>
+<Ionicons name="information-circle-outline" size={20} color="black" />
+<Text style={styles.optionText}>About</Text>
+</TouchableOpacity>
+
 
         <TouchableOpacity style={styles.option}>
           <Ionicons name="chatbubble-outline" size={20} color="black" />
