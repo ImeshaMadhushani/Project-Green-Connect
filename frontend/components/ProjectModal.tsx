@@ -4,7 +4,9 @@ import ButtonSuccess from "@/components/button-success";
 import { Picker } from "@react-native-picker/picker";
 import MapView, { Marker } from "react-native-maps";
 import TextInputStyled from "@/components/text-input";
-//import DateTimePicker from "@react-native-community/datetimepicker";
+import { DatePickerModal, TimePickerModal } from "react-native-paper-dates";
+import { PaperProvider } from "react-native-paper";
+
 
 const ProjectModalt = ({
   visible,
@@ -41,32 +43,22 @@ const ProjectModalt = ({
     setIsMapPickerVisible(false);
   };
 
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
-
-  const handleDateChange = (event: any, selectedDate: Date | undefined) => {
-    setShowDatePicker(false);
-    if (selectedDate) {
-      const formattedDate = selectedDate.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-      setFields("date", formattedDate);
-    }
-  };
-
-  const handleTimeChange = (event: any, selectedTime: Date | undefined) => {
-    setShowTimePicker(false);
-    if (selectedTime) {
-      const formattedTime = selectedTime.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      });
-      setFields("time", formattedTime);
-    }
-  };
+  const [openDatePicker, setOpenDatePicker] = useState(false);
+  const [openTimePicker, setOpenTimePicker] = useState(false);
 
   const excludedKeys = ["date", "time", "projectType", "location", "projectTitle"];
 
+  const theme = {
+    colors: {
+      primary: "#4CAF50", // Light green color
+      onSurface: "#006400", // Light green text color
+      background: "#E8F5E9", // Light greenish background
+      surface: "#fff", // Light greenish background for modal
+    },
+  };
+
   return (
+    <PaperProvider theme={theme}>
     <Modal
       animationType="slide"
       transparent={true}
@@ -100,8 +92,8 @@ const ProjectModalt = ({
                 </Picker>
               </View>
 
-                {/* Project Title Field */}
-                <TextInputStyled
+              {/* Project Title Field */}
+              <TextInputStyled
                 text="Project Title"
                 onChangeText={(value) => setFields("projectTitle", value)}
                 value={fields.projectTitle || ""}
@@ -133,7 +125,7 @@ const ProjectModalt = ({
                     <MapView
                       style={styles.map}
                       initialRegion={{
-                        latitude: location?.lat ||  8.7516,
+                        latitude: location?.lat || 8.7516,
                         longitude: location?.lng || 80.4975,
                         latitudeDelta: 0.0922,
                         longitudeDelta: 0.0421,
@@ -161,45 +153,40 @@ const ProjectModalt = ({
               )}
 
               {/* Date Picker */}
-              <Text style={styles.label}>Date</Text>
-              <Pressable
-                style={styles.pickerContainer}
-                onPress={() => setShowDatePicker(true)}
-              >
-                <Text>{fields.date || "Select Date"}</Text>
-              </Pressable>
-              {showDatePicker && (
-                <DateTimePicker
-                  value={fields.date ? new Date(fields.date) : new Date()}
-                  mode="date"
-                  display={Platform.OS === "ios" ? "inline" : "default"}
-                  onChange={handleDateChange}
-                />
-              )}
+              <TextInputStyled
+                text="Date"
+                value={fields.date || ""}
+                onFocus={() => setOpenDatePicker(true)}
+                placeholder="Select Date"
+              />
+              <DatePickerModal
+                locale="en"
+                mode="single"
+                visible={openDatePicker}
+                onDismiss={() => setOpenDatePicker(false)}
+                onConfirm={(params) => {
+                  const formattedDate = params.date.toISOString().split("T")[0];
+                  setFields("date", formattedDate);
+                  setOpenDatePicker(false);
+                }}
+              />
 
               {/* Time Picker */}
-              <Text style={styles.label}>Time</Text>
-              <Pressable
-                style={styles.pickerContainer}
-                onPress={() => {
-                  setShowTimePicker(true);
-                  setShowDatePicker(false); // Ensure only one picker is active
+              <TextInputStyled
+                text="Time"
+                value={fields.time || ""}
+                onFocus={() => setOpenTimePicker(true)}
+                placeholder="Select Time"
+              />
+              <TimePickerModal
+                visible={openTimePicker}
+                onDismiss={() => setOpenTimePicker(false)}
+                onConfirm={(params) => {
+                  const formattedTime = `${params.hours}:${params.minutes}`;
+                  setFields("time", formattedTime);
+                  setOpenTimePicker(false);
                 }}
-              >
-                <Text>{fields.time || "Select Time"}</Text>
-              </Pressable>
-              {showTimePicker && (
-                <DateTimePicker
-                  value={
-                    fields.time
-                      ? new Date(`1970-01-01T${fields.time}`)
-                      : new Date()
-                  }
-                  mode="time"
-                  display={Platform.OS === "ios" ? "inline" : "default"}
-                  onChange={handleTimeChange}
-                />
-              )}
+              />
 
               {/* Other Fields */}
               {Object.keys(fields).map((key) => {
@@ -225,6 +212,7 @@ const ProjectModalt = ({
         </ScrollView>
       </KeyboardAvoidingView>
     </Modal>
+    </PaperProvider>
   );
 };
 
@@ -290,10 +278,10 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(245, 253, 250, 0.97)",
   },
   scrollView: {
-    flexGrow: 1, 
+    flexGrow: 1,
   },
   keyboardAvoidingView: {
-    flex: 1, 
+    flex: 1,
   }
 });
 

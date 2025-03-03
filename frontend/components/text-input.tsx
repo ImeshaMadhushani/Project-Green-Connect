@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 10,
         paddingLeft: 10, 
-        fontSize: 18,
+        fontSize: 16,
         width: "100%"
       },
       iconContainer: {
