@@ -50,7 +50,7 @@ const ProfileScreen = () => {
           <Text style={styles.optionText}>My Projects</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity style={styles.option} onPress={()=>router.navigate("/view/myArticles")}>
           <Ionicons name="document-outline" size={20} color="black" />
           <Text style={styles.optionText}>My Articles</Text>
         </TouchableOpacity>

@@ -20,19 +20,19 @@ const MyArticles = () => {
       id: "1",
       title: "Saving Energy at Home",
       content: "Lower your bills and protect the environment...",
-      image: require("@/assets/images/login-backgroind.jpg"), // Ensure correct path
+      image: require("@/assets/images/bg.jpg"), // Ensure correct path
     },
     {
       id: "2",
       title: "The Future of Solar Energy",
       content: "How solar power is changing the world...",
-      image: require("@/assets/images/login-backgroind.jpg"),
+      image: require("@/assets/images/bg.jpg"),
     },
     {
       id: "3",
       title: "Eco-Friendly Lifestyle Tips",
       content: "Simple changes to make your lifestyle more eco-friendly...",
-      image: require("@/assets/images/login-backgroind.jpg"),
+      image: require("@/assets/images/bg.jpg"),
     },
   ]);
 
