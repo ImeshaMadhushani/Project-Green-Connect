@@ -4,7 +4,7 @@ import ButtonSuccess from "@/components/button-success";
 import { Picker } from "@react-native-picker/picker";
 import MapView, { Marker } from "react-native-maps";
 import TextInputStyled from "@/components/text-input";
-import DateTimePicker from "@react-native-community/datetimepicker";
+//import DateTimePicker from "@react-native-community/datetimepicker";
 
 const ProjectModalt = ({
   visible,
