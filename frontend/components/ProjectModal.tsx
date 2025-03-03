@@ -4,6 +4,8 @@ import ButtonSuccess from "@/components/button-success";
 import { Picker } from "@react-native-picker/picker";
 import MapView, { Marker } from "react-native-maps";
 import TextInputStyled from "@/components/text-input";
+import DateTimePicker from "@react-native-community/datetimepicker";
+
 const ProjectModalt = ({
   visible,
   onClose,
@@ -62,7 +64,7 @@ const ProjectModalt = ({
     }
   };
 
-  const excludedKeys = ["date", "time", "projectType", "location"];
+  const excludedKeys = ["date", "time", "projectType", "location", "projectTitle"];
 
   return (
     <Modal
@@ -97,6 +99,14 @@ const ProjectModalt = ({
                   ))}
                 </Picker>
               </View>
+
+                {/* Project Title Field */}
+                <TextInputStyled
+                text="Project Title"
+                onChangeText={(value) => setFields("projectTitle", value)}
+                value={fields.projectTitle || ""}
+                placeholder="Enter Project Title"
+              />
 
               {/* Location Picker */}
               <Text style={styles.label}>Location</Text>
