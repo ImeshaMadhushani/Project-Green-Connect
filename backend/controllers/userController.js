@@ -79,10 +79,10 @@ export async function register(req, res) {
 
 // Login
 
-export function login(req, res) {
+/* export function login(req, res) {
     const credentials = req.body;
 
-    User.findOne({ username: credentials.username }).then(async (user) => {
+    User.findOne({ email: credentials.email , password: credentials.password }).then(async (user) => {
         if (!user) {
             return res.status(401).json({ message: 'Invalid credentials' });
         } 
@@ -109,7 +109,46 @@ export function login(req, res) {
         console.error("Error during login:", error);
         return res.status(500).json({ message: "Server error" });
     });
+} */
+
+export async function login(req, res) {
+    try {
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        // Check if password matches
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        // Check organization approval
+        if (user.role === "organization" && !user.isApproved) {
+            return res.status(403).json({ message: "Organization account is not approved yet." });
+        }
+
+        // Generate JWT token
+        const payload = {
+            id: user._id,
+            name: user.name,
+            username: user.username,
+            email: user.email,
+            role: user.role
+        };
+        const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '48h' });
+
+        return res.json({ message: "User logged in successfully!", user, token });
+
+    } catch (error) {
+        console.error("Error during login:", error);
+        return res.status(500).json({ message: "Server error" });
+    }
 }
+
 
 // Get user
 export function getUser(req, res) {
