@@ -7,7 +7,14 @@ import { useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import PhotoUploadStyled from "@/components/PhotoUpload";
 
-import { account, loginWithGoogle } from "@/(services)/appwrite"; 
+import { account, loginWithGoogle } from "@/(services)/appwrite";
+
+//import api from "@/(services)/api";
+
+import axios from 'axios';
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+  
 
 const SignUp = () => {
   const [name, setName] = useState("");
@@ -15,7 +22,11 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
-  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [profilePhoto, setProfilePhoto] = useState<{
+    uri: string;
+    name?: string;
+    type?: string;
+  } | null>(null);
 
   const validateEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -30,6 +41,7 @@ const SignUp = () => {
   };
 
   const handleSignUp = async () => {
+    console.log("Sign Up button clicked");
     if (!name.trim()) {
       return Alert.alert("Error", "Please enter your name");
     }
@@ -48,19 +60,52 @@ const SignUp = () => {
     if (password !== password2) {
       return Alert.alert("Error", "Passwords do not match");
     }
-    if (!profilePhoto) {
+    if (!profilePhoto?.uri) {
       return Alert.alert("Error", "Please upload a profile photo");
     }
 
-      try {
+    console.log("All validations passed! Proceeding with API call.");
+    console.log(apiUrl);
+    /*  try {
         await account.create("unique()", email, password, name);
         router.navigate("/home", { relativeToDirectory: true });
       } catch (error:any) {
         Alert.alert("Sign Up Failed", error.message);
-      }
+      } 
+    
+     */
+
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("username", username);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("role", "volunteer"); // Fixed role
+    if (profilePhoto) {
+      formData.append("profile_picture", {
+        uri: profilePhoto.uri,
+        name: profilePhoto.name || "profile.jpg",
+        type: profilePhoto.type || "image/jpeg",
+      } as any);
+    }
+ 
+    console.log("SignUp Payload:", formData);
+
+    try {
+      await axios.post(`${apiUrl}/api/user/register`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      Alert.alert("Success", "Account created successfully!");
+      router.push("/home");
+    } catch (error: any) {
+      console.error("SignUp Error: ", error.response?.data || error.message);
+      Alert.alert(
+        "Sign Up Failed",
+        error.response?.data?.message || "Network error"
+      );
+    }
   };
 
-  
 
   return (
     <View style={styles.container}>
@@ -115,7 +160,7 @@ const SignUp = () => {
       /> */}
 
       <ButtonGoogle onPress={loginWithGoogle} />
-      
+
       <View style={styles.loginContainer}>
         <Text style={styles.loginText}>Already Have An Account?</Text>
         <ButtonText
