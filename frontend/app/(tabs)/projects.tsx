@@ -21,6 +21,7 @@ const projectIcons = {
 };
 
 const Projects = () => {
+  const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
   const [fields, setFields] = useState({
     volunteers: "",
@@ -46,13 +47,18 @@ const Projects = () => {
     });
   };
 
+  const getRandomColor = () => {
+    const colors = ['#E9F0C7', '#F0F8E6', '#FBFBEF', '#E0EDF4', '#E9E5F3']; // some pastel shades
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
+
   return (
     <>
     <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.container}>
             <Text style={styles.heading}>Projects</Text>
             <Card
-                bgColor="#dce8d6"
+                bgColor={getRandomColor()}
                 heading="Plastic-Free Market Campaign"
                 content={
                     <View style={styles.cardContent}>
@@ -77,7 +83,7 @@ const Projects = () => {
 
         <View style={styles.addButtonContainer}>
         <Pressable onPress={() => setModalVisible(true)}>
-        <Image source={plus} style={{ width: "100%", height: "100%" }} />
+        <Image source={plus} style={styles.addButton} />
         </Pressable>
         </View>
         
@@ -103,33 +109,33 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   heading: {
-    fontSize: 25,
+    fontSize: 28,
     padding: 10,
-    fontWeight: "bold",
+    fontWeight: 600,
   },
   cardContent: {
-    margin: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 15,
   },
   infoRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 5,
+  },
+  smallIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
   },
   addButtonContainer: {
-    width: 60,
-    height: 60,
     position: "absolute",
     bottom: 20,
     right: 20,
   },
   addButton: {
-    width: "100%",
-    height: "100%",
-  },
-  icon: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
+    width: 60,
+    height: 60,
   },
 });
 
