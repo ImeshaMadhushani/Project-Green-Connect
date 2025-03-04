@@ -31,6 +31,8 @@ const UserSchema = mongoose.Schema(
       type: String,
       required: function () { return this.role === "organization"; }
     },
+    passwordResetOtp: String, // Store OTP here
+    passwordResetOtpExpires: Date, // OTP expiration time
     
   },
   { timestamps: true }
