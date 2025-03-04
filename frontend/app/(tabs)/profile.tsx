@@ -15,7 +15,6 @@ const handleLogout = async () => {
   }
 };
 
-
 const ProfileScreen = () => {
   return (
     <View style={styles.container}>
@@ -51,7 +50,7 @@ const ProfileScreen = () => {
           <Text style={styles.optionText}>My Projects</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity style={styles.option} onPress={()=>router.navigate("/view/myArticles")}>
           <Ionicons name="document-outline" size={20} color="black" />
           <Text style={styles.optionText}>My Articles</Text>
         </TouchableOpacity>
@@ -61,17 +60,19 @@ const ProfileScreen = () => {
           <Text style={styles.optionText}>Leaderboard</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
-          <Ionicons name="information-circle-outline" size={20} color="black" />
-          <Text style={styles.optionText}>About</Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
+<TouchableOpacity style={styles.option} onPress={() => router.push("../view/about")}>
+<Ionicons name="information-circle-outline" size={20} color="black" />
+<Text style={styles.optionText}>About</Text>
+</TouchableOpacity>
+
+
+        <TouchableOpacity style={styles.option} onPress={()=>router.navigate("/view/feedback")}>
           <Ionicons name="chatbubble-outline" size={20} color="black" />
           <Text style={styles.optionText}>Feedback</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option} onPress={handleLogout} >
+        <TouchableOpacity style={styles.option}  onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={20} color="black" />
           <Text style={styles.optionText}>Log out</Text>
         </TouchableOpacity>
@@ -106,10 +107,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: 'center',
     marginVertical: 20,
-    gap: 15,
+    gap: 20,
   },
   profileImage: {
-    width: 120,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 10,
+    minWidth: 100,
     aspectRatio: 1,
   },
   userName: {
@@ -122,6 +127,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   roleButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     padding: 10,
     marginTop: 5,
     borderRadius: 10,

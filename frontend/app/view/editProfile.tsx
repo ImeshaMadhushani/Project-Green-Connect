@@ -1,6 +1,6 @@
 import ButtonSuccess from "@/components/button-success";
 import TextInputStyled from "@/components/text-input";
-import { ScrollView, StyleSheet, Text, View, TouchableOpacity} from "react-native";
+import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Image } from "react-native-elements";
 import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -9,7 +9,6 @@ import Icon from "react-native-vector-icons/FontAwesome";
 const user = require("@/assets/images/user.png");
 
 const EditProfile = () => {
-  
   const handleImagePick = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
@@ -48,15 +47,15 @@ const EditProfile = () => {
             padding: 10,
           }}
         >
-         <TouchableOpacity onPress={handleImagePick} style={style.imageContainer}>
-          <Image
-            style={style.profileImage}
-            source={ user}
-          />
-          <View style={style.iconContainer}>
-            <Icon name="camera" size={20} color="white" />
-          </View>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={handleImagePick} style={style.imageContainer}>
+            <Image
+              style={style.profileImage}
+              source={user}
+            />
+            <View style={style.iconContainer}>
+              <Icon name="camera" size={20} color="white" />
+            </View>
+          </TouchableOpacity>
 
           <TextInputStyled
             placeholder="First Name"
