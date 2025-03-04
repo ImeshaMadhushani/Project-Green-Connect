@@ -3,12 +3,22 @@ import {Alert, ScrollView, StyleSheet, Text, View, Pressable } from "react-nativ
 import Card from "@/components/Card";
 import ModalComponent from "@/components/ProjectModal";
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import { useNavigation } from '@react-navigation/native';
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const calender = require("../../assets/images/calender.png");
 const clock = require("../../assets/images/clock.png");
 const pin = require("../../assets/images/pin.png");
 const plus = require("../../assets/images/plus.png");
+
+const projectIcons = {
+  "Waste Reduction": "recycle",
+  "Plantation": "tree",
+  "Disaster Preparedness": "alert-circle-outline",
+  "Environmental Awareness Campaigns": "bullhorn-outline",
+  "Sustainable Gardening & Agriculture": "sprout",
+};
 
 const Projects = () => {
   const [modalVisible, setModalVisible] = useState(false);
