@@ -83,7 +83,49 @@ const MyProjects = () => {
         <View style={{ width: 28 }} /> {/* Placeholder for alignment */}
       </View>
 
-      
+      {/* Project List */}
+      <FlatList
+        data={projects}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View>
+            <Card
+              heading={item.title}
+              bgColor="#f4f4e4"
+              iconName={projectIcons[item.type]}
+              content={
+                <View>
+                  <Text>📅 {item.date}</Text>
+                  <Text>⏰ {item.time}</Text>
+                  <Text>📍 {item.location}</Text>
+
+                  {/* Action Buttons based on Role */}
+                  {loggedInUser.role === "volunteer" ? (
+                    <Pressable style={styles.unenrollButton} onPress={() => handleUnenroll(item.id)}>
+                      <Text style={styles.unenrollText}>Unenroll</Text>
+                    </Pressable>
+                  ) : (
+                    <View style={styles.orgActions}>
+                      <Pressable style={styles.deleteButton} onPress={() => handleDeleteProject(item.id)}>
+                        <MaterialCommunityIcons name="trash-can-outline" size={22} color="white" />
+                      </Pressable>
+                      <Pressable style={styles.viewUsersButton} onPress={() => viewEnrolledUsers(item.id)}>
+                        <MaterialCommunityIcons name="account-group-outline" size={22} color="white" />
+                      </Pressable>
+                    </View>
+                  )}
+                </View>
+              }
+              onPress={() => router.push({ pathname: "/view/projectSingleView", params: item })}
+            />
+          </View>
+        )}
+        ListEmptyComponent={
+          <Text style={styles.noProjectsText}>
+            {loggedInUser.role === "volunteer" ? "You haven't enrolled in any projects yet." : "You haven't created any projects yet."}
+          </Text>
+        }
+      />
     </View>
   );
 };
