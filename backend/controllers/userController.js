@@ -45,6 +45,7 @@ export async function register(req, res) {
 
         const hashedPassword = bcrypt.hashSync(password, saltRound);
 
+        
         const newUser = new User({
             name,
             username,
@@ -138,7 +139,8 @@ export async function login(req, res) {
             name: user.name,
             username: user.username,
             email: user.email,
-            role: user.role
+            role: user.role,
+            profile_picture: user.profile_picture
         };
         const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '48h' });
 
@@ -394,5 +396,21 @@ export async function resetPassword(req, res) {
     } catch (error) {
         console.error("Error during password reset:", error);
         res.status(500).json({ message: "Error resetting password", error: error.message });
+    }
+}
+
+
+//logout
+
+export async function logout(req, res) {
+    try {
+        // If you're storing JWT in cookies, clear the cookie
+        res.clearCookie('token'); // Replace 'token' with your actual cookie name
+
+        // Respond with a success message
+        res.status(200).json({ message: 'Logged out successfully' });
+    } catch (error) {
+        console.error("Error during logout:", error);
+        res.status(500).json({ message: 'Error logging out' });
     }
 }
