@@ -67,7 +67,7 @@ const Projects = () => {
 
         <View style={styles.addButtonContainer}>
         <Pressable onPress={() => setModalVisible(true)}>
-            <Text style={styles.addButton}>+</Text>
+        <Image source={plus} style={{ width: "100%", height: "100%" }} />
         </Pressable>
         </View>
         

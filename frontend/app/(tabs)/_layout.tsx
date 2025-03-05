@@ -77,7 +77,7 @@ const RootLayout = () => {
           },
         }}
       />
-      {/* <Tabs.Screen
+      { <Tabs.Screen
         name="authorities"
         options={{
           headerShown: true,
@@ -98,7 +98,7 @@ const RootLayout = () => {
             borderTopStartRadius: 20,
           },
         }}
-      /> */}
+      /> }
       <Tabs.Screen
         name="profile"
         options={{
@@ -130,8 +130,9 @@ const RootLayout = () => {
           tabBarItemStyle: { display: "none" },
         }}
       />
+      
        <Tabs.Screen
-        name="notification"
+        name="notificattion"
         options={{
           headerShown: true,
           header: () => <CustomHeader/>,

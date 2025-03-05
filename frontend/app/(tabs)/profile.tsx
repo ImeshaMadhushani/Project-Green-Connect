@@ -1,3 +1,4 @@
+
 import React from "react";
 import  { useState, useEffect } from "react";
 import {
@@ -19,6 +20,8 @@ const pen = require("@/assets/images/pen.png");
 
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
+
 
 const ProfileScreen = () => {
   const [userData, setUserData] = useState<{
@@ -122,6 +125,7 @@ const ProfileScreen = () => {
             </Text>
           </TouchableOpacity>
         </View>
+
         <Pressable onPress={() => router.navigate("/view/editProfile")}>
           <Image style={styles.penIcon} source={pen} />
         </Pressable>
@@ -134,8 +138,10 @@ const ProfileScreen = () => {
           <Text style={styles.optionText}>My Projects</Text>
         </TouchableOpacity>
 
+
         <TouchableOpacity style={styles.option}>
           <Ionicons name="document-outline" size={20} color="#4CAF50" />
+
           <Text style={styles.optionText}>My Articles</Text>
         </TouchableOpacity>
 
@@ -146,6 +152,7 @@ const ProfileScreen = () => {
           <Ionicons name="trophy-outline" size={20} color="#4CAF50" />
           <Text style={styles.optionText}>Leaderboard</Text>
         </TouchableOpacity>
+
 
         <TouchableOpacity style={styles.option}>
           <Ionicons
@@ -223,6 +230,7 @@ const styles = StyleSheet.create({
   penIcon: {
     width: 30,
     height: 30,
+
   },
   optionsSection: {
     backgroundColor: "#fff",
