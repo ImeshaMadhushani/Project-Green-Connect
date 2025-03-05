@@ -135,7 +135,7 @@ const ProfileScreen = () => {
       <View style={styles.optionsSection}>
         <TouchableOpacity style={styles.option}>
           <Ionicons name="folder-outline" size={20} color="#4CAF50" />
-          <Text style={styles.optionText}>My Projects</Text>
+          <Text style={styles.optionText} onPress={()=>router.navigate("/view/myProjects")}>My Projects</Text>
         </TouchableOpacity>
 
 
