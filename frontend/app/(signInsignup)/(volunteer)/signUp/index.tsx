@@ -94,9 +94,9 @@ const SignUp = () => {
     try {
       await axios.post(`${apiUrl}/api/user/register`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
-      });
+      }); 
       Alert.alert("Success", "Account created successfully!");
-      router.push("/home");
+      router.push("/logIn");
     } catch (error: any) {
       console.error("SignUp Error: ", error.response?.data || error.message);
       Alert.alert(
