@@ -31,6 +31,10 @@ app.use(session({
   }));
 app.use(bodyParser.json());
 
+
+app.use("/uploads", express.static("uploads"));
+
+
 //Middleware to verify JWT
 
 app.use((req, res, next) => {
