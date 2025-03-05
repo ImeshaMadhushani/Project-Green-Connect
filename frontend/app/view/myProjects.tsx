@@ -70,7 +70,46 @@ const MyProjects = () => {
   const navigation = useNavigation();
   const [projects, setProjects] = useState([]);
 
-  
+  useEffect(() => {
+    if (loggedInUser.role === "volunteer") {
+      setProjects(mockProjects.filter((proj) => proj.enrolledUsers.includes(loggedInUser.userId)));
+    } else {
+      setProjects(mockProjects.filter((proj) => proj.createdBy === loggedInUser.userId));
+    }
+  }, []);
+
+  const handleUnenroll = (projectId) => {
+    Alert.alert("Unenroll", "Are you sure you want to unenroll from this project?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Unenroll",
+        style: "destructive",
+        onPress: () => {
+          setProjects((prev) => prev.filter((proj) => proj.id !== projectId));
+          Alert.alert("Success", "You have unenrolled from the project.");
+        },
+      },
+    ]);
+  };
+
+  const handleDeleteProject = (projectId) => {
+    Alert.alert("Delete Project", "Are you sure you want to delete this project?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          setProjects((prev) => prev.filter((proj) => proj.id !== projectId));
+          Alert.alert("Success", "Project deleted successfully.");
+        },
+      },
+    ]);
+  };
+
+  const viewEnrolledUsers = (projectId) => {
+    Alert.alert("Enrolled Users", `Showing users for project ${projectId}`);
+    // Navigate to enrolled users page (if needed)
+  };
 
   return (
     <View style={styles.container}>
