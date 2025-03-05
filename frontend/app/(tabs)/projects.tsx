@@ -52,49 +52,87 @@ const Projects = () => {
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
+  const [events] = useState([
+    {
+      id: "1",
+      type: "Waste Reduction",
+      title: "Plastic-Free Market Campaign",
+      date: "November 10, 2024",
+      time: "9.00 a.m.",
+      location: "Vavunia, Market",
+      description: "A campaign to reduce plastic waste in the local market.",
+    },
+    {
+      id: "2",
+      type: "Plantation",
+      title: "Tree Planting Drive",
+      date: "November 15, 2024",
+      time: "10.00 a.m.",
+      location: "Colombo Park",
+      description: "Join us in planting trees to make our city greener.",
+    },
+    {
+      id: "3",
+      type: "Sustainable Gardening & Agriculture",
+      title: "Eco-Friendly Fair",
+      date: "December 5, 2024",
+      time: "11.30 a.m.",
+      location: "Kandy Town Hall",
+      description: "Promoting sustainable gardening and eco-friendly farming.",
+    },
+  ]);
+
   return (
     <>
-    <ScrollView contentContainerStyle={styles.contentContainer}>
+      <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.container}>
-            <Text style={styles.heading}>Projects</Text>
-            <Card
+          <Text style={styles.heading}>Projects</Text>
+          {events.map((event) => (
+            <Pressable key={event.id}>
+              <Card
+                onPress={() => router.push({ pathname: "/view/projectSingleView", params: event })}
                 bgColor={getRandomColor()}
-                heading="Plastic-Free Market Campaign"
+                heading={event.title}
+                iconName={projectIcons[event.type]} // Pass icon name correctly here
                 content={
-                    <View style={styles.cardContent}>
-                    <View style={styles.infoRow}>
-                        <Image source={calender} style={styles.icon} />
-                        <Text>November 10, 2024</Text>
+                  <View style={styles.cardContent}>
+                    <View>
+                      <View style={styles.infoRow}>
+                        <Image source={calender} style={styles.smallIcon} />
+                        <Text>{event.date}</Text>
+                      </View>
+                      <View style={styles.infoRow}>
+                        <Image source={clock} style={styles.smallIcon} />
+                        <Text>{event.time}</Text>
+                      </View>
+                      <View style={styles.infoRow}>
+                        <Image source={pin} style={styles.smallIcon} />
+                        <Text>{event.location}</Text>
+                      </View>
                     </View>
-                    <View style={styles.infoRow}>
-                        <Image source={clock} style={styles.icon} />
-                        <Text>9:00 a.m.</Text>
-                    </View>
-                    <View style={styles.infoRow}>
-                        <Image source={pin} style={styles.icon} />
-                        <Text>Vavuniya, Market</Text>
-                    </View>
-                    </View>
+                  </View>
                 }
-            />
+              />
+
+            </Pressable>
+          ))}
 
         </View>
-        </ScrollView>
+      </ScrollView>
 
-        <View style={styles.addButtonContainer}>
+      <View style={styles.addButtonContainer}>
         <Pressable onPress={() => setModalVisible(true)}>
-        <Image source={plus} style={styles.addButton} />
+          <Image source={plus} style={styles.addButton} />
         </Pressable>
-        </View>
-        
-        <ModalComponent
-            visible={modalVisible}
-            onClose={() => setModalVisible(false)}
-            onSave={handleAddProject}
-            fields={fields}
-            setFields={handleFieldChange}
-        />
+      </View>
 
+      <ModalComponent
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSave={handleAddProject}
+        fields={fields}
+        setFields={handleFieldChange}
+      />
     </>
   );
 };
