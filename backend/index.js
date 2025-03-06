@@ -4,12 +4,11 @@ import session from 'express-session';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import userRouter from './routes/userRoute.js';
 import projectRouter from './routes/projectRoute.js';
-
 import postRoute from './routes/postRoute.js';
 
-import cors from 'cors'; 
 
 
 import methodOverride from 'method-override';

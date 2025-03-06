@@ -12,6 +12,18 @@ export const createProject = async (req, res) => {
             return res.status(403).json({ message: "Only organizations can create projects." });
         }
 
+        // Validate location data
+        if (!Array.isArray(location) || location.length === 0) {
+            return res.status(400).json({ message: "A location must be provided." });
+        }
+
+        // Validate each location object
+        for (const loc of location) {
+            if (!loc.latitude || !loc.longitude || !loc.locationName) {
+                return res.status(400).json({ message: "Each location must include latitude, longitude, and locationName." });
+            }
+        }
+
         // Create the project
         const newProject = new Project({
             organizationId: organization._id,
@@ -69,6 +81,20 @@ export const updateProject = async (req, res) => {
             return res.status(403).json({ message: "You are not authorized to update this project" });
         }
 
+        // Validate location data if provided
+        if (location) {
+            if (!Array.isArray(location) || location.length === 0) {
+                return res.status(400).json({ message: "A location must be provided." });
+            }
+
+            // Validate each location object
+            for (const loc of location) {
+                if (!loc.latitude || !loc.longitude || !loc.locationName) {
+                    return res.status(400).json({ message: "Each location must include latitude, longitude, and locationName." });
+                }
+            }
+        }
+        
         // Update project details
         project.projectName = projectName || project.projectName;
         project.description = description || project.description;
