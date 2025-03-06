@@ -19,7 +19,8 @@ const ProjectSchema = mongoose.Schema(
         description: { type: String, required: true },
         date: { type: Date, required: true },
         time: { type: String, required: true },
-        location: { type: String, required: true },
+        //updated loacation  with cordinates
+        location: [LocationSchema],
         status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
         isApproved: { type: Boolean, default: false },
         approveDate: { type: Date, default: null },
@@ -38,6 +39,12 @@ const ProjectSchema = mongoose.Schema(
     },
     { timestamps: true }
 );
+
+const LocationSchema = new Schema({
+    latitude: { type: Number, required: true },
+    longitude: { type: Number, required: true },
+    locationName: { type: String, required: true },
+});
 
 // Creating the model
 const Project = mongoose.model("Project", ProjectSchema);
