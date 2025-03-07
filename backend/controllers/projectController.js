@@ -4,7 +4,7 @@ import User from "../models/User.js";
 // Create a new project (only organization can create projects)
 export const createProject = async (req, res) => {
     try {
-        const { projectName, description, date, time, location } = req.body;
+        const { projectName, description, date, time, location, projectType, noOfVolunteers, projectDuration } = req.body;
 
         // Ensure the user creating the project is an organization
         const organization = await User.findById(req.user.id);  // assuming req.user.id is the logged-in user id
@@ -20,6 +20,11 @@ export const createProject = async (req, res) => {
             date,
             time,
             location,
+            projectType,
+            noOfVolunteers,
+            projectDuration,
+            status: "pending",
+            isApproved: false,
         });
 
         await newProject.save();
