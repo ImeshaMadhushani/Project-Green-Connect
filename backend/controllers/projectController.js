@@ -4,17 +4,19 @@ import User from "../models/User.js";
 // Create a new project (only organization can create projects)
 export const createProject = async (req, res) => {
     try {
+        console.log("Incoming request body:", req.body); 
+
         const { projectName, description, date, time, location, projectType, noOfVolunteers, projectDuration } = req.body;
 
         // Ensure the user creating the project is an organization
-        const organization = await User.findById(req.user.id);  // assuming req.user.id is the logged-in user id
-        if (organization.role !== "organization") {
+        const user = await User.findById(req.user.id);  // assuming req.user.id is the logged-in user id
+        if (user.role !== "organization") {
             return res.status(403).json({ message: "Only organizations can create projects." });
         }
 
         // Create the project
         const newProject = new Project({
-            organizationId: organization._id,
+            organizationId: user._id,
             projectName,
             description,
             date,
@@ -30,6 +32,7 @@ export const createProject = async (req, res) => {
         await newProject.save();
         res.status(201).json(newProject);
     } catch (error) {
+        console.error("Server Error:", error);
         res.status(500).json({ message: error.message });
     }
 };
