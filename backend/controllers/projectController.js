@@ -176,3 +176,61 @@ export const updateProjectStatus = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
+//enrolle project
+export const enrollProject = async (req, res) => { 
+    try {
+        // Check if the user is a volunteer
+        const user = await User.findById(req.user.id);
+        if (user.role !== "volunteer") {
+            return res.status(403).json({ message: "Only volunteers can enroll in projects" });
+        }
+        // Check if the project exists
+        const project = await Project.findById(req.params.id);
+        if (!project) {
+            return res.status(404).json({ message: "Project not found" });
+        }
+
+        // Check if the user is already enrolled in the project
+        if (project.volunteers.includes(req.user.id)) {
+            return res.status(400).json({ message: "You are already enrolled in this project" });
+        }
+        
+        // Enroll the user in the project
+        project.volunteers.push(req.user.id);
+        await project.save();
+        res.status(200).json({ message: "Project enrolled successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+//unenrol project
+export const unenrollProject = async (req, res) => {
+    try {
+        // Check if the user is a volunteer
+        const user = await User.findById(req.user.id);
+        if (user.role !== "volunteer") {
+            return res.status(403).json({ message: "Only volunteers can unenroll from projects" });
+        }
+
+        // Check if the project exists
+        const project = await Project.findById(req.params.id);
+        if (!project) {
+            return res.status(404).json({ message: "Project not found" });
+        }
+        
+        // Check if the user is enrolled in the project
+        if (!project.volunteers.includes(req.user.id)) {
+            return res.status(400).json({ message: "You are not enrolled in this project" });
+        }
+        
+        // Unenroll the user from the project
+        project.volunteers = project.volunteers.filter(volunteerId => volunteerId.toString() !== req.user.id);
+        await project.save();
+        res.status(200).json({ message: "Project unenrolled successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+        }
+    }
