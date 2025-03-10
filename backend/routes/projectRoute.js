@@ -1,5 +1,5 @@
 import express from "express";
-import { createProject, getProjects, getProjectById, updateProject, deleteProject, updateProjectStatus, getNotApprovedProjects } from "../controllers/projectController.js";
+import { createProject, getProjects, getProjectById, updateProject, deleteProject, updateProjectStatus, getNotApprovedProjects, enrollProject, unenrollProject } from "../controllers/projectController.js";
 
 const projectRouter = express.Router();
 
@@ -23,5 +23,11 @@ projectRouter.delete("/:id", deleteProject);
 
 // Approve project (only admins can approve)
 projectRouter.put("/:id/status", updateProjectStatus);
+
+//enroll project
+projectRouter.put("/:id/enroll", enrollProject);
+
+//unenrollProject
+projectRouter.put("/:id/unenroll", unenrollProject);
 
 export default projectRouter;

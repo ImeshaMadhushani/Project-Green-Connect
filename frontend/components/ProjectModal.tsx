@@ -7,6 +7,11 @@ import TextInputStyled from "@/components/text-input";
 import { DatePickerModal, TimePickerModal } from "react-native-paper-dates";
 import { PaperProvider } from "react-native-paper";
 
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+const API_KEY = process.env.EXPO_PUBLIC_LOCATIONIQ_API_KEY;
 
 const ProjectModalt = ({
   visible,
@@ -25,9 +30,16 @@ const ProjectModalt = ({
     fields.projectType || ""
   );
   const [isMapPickerVisible, setIsMapPickerVisible] = useState(false);
-  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
-    fields.location ? JSON.parse(fields.location) : null
-  );
+ const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
+   () => {
+     try {
+       return fields.location ? JSON.parse(fields.location) : null;
+     } catch (error) {
+       console.error("Invalid location JSON:", fields.location);
+       return null;
+     }
+   }
+ );
 
   const projectCriteriaOptions = [
     "Waste Reduction",
@@ -37,11 +49,31 @@ const ProjectModalt = ({
     "Sustainable Gardening & Agriculture",
   ];
 
-  const handleSaveLocation = (selectedLocation: { lat: number; lng: number }) => {
+ /*  const handleSaveLocation = (selectedLocation: { lat: number; lng: number }) => {
     setLocation(selectedLocation);
     setFields("location", JSON.stringify(selectedLocation)); // Save as string for consistent storage
     setIsMapPickerVisible(false);
-  };
+  }; */
+
+const handleSaveLocation = async (selectedLocation: {
+  lat: number;
+  lng: number;
+}) => {
+  try {
+    const response = await axios.get(
+      `https://us1.locationiq.com/v1/reverse.php?key=${API_KEY}&lat=${selectedLocation.lat}&lon=${selectedLocation.lng}&format=json`
+    );
+
+    const placeName = response.data.display_name || "Unknown Location";
+
+    setLocation(selectedLocation);
+    setFields("location", placeName);
+    setIsMapPickerVisible(false);
+  } catch (error) {
+    console.error("Error fetching location name:", error);
+    alert("Failed to fetch location name. Please try again.");
+  }
+};
 
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [openTimePicker, setOpenTimePicker] = useState(false);
@@ -57,161 +89,222 @@ const ProjectModalt = ({
     },
   };
 
+  const handleSaveProject = async () => {
+    try {
+
+      const token = await AsyncStorage.getItem("authToken");
+
+      const projectData = {
+        projectName: fields.projectTitle,
+        description: fields.description,
+        date: fields.date,
+        time: fields.time,
+        location: fields.location,
+        projectType: fields.projectType,
+        noOfVolunteers: fields.volunteers,
+        projectDuration: fields.duration,
+      };
+
+        console.log("Sending project data:", projectData);
+
+
+      const response = await axios.post(`${apiUrl}/api/project/`, projectData, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Replace `userToken` with your authentication token
+          "Content-Type": "application/json",
+        },
+      });
+
+       console.log("API Response:", response.data);
+
+      if (response.status === 201) {
+        alert("Project created successfully!");
+        onClose(); // Close the modal
+      }
+    } catch (error) {
+      console.error("Error creating project:", error);
+      alert("Failed to create project. Please try again.");
+    }
+  };
+
   return (
     <PaperProvider theme={theme}>
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-    >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardAvoidingView}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={visible}
+        onRequestClose={onClose}
       >
-        <ScrollView contentContainerStyle={styles.scrollView}>
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalHeading}>Create Project</Text>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.keyboardAvoidingView}
+        >
+          <ScrollView contentContainerStyle={styles.scrollView}>
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalHeading}>Create Project</Text>
 
-              {/* Dropdown for Project Type */}
-              <Text style={styles.label}>Project Type</Text>
-              <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={selectedProjectType}
-                  onValueChange={(itemValue) => {
-                    setSelectedProjectType(itemValue);
-                    setFields("projectType", itemValue);
-                  }}
-                  style={styles.picker}
+                {/* Dropdown for Project Type */}
+                <Text style={styles.label}>Project Type</Text>
+                <View style={styles.pickerContainer}>
+                  <Picker
+                    selectedValue={selectedProjectType}
+                    onValueChange={(itemValue) => {
+                      setSelectedProjectType(itemValue);
+                      setFields("projectType", itemValue);
+                    }}
+                    style={styles.picker}
+                  >
+                    <Picker.Item label="Select a project type" value="" />
+                    {projectCriteriaOptions.map((option, index) => (
+                      <Picker.Item label={option} value={option} key={index} />
+                    ))}
+                  </Picker>
+                </View>
+
+                {/* Project Title Field */}
+                <TextInputStyled
+                  text="Project Title"
+                  onChangeText={(value) => setFields("projectTitle", value)}
+                  value={fields.projectTitle || ""}
+                  placeholder="Enter Project Title"
+                />
+
+                {/* Location Picker */}
+                <Text style={styles.label}>Location</Text>
+                <Pressable
+                  style={styles.pickerContainer}
+                  onPress={() => setIsMapPickerVisible(true)}
                 >
-                  <Picker.Item label="Select a project type" value="" />
-                  {projectCriteriaOptions.map((option, index) => (
-                    <Picker.Item label={option} value={option} key={index} />
-                  ))}
-                </Picker>
-              </View>
+                  <Text>
+                    {location
+                      ? `Lat: ${location.lat.toFixed(
+                          4
+                        )}, Lng: ${location.lng.toFixed(4)}`
+                      : "Select Location"}
+                  </Text>
+                </Pressable>
 
-              {/* Project Title Field */}
-              <TextInputStyled
-                text="Project Title"
-                onChangeText={(value) => setFields("projectTitle", value)}
-                value={fields.projectTitle || ""}
-                placeholder="Enter Project Title"
-              />
-
-              {/* Location Picker */}
-              <Text style={styles.label}>Location</Text>
-              <Pressable
-                style={styles.pickerContainer}
-                onPress={() => setIsMapPickerVisible(true)}
-              >
-                <Text>
-                  {location
-                    ? `Lat: ${location.lat.toFixed(4)}, Lng: ${location.lng.toFixed(4)}`
-                    : "Select Location"}
-                </Text>
-              </Pressable>
-
-              {/* Map Picker Modal */}
-              {isMapPickerVisible && (
-                <Modal
-                  animationType="slide"
-                  transparent={true}
-                  visible={isMapPickerVisible}
-                  onRequestClose={() => setIsMapPickerVisible(false)}
-                >
-                  <View style={styles.mapModalOverlay}>
-                    <MapView
-                      style={styles.map}
-                      initialRegion={{
-                        latitude: location?.lat || 8.7516,
-                        longitude: location?.lng || 80.4975,
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
-                      }}
-                      onPress={(event) => {
-                        const { latitude, longitude } = event.nativeEvent.coordinate;
-                        setLocation({ lat: latitude, lng: longitude });
-                      }}
-                    >
-                      {location && (
-                        <Marker
-                          coordinate={{
-                            latitude: location.lat,
-                            longitude: location.lng,
-                          }}
+                {/* Map Picker Modal */}
+                {isMapPickerVisible && (
+                  <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={isMapPickerVisible}
+                    onRequestClose={() => setIsMapPickerVisible(false)}
+                  >
+                    <View style={styles.mapModalOverlay}>
+                      <MapView
+                        style={styles.map}
+                        initialRegion={{
+                          latitude: location?.lat || 8.7516,
+                          longitude: location?.lng || 80.4975,
+                          latitudeDelta: 0.0922,
+                          longitudeDelta: 0.0421,
+                        }}
+                        onPress={(event) => {
+                          const { latitude, longitude } =
+                            event.nativeEvent.coordinate;
+                          setLocation({ lat: latitude, lng: longitude });
+                        }}
+                      >
+                        {location && (
+                          <Marker
+                            coordinate={{
+                              latitude: location.lat,
+                              longitude: location.lng,
+                            }}
+                          />
+                        )}
+                      </MapView>
+                      <View style={styles.mapActions}>
+                        <ButtonSuccess
+                          style={{ width: 150, height: 50 }}
+                          label="Save Location"
+                          onPress={() =>
+                            location && handleSaveLocation(location)
+                          }
                         />
-                      )}
-                    </MapView>
-                    <View style={styles.mapActions}>
-                      <ButtonSuccess style={{ width: 150, height: 50 }} label="Save Location" onPress={() => location && handleSaveLocation(location)} />
-                      <ButtonSuccess label="Cancel" style={{ width: 150, height: 50 }} onPress={() => setIsMapPickerVisible(false)} />
+                        <ButtonSuccess
+                          label="Cancel"
+                          style={{ width: 150, height: 50 }}
+                          onPress={() => setIsMapPickerVisible(false)}
+                        />
+                      </View>
                     </View>
-                  </View>
-                </Modal>
-              )}
+                  </Modal>
+                )}
 
-              {/* Date Picker */}
-              <TextInputStyled
-                text="Date"
-                value={fields.date || ""}
-                onFocus={() => setOpenDatePicker(true)}
-                placeholder="Select Date"
-              />
-              <DatePickerModal
-                locale="en"
-                mode="single"
-                visible={openDatePicker}
-                onDismiss={() => setOpenDatePicker(false)}
-                onConfirm={(params) => {
-                  const formattedDate = params.date.toISOString().split("T")[0];
-                  setFields("date", formattedDate);
-                  setOpenDatePicker(false);
-                }}
-              />
+                {/* Date Picker */}
+                <TextInputStyled
+                  text="Date"
+                  value={fields.date || ""}
+                  onFocus={() => setOpenDatePicker(true)}
+                  placeholder="Select Date"
+                />
+                <DatePickerModal
+                  locale="en"
+                  mode="single"
+                  visible={openDatePicker}
+                  onDismiss={() => setOpenDatePicker(false)}
+                  onConfirm={(params) => {
+                    const formattedDate = params.date
+                      .toISOString()
+                      .split("T")[0];
+                    setFields("date", formattedDate);
+                    setOpenDatePicker(false);
+                  }}
+                />
 
-              {/* Time Picker */}
-              <TextInputStyled
-                text="Time"
-                value={fields.time || ""}
-                onFocus={() => setOpenTimePicker(true)}
-                placeholder="Select Time"
-              />
-              <TimePickerModal
-                visible={openTimePicker}
-                onDismiss={() => setOpenTimePicker(false)}
-                onConfirm={(params) => {
-                  const formattedTime = `${params.hours}:${params.minutes}`;
-                  setFields("time", formattedTime);
-                  setOpenTimePicker(false);
-                }}
-              />
+                {/* Time Picker */}
+                <TextInputStyled
+                  text="Time"
+                  value={fields.time || ""}
+                  onFocus={() => setOpenTimePicker(true)}
+                  placeholder="Select Time"
+                />
+                <TimePickerModal
+                  visible={openTimePicker}
+                  onDismiss={() => setOpenTimePicker(false)}
+                  onConfirm={(params) => {
+                    const formattedTime = `${params.hours}:${params.minutes}`;
+                    setFields("time", formattedTime);
+                    setOpenTimePicker(false);
+                  }}
+                />
 
-              {/* Other Fields */}
-              {Object.keys(fields).map((key) => {
-                if (excludedKeys.includes(key)) return null;
-                return (
-                  <TextInputStyled
-                    key={key}
-                    text={key.replace(/([A-Z])/g, " $1")}
-                    onChangeText={(value) => setFields(key, value)}
-                    value={fields[key]}
-                    placeholder={`Enter ${key}`}
+                {/* Other Fields */}
+                {Object.keys(fields).map((key) => {
+                  if (excludedKeys.includes(key)) return null;
+                  return (
+                    <TextInputStyled
+                      key={key}
+                      text={key.replace(/([A-Z])/g, " $1")}
+                      onChangeText={(value) => setFields(key, value)}
+                      value={fields[key]}
+                      placeholder={`Enter ${key}`}
+                    />
+                  );
+                })}
+
+                {/* Save & Cancel Buttons */}
+                <View style={styles.buttonRow}>
+                  <ButtonSuccess
+                    style={{ width: 100, height: 50 }}
+                    label="Save"
+                    onPress={handleSaveProject}
                   />
-                );
-              })}
-
-              {/* Save & Cancel Buttons */}
-              <View style={styles.buttonRow}>
-                <ButtonSuccess style={{ width: 100, height: 50 }} label="Save" onPress={onSave} />
-                <ButtonSuccess label="Cancel" style={{ width: 100, height: 50 }} onPress={onClose} />
+                  <ButtonSuccess
+                    label="Cancel"
+                    style={{ width: 100, height: 50 }}
+                    onPress={onClose}
+                  />
+                </View>
               </View>
             </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </Modal>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </Modal>
     </PaperProvider>
   );
 };

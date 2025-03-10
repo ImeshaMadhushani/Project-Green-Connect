@@ -5,6 +5,11 @@ import { useLocalSearchParams, router } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import { Card } from 'react-native-paper';
 
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
 const projectIcons = {
     "Waste Reduction": "recycle",
     "Plantation": "tree",
@@ -19,20 +24,39 @@ const ProjectSingleView = () => {
 
     const handleEnroll = async () => {
         try {
-            const response = await fetch("https://your-backend.com/api/enroll", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ projectId: project.id, userId: "USER_ID" }),
-            });
-
-            const data = await response.json();
-            if (data.success) {
-                Alert.alert("Success", "You have successfully enrolled in this project!");
-            } else {
-                Alert.alert("Error", "Something went wrong. Please try again.");
+            const token = await AsyncStorage.getItem("authToken");
+            
+                if (!token) {
+                  Alert.alert("Error", "You must be logged in to enroll.");
+                  return;
             }
-        } catch (error) {
-            console.error(error);
+            
+             const response = await axios.put(
+               `${apiUrl}/api/project/${project._id}/enroll`,
+               {},
+               {
+                 headers: {
+                   Authorization: `Bearer ${token}`, // Pass the token in the request header
+                  "Content-Type": "application/json",
+                 },
+               }
+             );
+            
+            if (response.data.success) {
+                Alert.alert(
+                  "Success",
+                  response.data.message ||
+                    "You have successfully enrolled in this project!"
+                );
+            } else {
+                Alert.alert(
+                  "Error",
+                  response.data.message ||
+                    "Something went wrong. Please try again."
+                );
+            }
+        } catch (error:any) {
+            console.error("Enrollment Error:", error.response?.data || error.message);
             Alert.alert("Error", "Unable to enroll. Please check your connection.");
         }
     };
@@ -49,7 +73,7 @@ const ProjectSingleView = () => {
             <Card style={styles.contentCard}>
                 <View style={styles.iconContainer}>
                     <MaterialCommunityIcons
-                        name={projectIcons[project.type] || "information-outline"}
+                        name={projectIcons[project.projectType] || "information-outline"}
                         size={80}
                         color="#006400"
                     />

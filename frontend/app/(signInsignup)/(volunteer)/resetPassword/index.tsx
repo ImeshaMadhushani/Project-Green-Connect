@@ -68,7 +68,7 @@ const ResetPassword = () => {
       });
 
       Alert.alert("Success", "Password reset successfully!");
-      router.push("/home");
+      router.push("/logIn");
     } catch (error: any) {
       console.error(
         "Reset Password Error:",
