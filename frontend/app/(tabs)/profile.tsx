@@ -133,13 +133,18 @@ const ProfileScreen = () => {
 
       {/* Options Section */}
       <View style={styles.optionsSection}>
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => router.navigate("/view/myProjects")}
+        >
           <Ionicons name="folder-outline" size={20} color="#4CAF50" />
           <Text style={styles.optionText}>My Projects</Text>
         </TouchableOpacity>
 
-
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => router.navigate("/view/myArticles")}
+        >
           <Ionicons name="document-outline" size={20} color="#4CAF50" />
 
           <Text style={styles.optionText}>My Articles</Text>
@@ -153,8 +158,10 @@ const ProfileScreen = () => {
           <Text style={styles.optionText}>Leaderboard</Text>
         </TouchableOpacity>
 
-
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => router.navigate("/view/about")}
+        >
           <Ionicons
             name="information-circle-outline"
             size={20}
@@ -163,7 +170,10 @@ const ProfileScreen = () => {
           <Text style={styles.optionText}>About</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => router.navigate("/view/feedback")}
+        >
           <Ionicons name="chatbubble-outline" size={20} color="#4CAF50" />
           <Text style={styles.optionText}>Feedback</Text>
         </TouchableOpacity>

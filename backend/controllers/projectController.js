@@ -162,17 +162,26 @@ export const updateProjectStatus = async (req, res) => {
         project.status = status;
         project.isApproved = status === "approved";
 
-        if (status === "approved") {
-            project.approveDate = new Date();
+        if (status.toLowerCase() === "approved") {
+            const approvalDate = new Date();
+            const endDate = new Date(approvalDate);
+            endDate.setDate(endDate.getDate() + 14); // Set the end date 14 days from approval date
+           
+            project.approveDate = approvalDate;
+            project.endDate = endDate;  // Assign `endDate` before saving
+           
+            /* project.approveDate = new Date();
             project.endDate = new Date(project.approveDate);
-            project.endDate.setDate(project.endDate.getDate() + 14); // Set the end date 14 days from approval date
-        } else if (status === "rejected") {
+            project.endDate.setDate(project.endDate.getDate() + 14); */ // Set the end date 14 days from approval date
+        } else if (status.toLowerCase() === "rejected") {
             project.rejectionDate = new Date();  // Optionally, you can track the rejection date
+            project.endDate = null; // Reset endDate if rejected
         }
 
         await project.save();
         res.status(200).json(project);
     } catch (error) {
+        console.error("Error updating project status:", error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -181,8 +190,19 @@ export const updateProjectStatus = async (req, res) => {
 //enrolle project
 export const enrollProject = async (req, res) => { 
     try {
+
+        // Ensure the user is authenticated
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized: No user found in request" });
+        }
+
         // Check if the user is a volunteer
         const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
         if (user.role !== "volunteer") {
             return res.status(403).json({ message: "Only volunteers can enroll in projects" });
         }
@@ -200,9 +220,10 @@ export const enrollProject = async (req, res) => {
         // Enroll the user in the project
         project.volunteers.push(req.user.id);
         await project.save();
-        res.status(200).json({ message: "Project enrolled successfully" });
+        res.status(200).json({ success: true, message: "Project enrolled successfully" });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("Enrollment Error:", error);
+        res.status(500).json({ success: false, message: "Internal server error: " + error.message });
     }
 };
 
