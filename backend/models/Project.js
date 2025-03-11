@@ -1,6 +1,12 @@
 import mongoose from "mongoose";
 import User from "../models/User.js";
 
+const LocationSchema = mongoose.Schema({
+    latitude: { type: Number, required: true },
+    longitude: { type: Number, required: true },
+    locationName: { type: String, required: true },
+});
+
 const ProjectSchema = mongoose.Schema(
     {
         organizationId: {
@@ -40,11 +46,7 @@ const ProjectSchema = mongoose.Schema(
     { timestamps: true }
 );
 
-const LocationSchema = new Schema({
-    latitude: { type: Number, required: true },
-    longitude: { type: Number, required: true },
-    locationName: { type: String, required: true },
-});
+
 
 // Creating the model
 const Project = mongoose.model("Project", ProjectSchema);

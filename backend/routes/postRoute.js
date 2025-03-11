@@ -4,7 +4,7 @@ import path from 'path';
 
 import { createPost, deletePost, updatePost, } from "../controllers/postController/postController.js";
 import { addComment, deleteComment } from "../controllers/postController/commentController.js";
-import { likeController, toggleLike } from "../controllers/postController/likeController.js";
+import { toggleLike } from "../controllers/postController/likeController.js";
 import { getLeaderboard } from "../controllers/postController/leaderboardController.js";
 
 
@@ -44,7 +44,7 @@ router.delete("/:id/delete", deletePost);
 router.post("/:id/update", upload.single("image"), updatePost);
 router.post("/:id/comment", addComment);
 router.delete("/:postId/comment/:commentId/delete", deleteComment);
-router.post("/:postId/like", likeController);
+router.post("/:postId/like", toggleLike);
 router.get('/leaderboard',getLeaderboard);
 
 
