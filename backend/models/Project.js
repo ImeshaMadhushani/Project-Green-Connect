@@ -42,6 +42,22 @@ const ProjectSchema = mongoose.Schema(
                 return null;
             }
         },
+
+        projectType: {
+            type: String,
+            enum: [
+                "Waste Reduction",
+                "Plantation",
+                "Disaster Preparedness",
+                "Environmental Awareness Campaigns",
+                "Sustainable Gardening & Agriculture"
+            ],
+            required: true
+        },
+        noOfVolunteers: { type: Number, required: true },
+        projectDuration: { type: String, required: true },
+        volunteers: { type: [mongoose.Schema.Types.ObjectId], ref: "User", default: [] }  // Volunteers field added
+        
     },
     { timestamps: true }
 );

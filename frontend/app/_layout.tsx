@@ -5,11 +5,19 @@ import { StatusBar } from "react-native";
 const RootLayout = () => {
   const ui = (
     <LoadingProvider>
-      <StatusBar hidden={true} />
+      {/* <StatusBar hidden={true} /> */}
       <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(signInsignup)" options={{ headerShown: false }} />
-        <Stack.Screen name="(ngo)" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{ headerShown: false, statusBarHidden: true  }} />
+        <Stack.Screen name="(signInsignup)" options={{ headerShown: false, statusBarHidden: true  }} />
+        <Stack.Screen name="(ngo)" options={{ headerShown: false, statusBarHidden: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false, statusBarHidden: false  }} />
+        <Stack.Screen name="view/articleView" options={{ headerShown: false, statusBarHidden: false  }} />
+        <Stack.Screen name="view/editProfile" options={{ headerShown: false, statusBarHidden: false  }} />
+        <Stack.Screen name="view/feedback" options={{ headerShown: false, statusBarHidden: false  }} />
+        <Stack.Screen name="view/about" options={{ headerShown: false, statusBarHidden: false  }} />
+        <Stack.Screen name="view/myArticles" options={{ headerShown: false, statusBarHidden: false  }} />
+        <Stack.Screen name="view/projectSingleView" options={{ headerShown: false, statusBarHidden: false  }} />
+        <Stack.Screen name="view/myProjects" options={{ headerShown: false, statusBarHidden: false  }} />
       </Stack>
     </LoadingProvider>
   );
@@ -17,3 +25,5 @@ const RootLayout = () => {
 };
 
 export default RootLayout;
+
+

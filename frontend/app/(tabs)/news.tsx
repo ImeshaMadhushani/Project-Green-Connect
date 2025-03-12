@@ -11,12 +11,13 @@ import {
   View,
 } from "react-native";
 
-const plus = require("../../assets/images/icon.png");
-const scope = require("../../assets/images/logo1.png");
+const plus = require("../../assets/images/plus.png");
+const scope = require("../../assets/images/scope.png");
 
 const News = () => {
     const ui = (
-      <div>
+      <>
+      <View>
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <View style={styles.container}>
             <View style={{ 
@@ -25,7 +26,9 @@ const News = () => {
                 }}
                 >
               <Text style={{ 
-                fontSize: 25 
+                fontSize: 25,
+                textAlign: "center",
+                fontWeight: "bold",
                 }}
                 >
                     Articles/News
@@ -49,7 +52,7 @@ const News = () => {
                 }}
               />
               <Pressable onPress={() => {
-                router.navigate('/user')
+                //router.navigate('')
               }}>
                 <Image source={scope} style={{ 
                     width: 30, 
@@ -59,9 +62,20 @@ const News = () => {
               </Pressable>
             </View>
           </View>
-
-                   
+    
           <Card
+          onPress={() => {
+            router.push({
+              pathname: "/view/articleView",
+              params: {
+                title: "Beach Cleanup: Taking Action to Protect Our Oceans",
+                image: "https://example.com/beach-cleanup.jpg",
+                author: "Hazel Kris",
+                time: "1hr",
+                content: "Plastic pollution is one of the most severe environmental issues affecting our oceans..."
+              },
+            });
+          }}
             heading="Energy - Saving Tips for an eco-Friendly Home"
             bgColor="#d6e4e8"
             content={
@@ -78,20 +92,6 @@ const News = () => {
           <Card
             heading="Energy - Saving Tips for an eco-Friendly Home"
             bgColor="#FFFDEC"
-            content={
-              <View style={styles.cardTextContent}>
-                <Text style={styles.cardText}>
-                  Reducing energy consumption at home not only lowers utility
-                  bills but also helps protect the environment. Simple
-                  changes...
-                </Text>
-              </View>
-            }
-          />
-
-          <Card
-            heading="Energy - Saving Tips for an eco-Friendly Home"
-            bgColor="#F9E6CF"
             content={
               <View style={styles.cardTextContent}>
                 <Text style={styles.cardText}>
@@ -163,15 +163,17 @@ const News = () => {
       </ScrollView>
 
         <View style={{
-            width: 80,
-            height: 80,
+            width: 75,
+            height: 75,
             position: "absolute",
             bottom: 0,
             right: 0,
-            padding: 10,
+            padding: 8,
         }}
         >
-          <Pressable onPress={() => Alert.alert("Alert", "add")}>
+          <Pressable onPress={() => {
+            router.navigate("/createArticles", { relativeToDirectory: true })
+          }}>
             <Image source={plus} style={{
                  width: "100%", 
                  height: "100%" 
@@ -179,7 +181,8 @@ const News = () => {
                  />
           </Pressable>
         </View>
-    </div>
+    </View>
+    </>
   );
   return ui;
 };

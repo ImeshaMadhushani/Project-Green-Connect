@@ -1,35 +1,36 @@
-import multer from 'multer';
-import path from 'path';
+import multer from "multer";
+import path from "path";
 
-// Configure storage
+// Set storage engine
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        if (file.fieldname === "profile_picture") {
-            cb(null, 'uploads/profile_pictures/'); // Folder for profile pictures
-        } else if (file.fieldname === "legalDocument") {
-            cb(null, 'uploads/legal_documents/'); // Folder for legal documents
-        }
-    },
-    filename: function (req, file, cb) {
-        cb(null, `${Date.now()}-${file.originalname}`);
-    }
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Store images in "uploads" folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`); // Unique file name
+  },
 });
 
-// File filter
+// File filter to allow only images
 const fileFilter = (req, file, cb) => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-    if (allowedTypes.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
-        cb(new Error('Invalid file type. Only JPEG, PNG, and PDF are allowed.'), false);
-    }
+  const allowedFileTypes = /jpeg|jpg|png/;
+  const extname = allowedFileTypes.test(
+    path.extname(file.originalname).toLowerCase()
+  );
+  const mimetype = allowedFileTypes.test(file.mimetype);
+
+  if (extname && mimetype) {
+    return cb(null, true);
+  } else {
+    return cb(new Error("Only images (JPG, JPEG, PNG) are allowed"));
+  }
 };
 
-// Multer middleware
+// Initialize multer
 const upload = multer({
-    storage,
-    fileFilter,
-    limits: { fileSize: 1024 * 1024 * 5 } // Limit file size to 5MB
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max file size
 });
 
 export default upload;

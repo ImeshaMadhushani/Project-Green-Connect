@@ -9,6 +9,11 @@ import userRouter from './routes/userRoute.js';
 import projectRouter from './routes/projectRoute.js';
 import postRoute from './routes/postRoute.js';
 import methodOverride from 'method-override';
+import  path  from 'path';
+import { fileURLToPath } from 'url';
+import morgan from 'morgan';
+
+
 
 // Load environment variables
 dotenv.config();
@@ -16,20 +21,19 @@ dotenv.config();
 // Initialize the Express app
 const app = express();
 
-// Middleware
-app.use(cors());
-app.use(bodyParser.json());
-app.use(methodOverride('_method')); // Move this after app is initialized
 
-// Session configuration
-app.use(
-  session({
-    secret: 'yourSecretKey',
+app.use(express.json());
+
+app.use(cors()); 
+
+
+app.use(session({
+    secret: 'yourSecretKey', 
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false },
-  })
-);
+    cookie: { secure: false } 
+  }));
+app.use(bodyParser.json());
 
 // Middleware to verify JWT
 app.use((req, res, next) => {
