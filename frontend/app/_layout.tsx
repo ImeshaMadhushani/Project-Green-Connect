@@ -16,6 +16,8 @@ const RootLayout = () => {
         <Stack.Screen name="view/feedback" options={{ headerShown: false, statusBarHidden: false  }} />
         <Stack.Screen name="view/about" options={{ headerShown: false, statusBarHidden: false  }} />
         <Stack.Screen name="view/myArticles" options={{ headerShown: false, statusBarHidden: false  }} />
+        <Stack.Screen name="view/projectSingleView" options={{ headerShown: false, statusBarHidden: false  }} />
+        <Stack.Screen name="view/myProjects" options={{ headerShown: false, statusBarHidden: false  }} />
       </Stack>
     </LoadingProvider>
   );

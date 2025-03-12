@@ -12,10 +12,12 @@ import Card from "@/components/Card";
 import ModalComponent from "@/components/ProjectModal";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
+
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import axios from "axios";
+
 
 const calender = require("../../assets/images/calender.png");
 const clock = require("../../assets/images/clock.png");
@@ -32,8 +34,6 @@ const projectIcons = {
   "Environmental Awareness Campaigns": "bullhorn-outline",
   "Sustainable Gardening & Agriculture": "sprout",
 };
-
-
 
 const Projects = () => {
   const router = useRouter();
@@ -81,11 +81,13 @@ const Projects = () => {
   };
 
   const getRandomColor = () => {
+
     const colors = ["#E9F0C7", "#F0F8E6", "#FBFBEF", "#E0EDF4", "#E9E5F3"]; // some pastel shades
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
  /*  const [events] = useState([
+
     {
       id: "1",
       type: "Waste Reduction",
@@ -113,13 +115,16 @@ const Projects = () => {
       location: "Kandy Town Hall",
       description: "Promoting sustainable gardening and eco-friendly farming.",
     },
+
   ]); */
+
 
   return (
     <>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.container}>
           <Text style={styles.heading}>Projects</Text>
+
 
           {loading ? (
             <ActivityIndicator size="large" color="#007AFF" />
@@ -168,6 +173,12 @@ const Projects = () => {
                     params: event,
                   })
                 }
+
+          {events.map((event) => (
+            <Pressable key={event.id}>
+              <Card
+                onPress={() => router.push({ pathname: "/view/projectSingleView", params: event })}
+
                 bgColor={getRandomColor()}
                 heading={event.title}
                 iconName={projectIcons[event.type]} // Pass icon name correctly here
@@ -190,8 +201,15 @@ const Projects = () => {
                   </View>
                 }
               />
+
             </Pressable>
           ))} */}
+
+
+            </Pressable>
+          ))}
+
+
         </View>
       </ScrollView>
 
