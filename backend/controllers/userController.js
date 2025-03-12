@@ -265,7 +265,7 @@ export async function getCounts(req, res) {
         res.status(500).json({ message: "Error updating user role", error: error.message });
     }
 }
- */
+ 
 
 
 // Forgot Password - Request OTP
