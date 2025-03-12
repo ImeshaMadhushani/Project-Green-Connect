@@ -1,5 +1,5 @@
 import express from 'express';
-import { approveOrganization, /* assignAdmin, */ deleteUser, getAllUsers, getUser, login, register, getCounts, forgotPassword, verifyOtp, resetPassword, logout } from '../controllers/userController.js';
+import { approveOrganization, /* assignAdmin, */ deleteUser, getAllUsers, getUser, login, register, getCounts, forgotPassword, verifyOtp, resetPassword, logout, getEnrolledUsers } from '../controllers/userController.js';
 import upload from '../config/multerConfig.js';
 
 const userRouter = express.Router();
@@ -23,6 +23,7 @@ userRouter.get('/counts', getCounts);
 userRouter.post('/forgot-password', forgotPassword);
 userRouter.post('/verify-otp', verifyOtp);
 userRouter.post('/reset-password', resetPassword);
+userRouter.get('/:id/enrolled-users', getEnrolledUsers);
 
 userRouter.post('/logout', logout);
 

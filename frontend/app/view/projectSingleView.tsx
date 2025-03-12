@@ -62,34 +62,36 @@ const ProjectSingleView = () => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                    <Pressable onPress={() => router.back()}>
-                        <FontAwesome name="arrow-left" size={20} color="#000" />
-                    </Pressable>
-                    <Text style={styles.title}>{project.title}</Text>
-                </View>
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-            <Card style={styles.contentCard}>
-                <View style={styles.iconContainer}>
-                    <MaterialCommunityIcons
-                        name={projectIcons[project.projectType] || "information-outline"}
-                        size={80}
-                        color="#006400"
-                    />
-                </View>
-                <Text style={styles.details}> 📅  {project.date} </Text>
-                <Text style={styles.details}> ⏰  {project.time}</Text>
-                <Text style={styles.details}> 📍  {project.location}</Text>
-                <Text style={styles.description}>{project.description}</Text>
-                </Card>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Pressable onPress={() => router.back()}>
+            <FontAwesome name="arrow-left" size={20} color="#000" />
+          </Pressable>
+          <Text style={styles.title}>{project.projectName}</Text>
+        </View>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <Card style={styles.contentCard}>
+            <View style={styles.iconContainer}>
+              <MaterialCommunityIcons
+                name={
+                  projectIcons[project.projectType] || "information-outline"
+                }
+                size={80}
+                color="#006400"
+              />
+            </View>
+            <Text style={styles.details}> 📅 {project.date} </Text>
+            <Text style={styles.details}> ⏰ {project.time}</Text>
+            <Text style={styles.details}> 📍 {project.location}</Text>
+            <Text style={styles.description}>{project.description}</Text>
+          </Card>
 
-                {/* Enroll Button */}
-                <TouchableOpacity style={styles.enrollButton} onPress={handleEnroll}>
-                    <Text style={styles.enrollButtonText}>Enroll in Project</Text>
-                </TouchableOpacity>
-            </ScrollView>
-        </SafeAreaView>
+          {/* Enroll Button */}
+          <TouchableOpacity style={styles.enrollButton} onPress={handleEnroll}>
+            <Text style={styles.enrollButtonText}>Enroll in Project</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </SafeAreaView>
     );
 };
 

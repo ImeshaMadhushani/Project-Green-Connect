@@ -220,7 +220,7 @@ export const enrollProject = async (req, res) => {
         // Enroll the user in the project
         project.volunteers.push(req.user.id);
         await project.save();
-        res.status(200).json({ success: true, message: "Project enrolled successfully" });
+        res.status(200).json({ success: true, message: "Project enrolled successfully", enrolledUser: { id: user.id, name: user.name, email: user.email } });
     } catch (error) {
         console.error("Enrollment Error:", error);
         res.status(500).json({ success: false, message: "Internal server error: " + error.message });
