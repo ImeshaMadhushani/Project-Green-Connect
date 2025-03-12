@@ -176,6 +176,7 @@ const ProfileScreen = () => {
         <TouchableOpacity
           style={styles.option}
           onPress={() => router.navigate("/view/feedback")}
+        >
 
           <Ionicons name="chatbubble-outline" size={20} color="#4CAF50" />
           <Text style={styles.optionText}>Feedback</Text>
