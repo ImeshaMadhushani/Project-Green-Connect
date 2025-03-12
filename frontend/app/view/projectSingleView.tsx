@@ -57,7 +57,11 @@ const ProjectSingleView = () => {
             }
         } catch (error:any) {
             console.error("Enrollment Error:", error.response?.data || error.message);
-            Alert.alert("Error", "Unable to enroll. Please check your connection.");
+            Alert.alert(
+              "Error",
+              "Unable to enroll. Please check your connection.",
+              error.response?.data || error.message
+            );
         }
     };
 
