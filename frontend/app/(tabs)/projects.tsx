@@ -225,6 +225,7 @@ const Projects = () => {
 
             </Pressable>
           ))} */}
+
         </View>
       </ScrollView>
 
