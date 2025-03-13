@@ -13,51 +13,14 @@ import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
 import Card from "@/components/Card";
 import { useRouter } from "expo-router";
 
-// Mocked user role (Replace this with actual authentication state)
-const loggedInUser = {
-  role: "volunteer", // Change to "organization" to test both views
-  userId: "user_123",
-};
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Mock API response (Replace with actual API calls)
-const mockProjects = [
-  {
-    id: "1",
-    type: "Waste Reduction",
-    title: "Plastic-Free Market Campaign",
-    date: "November 10, 2024",
-    time: "9.00 a.m.",
-    location: "Vavunia, Market",
-    description: "A campaign to reduce plastic waste in the local market.",
-    createdBy: "org_001", // Organization ID
-    enrolledUsers: ["user_123", "user_456"], // List of enrolled users
-  },
-  {
-    id: "2",
-    type: "Plantation",
-    title: "Tree Planting Drive",
-    date: "November 15, 2024",
-    time: "10.00 a.m.",
-    location: "Colombo Park",
-    description: "Join us in planting trees to make our city greener.",
-    createdBy: "org_001",
-    enrolledUsers: ["user_789"],
-  },
-  {
-    id: "3",
-    type: "Sustainable Gardening & Agriculture",
-    title: "Eco-Friendly Fair",
-    date: "December 5, 2024",
-    time: "11.30 a.m.",
-    location: "Kandy Town Hall",
-    description: "Promoting sustainable gardening and eco-friendly farming.",
-    createdBy: "user_123", // This project was created by the logged-in user
-    enrolledUsers: ["user_123"],
-  },
-];
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 // Project type icons
-const projectIcons = {
+const projectIcons: { [key: string]: string } = {
   "Waste Reduction": "recycle",
   "Plantation": "tree",
   "Disaster Preparedness": "alert-circle-outline",
@@ -65,48 +28,146 @@ const projectIcons = {
   "Sustainable Gardening & Agriculture": "sprout",
 };
 
+
+interface Project {
+  _id: string;
+  projectName: string;
+  date: string;
+  time: string;
+  location: string;
+  projectType: string;
+}
+
 const MyProjects = () => {
   const router = useRouter();
   const navigation = useNavigation();
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [userRole, setUserRole] = useState(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
+  // Fetch User Role
   useEffect(() => {
-    if (loggedInUser.role === "volunteer") {
-      setProjects(mockProjects.filter((proj) => proj.enrolledUsers.includes(loggedInUser.userId)));
-    } else {
-      setProjects(mockProjects.filter((proj) => proj.createdBy === loggedInUser.userId));
-    }
+    const fetchUserRole = async () => {
+      try {
+        const token = await AsyncStorage.getItem("authToken");
+        if (!token) throw new Error("No token found");
+
+        const response = await axios.get(`${apiUrl}/api/user/getUser`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+
+        console.log("User Data:", response.data.user);
+
+        setUserRole(response.data.user.role);
+        console.log("User Role:", response.data.user.role);
+
+        setUserId(response.data.user.id);
+        console.log("User ID:", response.data.user.id);
+
+        fetchProjects(response.data.user.role, response.data.user.id);
+
+      } catch (error) {
+        console.error("Failed to fetch user role", error);
+        Alert.alert("Error", "Failed to fetch user role.");
+        setLoading(false);
+      }
+    };
+
+    fetchUserRole();
   }, []);
 
-  const handleUnenroll = (projectId) => {
-    Alert.alert("Unenroll", "Are you sure you want to unenroll from this project?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Unenroll",
-        style: "destructive",
-        onPress: () => {
-          setProjects((prev) => prev.filter((proj) => proj.id !== projectId));
-          Alert.alert("Success", "You have unenrolled from the project.");
-        },
-      },
-    ]);
+  // Fetch projects based on role
+  const fetchProjects = async (role: string, id: string) => {
+    try {
+      console.log("Fetching projects for role:", role, "with ID:", id); 
+      setLoading(true);
+      
+         const token = await AsyncStorage.getItem("authToken");
+         if (!token) throw new Error("No token found");
+
+         let response;
+        const headers = { Authorization: `Bearer ${token}` }; 
+      
+      if (role === "volunteer") {
+
+        console.log(`${apiUrl}/api/project/${id}/enrolled-users`);
+        response = await axios.get(`${apiUrl}/api/project/${id}/enrolled-users`, { headers });
+     
+      } else if (role === "organization") {
+       console.log(`${apiUrl}/api/project/organization/${id}`);
+       response = await axios.get(`${apiUrl}/api/project/organization/${id}`, { headers });
+      } else {
+        throw new Error("Invalid user role");
+      }
+
+      console.log("API Response:", response.data);
+
+      setProjects(response.data|| []);
+      console.log("Projects fetched:", response.data);
+
+    } catch (error) {
+      console.error("Failed to fetch projects", error);
+      Alert.alert("Error", "Failed to fetch projects.");
+    }
   };
 
-  const handleDeleteProject = (projectId) => {
-    Alert.alert("Delete Project", "Are you sure you want to delete this project?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: () => {
-          setProjects((prev) => prev.filter((proj) => proj.id !== projectId));
-          Alert.alert("Success", "Project deleted successfully.");
+  // Unenroll Function
+  const handleUnenroll = async (projectId: string) => {
+    Alert.alert(
+      "Unenroll",
+      "Are you sure you want to unenroll from this project?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Unenroll",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await axios.put(`${apiUrl}/api/project/${projectId}/unenroll`);
+              setProjects((prev) =>
+                prev.filter((proj) => proj._id !== projectId)
+              );
+              Alert.alert("Success", "You have unenrolled from the project.");
+            } catch (error) {
+              console.error("Unenroll failed", error);
+              Alert.alert("Error", "Failed to unenroll from the project.");
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
-  const viewEnrolledUsers = (projectId) => {
+  // Delete Function (For Organizations)
+  const handleDeleteProject = async (projectId: string) => {
+    Alert.alert(
+      "Delete Project",
+      "Are you sure you want to delete this project?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await axios.delete(`${apiUrl}/api/project/${projectId}`);
+              setProjects((prev) =>
+                prev.filter((proj) => proj._id !== projectId)
+              );
+              Alert.alert("Success", "Project deleted successfully.");
+            } catch (error) {
+              console.error("Project deletion failed", error);
+              Alert.alert("Error", "Failed to delete the project.");
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const viewEnrolledUsers = (projectId: string) => {
     Alert.alert("Enrolled Users", `Showing users for project ${projectId}`);
     // Navigate to enrolled users page (if needed)
   };
@@ -125,13 +186,15 @@ const MyProjects = () => {
       {/* Project List */}
       <FlatList
         data={projects}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <View>
             <Card
-              heading={item.title}
+              heading={item.projectName}
               bgColor="#f4f4e4"
-              iconName={projectIcons[item.type]}
+              iconName={
+                projectIcons[item.projectType as keyof typeof projectIcons]
+              }
               content={
                 <View>
                   <Text>📅 {item.date}</Text>
@@ -139,29 +202,54 @@ const MyProjects = () => {
                   <Text>📍 {item.location}</Text>
 
                   {/* Action Buttons based on Role */}
-                  {loggedInUser.role === "volunteer" ? (
-                    <Pressable style={styles.unenrollButton} onPress={() => handleUnenroll(item.id)}>
+                  {/* Buttons based on Role */}
+                  {userRole === "volunteer" ? (
+                    <Pressable
+                      style={styles.unenrollButton}
+                      onPress={() => handleUnenroll(item._id)}
+                    >
                       <Text style={styles.unenrollText}>Unenroll</Text>
                     </Pressable>
                   ) : (
                     <View style={styles.orgActions}>
-                      <Pressable style={styles.deleteButton} onPress={() => handleDeleteProject(item.id)}>
-                        <MaterialCommunityIcons name="trash-can-outline" size={22} color="white" />
+                      <Pressable
+                        style={styles.deleteButton}
+                        onPress={() => handleDeleteProject(item._id)}
+                      >
+                        <MaterialCommunityIcons
+                          name="trash-can-outline"
+                          size={22}
+                          color="white"
+                        />
                       </Pressable>
-                      <Pressable style={styles.viewUsersButton} onPress={() => viewEnrolledUsers(item.id)}>
-                        <MaterialCommunityIcons name="account-group-outline" size={22} color="white" />
+                      <Pressable
+                        style={styles.viewUsersButton}
+                        onPress={() => viewEnrolledUsers(item._id)}
+                      >
+                        <MaterialCommunityIcons
+                          name="account-group-outline"
+                          size={22}
+                          color="white"
+                        />
                       </Pressable>
                     </View>
                   )}
                 </View>
               }
-              onPress={() => router.push({ pathname: "/view/projectSingleView", params: item })}
+              onPress={() =>
+                router.push({
+                  pathname: "/view/projectSingleView",
+                  params: { ...item },
+                })
+              }
             />
           </View>
         )}
         ListEmptyComponent={
           <Text style={styles.noProjectsText}>
-            {loggedInUser.role === "volunteer" ? "You haven't enrolled in any projects yet." : "You haven't created any projects yet."}
+            {userRole === "volunteer"
+              ? "You haven't enrolled in any projects yet."
+              : "You haven't created any projects yet."}
           </Text>
         }
       />
