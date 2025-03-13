@@ -57,7 +57,6 @@ const MyProjects = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-
         console.log("User Data:", response.data.user);
 
         setUserRole(response.data.user.role);
@@ -67,7 +66,6 @@ const MyProjects = () => {
         console.log("User ID:", response.data.user.id);
 
         fetchProjects(response.data.user.role, response.data.user.id);
-
       } catch (error) {
         console.error("Failed to fetch user role", error);
         Alert.alert("Error", "Failed to fetch user role.");
@@ -81,32 +79,34 @@ const MyProjects = () => {
   // Fetch projects based on role
   const fetchProjects = async (role: string, id: string) => {
     try {
-      console.log("Fetching projects for role:", role, "with ID:", id); 
+      console.log("Fetching projects for role:", role, "with ID:", id);
       setLoading(true);
-      
-         const token = await AsyncStorage.getItem("authToken");
-         if (!token) throw new Error("No token found");
 
-         let response;
-        const headers = { Authorization: `Bearer ${token}` }; 
-      
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) throw new Error("No token found");
+
+      let response;
+      const headers = { Authorization: `Bearer ${token}` };
+
       if (role === "volunteer") {
-
         console.log(`${apiUrl}/api/project/${id}/enrolled-users`);
-        response = await axios.get(`${apiUrl}/api/project/${id}/enrolled-users`, { headers });
-     
+        response = await axios.get(
+          `${apiUrl}/api/project/${id}/enrolled-users`,
+          { headers }
+        );
       } else if (role === "organization") {
-       console.log(`${apiUrl}/api/project/organization/${id}`);
-       response = await axios.get(`${apiUrl}/api/project/organization/${id}`, { headers });
+        console.log(`${apiUrl}/api/project/organization/${id}`);
+        response = await axios.get(`${apiUrl}/api/project/organization/${id}`, {
+          headers,
+        });
       } else {
         throw new Error("Invalid user role");
       }
 
       console.log("API Response:", response.data);
 
-      setProjects(response.data|| []);
+      setProjects(response.data || []);
       console.log("Projects fetched:", response.data);
-
     } catch (error) {
       console.error("Failed to fetch projects", error);
       Alert.alert("Error", "Failed to fetch projects.");
@@ -128,22 +128,16 @@ const MyProjects = () => {
               const token = await AsyncStorage.getItem("authToken");
               if (!token) throw new Error("No token found");
 
-                const response = await axios.put(
-                  `${apiUrl}/api/project/${id}/unenroll`,
-                  {},
-                  { headers: { Authorization: `Bearer ${token}` } }
-                );
+              const response = await axios.put(
+                `${apiUrl}/api/project/${id}/unenroll`,
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+              );
 
-                 if (response.status === 200) {
-                   setProjects((prev) =>
-                     prev.filter((proj) => proj._id !== id)
-                   );
-                   Alert.alert(
-                     "Success",
-                     "You have unenrolled from the project."
-                   );
+              if (response.status === 200) {
+                setProjects((prev) => prev.filter((proj) => proj._id !== id));
+                Alert.alert("Success", "You have unenrolled from the project.");
               }
-              
             } catch (error) {
               console.error("Unenroll failed", error);
               Alert.alert("Error", "Failed to unenroll from the project.");
@@ -154,31 +148,22 @@ const MyProjects = () => {
     );
   };
 
-  // Delete Function (For Organizations)
-  const handleDeleteProject = async (projectId: string) => {
-    Alert.alert(
-      "Delete Project",
-      "Are you sure you want to delete this project?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await axios.delete(`${apiUrl}/api/project/${projectId}`);
-              setProjects((prev) =>
-                prev.filter((proj) => proj._id !== projectId)
-              );
-              Alert.alert("Success", "Project deleted successfully.");
-            } catch (error) {
-              console.error("Project deletion failed", error);
-              Alert.alert("Error", "Failed to delete the project.");
-            }
-          },
+  //Edit Project for organization
+  const handleEditProject = (id: string) => {
+    Alert.alert("Edit Project", "Are you sure you want to edit this project?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Edit",
+        style: "default",
+        onPress: () => {
+          // Navigate to the edit screen and pass project details
+          router.push({
+            pathname: "/view/projectEdit", // Ensure this route exists
+            params: { id }, // You can pass project ID and other details if needed
+          });
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const viewEnrolledUsers = (projectId: string) => {
@@ -227,11 +212,11 @@ const MyProjects = () => {
                   ) : (
                     <View style={styles.orgActions}>
                       <Pressable
-                        style={styles.deleteButton}
-                        onPress={() => handleDeleteProject(item._id)}
+                        style={styles.editButton}
+                        onPress={() => handleEditProject(item._id)}
                       >
                         <MaterialCommunityIcons
-                          name="trash-can-outline"
+                          name="pencil-outline"
                           size={22}
                           color="white"
                         />
@@ -308,8 +293,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 10,
   },
-  deleteButton: {
-    backgroundColor: "red",
+  editButton: {
+    backgroundColor: "#28a745", 
     padding: 8,
     borderRadius: 5,
     alignItems: "center",
