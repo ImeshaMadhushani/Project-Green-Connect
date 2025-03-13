@@ -114,7 +114,7 @@ const MyProjects = () => {
   };
 
   // Unenroll Function
-  const handleUnenroll = async (projectId: string) => {
+  const handleUnenroll = async (id: string) => {
     Alert.alert(
       "Unenroll",
       "Are you sure you want to unenroll from this project?",
@@ -125,11 +125,25 @@ const MyProjects = () => {
           style: "destructive",
           onPress: async () => {
             try {
-              await axios.put(`${apiUrl}/api/project/${projectId}/unenroll`);
-              setProjects((prev) =>
-                prev.filter((proj) => proj._id !== projectId)
-              );
-              Alert.alert("Success", "You have unenrolled from the project.");
+              const token = await AsyncStorage.getItem("authToken");
+              if (!token) throw new Error("No token found");
+
+                const response = await axios.put(
+                  `${apiUrl}/api/project/${id}/unenroll`,
+                  {},
+                  { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                 if (response.status === 200) {
+                   setProjects((prev) =>
+                     prev.filter((proj) => proj._id !== id)
+                   );
+                   Alert.alert(
+                     "Success",
+                     "You have unenrolled from the project."
+                   );
+              }
+              
             } catch (error) {
               console.error("Unenroll failed", error);
               Alert.alert("Error", "Failed to unenroll from the project.");
