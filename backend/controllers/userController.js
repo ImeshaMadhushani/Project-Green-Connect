@@ -235,7 +235,7 @@ export async function getCounts(req, res) {
 
 
 // Assign admin role (Admin only)
- export async function assignAdmin(req, res) {
+/* export async function assignAdmin(req, res) {
     const { userId } = req.params;
     const { role } = req.body;
 
@@ -266,7 +266,7 @@ export async function getCounts(req, res) {
         res.status(500).json({ message: "Error updating user role", error: error.message });
     }
 }
- 
+ */
 
 
 // Forgot Password - Request OTP
