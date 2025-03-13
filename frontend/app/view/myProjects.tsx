@@ -7,6 +7,8 @@ import {
   Pressable,
   Alert,
   TouchableOpacity,
+  Modal,
+  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
@@ -45,6 +47,15 @@ const MyProjects = () => {
   const [userRole, setUserRole] = useState(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  interface EnrolledUser {
+    _id: string;
+    name: string;
+    email: string;
+  }
+  
+  const [enrolledUsers, setEnrolledUsers] = useState<EnrolledUser[]>([]);
+  const [modalVisible, setModalVisible] = useState(false);
 
   // Fetch User Role
   useEffect(() => {
@@ -89,13 +100,13 @@ const MyProjects = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       if (role === "volunteer") {
-        console.log(`${apiUrl}/api/project/${id}/enrolled-users`);
+        //console.log(`${apiUrl}/api/project/${id}/enrolled-users`);
         response = await axios.get(
           `${apiUrl}/api/project/${id}/enrolled-users`,
           { headers }
         );
       } else if (role === "organization") {
-        console.log(`${apiUrl}/api/project/organization/${id}`);
+        //console.log(`${apiUrl}/api/project/organization/${id}`);
         response = await axios.get(`${apiUrl}/api/project/organization/${id}`, {
           headers,
         });
@@ -103,10 +114,10 @@ const MyProjects = () => {
         throw new Error("Invalid user role");
       }
 
-      console.log("API Response:", response.data);
+      //console.log("API Response:", response.data);
 
       setProjects(response.data || []);
-      console.log("Projects fetched:", response.data);
+      //console.log("Projects fetched:", response.data);
     } catch (error) {
       console.error("Failed to fetch projects", error);
       Alert.alert("Error", "Failed to fetch projects.");
@@ -166,9 +177,39 @@ const MyProjects = () => {
     ]);
   };
 
-  const viewEnrolledUsers = (projectId: string) => {
-    Alert.alert("Enrolled Users", `Showing users for project ${projectId}`);
-    // Navigate to enrolled users page (if needed)
+  const viewEnrolledUsers = async (id: string) => {
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+      console.log("Auth Token:", token);
+
+      if (!token) throw new Error("No token found");
+
+      console.log("Fetching enrolled users for project ID:", id);
+
+      const response = await axios.get(
+        `${apiUrl}/api/project/volunteer/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      console.log("API Response:", response.data);
+
+    if (response.status === 200 && response.data?.success) {
+      // Check if the enrolledProjects array exists
+      if (response.data.enrolledUsers) {
+        setEnrolledUsers(response.data.enrolledUsers);
+        setModalVisible(true);
+      } else {
+        throw new Error("Enrolled projects not found in response");
+      }
+    } else {
+      throw new Error("Failed to fetch enrolled users");
+    }
+    } catch (error) {
+      console.error("Error fetching enrolled users", error);
+      Alert.alert("Error", "Failed to load enrolled users.");
+    }
   };
 
   return (
@@ -235,12 +276,12 @@ const MyProjects = () => {
                   )}
                 </View>
               }
-              onPress={() =>
+              /*     onPress={() =>
                 router.push({
                   pathname: "/view/projectSingleView",
                   params: { ...item },
                 })
-              }
+              } */
             />
           </View>
         )}
@@ -252,6 +293,44 @@ const MyProjects = () => {
           </Text>
         }
       />
+
+      {/* Modal to Display Enrolled Users */}
+      <Modal
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Enrolled Users</Text>
+          {enrolledUsers.length > 0 ? (
+            <FlatList
+              data={enrolledUsers}
+              keyExtractor={(item) => item._id}
+              renderItem={({ item }) => (
+                <View style={styles.userItem}>
+                    {/* <Image
+                    source={{ uri: item.profile_picture }}
+                    style={styles.profileImage}
+                  /> */}
+                  <View style={styles.userInfo}>
+                    <Text style={styles.userName}>{item.name}</Text>
+                    <Text style={styles.userEmail}>{item.email}</Text>
+                  </View>
+                </View>
+              )}
+            />
+          ) : (
+            <Text style={styles.noUsersText}>
+              No users enrolled in this project.
+            </Text>
+          )}
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setModalVisible(false)}
+          >
+            <Text style={styles.closeButtonText}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -294,7 +373,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   editButton: {
-    backgroundColor: "#28a745", 
+    backgroundColor: "#28a745",
     padding: 8,
     borderRadius: 5,
     alignItems: "center",
@@ -310,6 +389,51 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 16,
     color: "#777",
+  },
+  modalContent: {
+    flex: 1,
+    padding: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  userItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  userInfo: {
+    marginLeft: 10,
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  userEmail: {
+    fontSize: 14,
+    color: "#777",
+  },
+  noUsersText: {
+    textAlign: "center",
+    marginTop: 20,
+    fontSize: 16,
+    color: "#777",
+  },
+  closeButton: {
+    backgroundColor: "#007bff",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginTop: 20,
+  },
+  closeButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
 

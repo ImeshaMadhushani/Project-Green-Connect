@@ -313,3 +313,60 @@ export const getVolunteerProjects = async (req, res) => {
     }
 }
     
+// Get enrolled users
+/* export const getEnrolledUsers = async (req, res) => {
+    try {
+        // Ensure the user is authenticated
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ message: "Unauthorized access" });
+        }
+
+        console.log("Authenticated User ID:", req.user.id);
+
+        // Fetch all projects with enrolled volunteers
+        const projects = await Project.find({ volunteers: req.user.id })
+            .populate("volunteers", "name email");
+        
+        if (!projects.length) {
+            console.log("No projects found for this user."); 
+            return res.status(200).json({ success: true, enrolledProjects: [] });
+           // return res.status(404).json({ message: "No enrolled projects found for this user" });
+        }
+
+        // Extract enrolled users per project
+        const enrolledProjects = projects.map(project => ({
+            projectId: project._id,
+            projectName: project.projectName,
+            volunteers: project.volunteers
+        }));
+        
+        res.status(200).json({ success: true, enrolledProjects });
+    } catch (error) {
+        console.error("Error fetching enrolled users:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+}; */
+
+
+export async function getEnrolledUsers(req, res) {
+    try {
+        const { id } = req.params; // Extract project ID from request params
+        console.log('Received projectId:', id); 
+        // Find project and populate the 'volunteers' field with user details
+        const project = await Project.findById(id)
+            .populate("volunteers", "name email username profile_picture role"); // Populate relevant fields
+
+        if (!project) {
+            return res.status(404).json({ message: "Project not found" });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Enrolled users fetched successfully",
+            enrolledUsers: project.volunteers || [],
+        });
+    } catch (error) {
+        console.error("Error fetching enrolled users:", error);
+        res.status(500).json({ success: false, message: "Internal server error", error: error.message });
+    }
+}
