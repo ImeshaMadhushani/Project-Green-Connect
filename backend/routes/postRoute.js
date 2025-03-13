@@ -13,8 +13,8 @@ import {
   deleteComment
 } from "../controllers/postController/commentController.js";
 import {
-  toggleLike,
-  
+  likeController,
+  /* toggleLike */
 } from "../controllers/postController/likeController.js";
 import {
   getLeaderboard
@@ -60,8 +60,8 @@ router.delete("/:id/delete", deletePost);
 router.post("/:id/update", upload.single("image"), updatePost);
 router.post("/:id/comment", addComment);
 router.delete("/:postId/comment/:commentId/delete", deleteComment);
-router.post("/:postId/like", toggleLike);
-router.get('/leaderboard',getLeaderboard);
+router.post("/:postId/like", likeController);
+router.get('/leaderboard', getLeaderboard);
 
 
 export default router;
