@@ -1,5 +1,5 @@
 import express from 'express';
-import { approveOrganization, /* assignAdmin, */ deleteUser, getAllUsers, getUser, login, register, getCounts, forgotPassword, verifyOtp, resetPassword, logout } from '../controllers/userController.js';
+import { approveOrganization, /* assignAdmin, */ deleteUser, getAllUsers, getUser, login, register, getCounts, forgotPassword, verifyOtp, resetPassword, logout} from '../controllers/userController.js';
 import upload from '../config/multerConfig.js';
 
 const userRouter = express.Router();
