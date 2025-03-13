@@ -1,12 +1,6 @@
 import mongoose from "mongoose";
 import User from "../models/User.js";
 
-const LocationSchema = mongoose.Schema({
-    latitude: { type: Number, required: true },
-    longitude: { type: Number, required: true },
-    locationName: { type: String, required: true },
-});
-
 const ProjectSchema = mongoose.Schema(
     {
         organizationId: {
@@ -25,8 +19,7 @@ const ProjectSchema = mongoose.Schema(
         description: { type: String, required: true },
         date: { type: Date, required: true },
         time: { type: String, required: true },
-        //updated loacation  with cordinates
-        location: [LocationSchema],
+        location: { type: String, required: true },
         status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
         isApproved: { type: Boolean, default: false },
         approveDate: { type: Date, default: null },
@@ -61,8 +54,6 @@ const ProjectSchema = mongoose.Schema(
     },
     { timestamps: true }
 );
-
-
 
 // Creating the model
 const Project = mongoose.model("Project", ProjectSchema);
