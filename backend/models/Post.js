@@ -11,7 +11,21 @@ const CommentSchema = new Schema({
 const PostSchema = new Schema(
   {
     title: { type: String, required: true },
+
     content: { type: String, required: true },
+    category: {
+      type: String,
+      required: true,
+      enum: [
+        "Climate Action",
+        "Sustainable Living",
+        "Conservation",
+        "Clean Energy",
+        "Environmental Justice",
+        "Green Innovation",
+        "Policy & Advocacy",
+      ],
+    },
     username: { type: String, required: true },
     image: { type: String },
     likes: { type: Number, default: 0 },
