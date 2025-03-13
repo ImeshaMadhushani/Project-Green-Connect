@@ -17,7 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import axios from "axios";
-
+import AsyncStorage from "@react-native-async-storage/async-storage"; 
 
 const calender = require("../../assets/images/calender.png");
 const clock = require("../../assets/images/clock.png");
@@ -45,9 +45,11 @@ const Projects = () => {
   });
     const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+   const [userRole, setUserRole] = useState(""); 
   
     useEffect(() => {
       fetchProjects();
+       fetchUserRole();
     }, []);
   
   const fetchProjects = async () => {
@@ -62,6 +64,26 @@ const Projects = () => {
     }
   };
 
+  const fetchUserRole = async () => {
+      try {
+          const token = await AsyncStorage.getItem("authToken"); // Retrieve JWT token from AsyncStorage
+          if (!token) {
+            throw new Error("No token found");
+          }
+          const response = await axios.get(`${apiUrl}/api/user/getUser`, {
+            headers: {
+              Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
+            },
+          });
+       
+        console.log("User Role:", response.data.user.role);
+          setUserRole(response.data.user.role);
+      } catch (error) {
+        console.error("Failed to fetch user role", error);
+        Alert.alert("Error", "Failed to fetch user role.");
+      }
+  };
+  
   const handleFieldChange = (key: string, value: string) => {
     setFields((prev) => ({ ...prev, [key]: value }));
   };
@@ -124,7 +146,6 @@ const Projects = () => {
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.container}>
           <Text style={styles.heading}>Projects</Text>
-
 
           {loading ? (
             <ActivityIndicator size="large" color="#007AFF" />
@@ -205,18 +226,16 @@ const Projects = () => {
             </Pressable>
           ))} */}
 
-
-          ))}
-
-
         </View>
       </ScrollView>
 
-      <View style={styles.addButtonContainer}>
-        <Pressable onPress={() => setModalVisible(true)}>
-          <Image source={plus} style={styles.addButton} />
-        </Pressable>
-      </View>
+      {userRole === "organization" && (
+        <View style={styles.addButtonContainer}>
+          <Pressable onPress={() => setModalVisible(true)}>
+            <Image source={plus} style={styles.addButton} />
+          </Pressable>
+        </View>
+      )}
 
       <ModalComponent
         visible={modalVisible}
