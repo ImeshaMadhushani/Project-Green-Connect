@@ -3,27 +3,27 @@ import path from "path";
 import fs from "fs";
 import User from "../../models/User.js";
 
+
 export const createPost = async (req, res) => {
   try {
-    const {
-      title,
-      content,
-      username
-    } = req.body;
-    const imagePath = req.file ? `uploads/${req.file.filename}` : null; // Save file path
+    const { title, content, username, category } = req.body;
+    const imagePath = req.file ? `uploads/${req.file.filename}` : null;
 
-    if (!title || !content || !username) {
+    console.log("Received POST /api/post/create-post");
+    console.log("Body:", req.body);
+    console.log("File:", req.file);
+
+    if (!title || !content || !username || !category) {
+      console.log("Missing fields:", { title, content, username, category });
       return res.status(400).send({
         success: false,
-        message: "All fields are required",
+        message: "Title, content, username, and category are required",
       });
     }
 
-    const user = await User.findOne({
-      username,
-    });
-
+    const user = await User.findOne({ username });
     if (!user) {
+      console.log("User not found:", username);
       return res.status(400).send({
         success: false,
         message: "User not found",
@@ -33,6 +33,7 @@ export const createPost = async (req, res) => {
     const post = new Post({
       title,
       content,
+      category,
       username,
       image: imagePath,
     });
@@ -45,14 +46,14 @@ export const createPost = async (req, res) => {
       post,
     });
   } catch (err) {
-    console.error(err);
+    console.error("Error creating post:", err);
     res.status(500).send({
       success: false,
       message: "Server Error",
+      error: err.message,
     });
   }
 };
-
 
 export const getPost = async(req,res)=>{
   try {
