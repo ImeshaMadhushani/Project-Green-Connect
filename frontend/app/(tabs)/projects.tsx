@@ -205,8 +205,6 @@ const Projects = () => {
             </Pressable>
           ))} */}
 
-
-            </Pressable>
           ))}
 
 
