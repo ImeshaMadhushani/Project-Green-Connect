@@ -416,22 +416,3 @@ export async function logout(req, res) {
     }
 }
 
-//get enrolle users to projects
-
-export async function getEnrolledUsers (req, res) {
-    try {
-        const project = await Project.findById(req.params.id).populate("volunteers", "name email"); // Populate user details
-
-        if (!project) {
-            return res.status(404).json({ message: "Project not found" });
-        }
-
-        res.status(200).json({
-            success: true,
-            enrolledUsers: project.volunteers,
-        });
-    } catch (error) {
-        console.error("Error fetching enrolled users:", error);
-        res.status(500).json({ success: false, message: "Internal server error: " + error.message });
-    }
-};

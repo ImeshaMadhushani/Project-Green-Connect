@@ -254,4 +254,62 @@ export const unenrollProject = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
         }
+}
+
+// Get all projects created by a specific organization
+export const getOrganizationProjects = async (req, res) => {
+    try {
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ message: "Unauthorized access" });
+        }
+        // Check if the user is an organization
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        if (user.role !== "organization") {
+            return res.status(403).json({ message: "Only organizations can view their projects" });
+        }
+
+        // Get all projects created by the organization
+        const projects = await Project
+            .find({ organizationId: req.user.id })
+            .populate("organizationId", "name email")
+            .populate("volunteers", "name email")
+          /*   .exec(); */
+        res.status(200).json(projects);
     }
+    catch (error) {
+        console.error("Error fetching organization projects:", error);
+        res.status(500).json({ message: error.message });
+    }
+}
+
+// Get all projects by a specific volunteer
+export const getVolunteerProjects = async (req, res) => {
+    try {
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ message: "Unauthorized access" });
+        }
+        // Check if the user is a volunteer
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        if (user.role !== "volunteer") {
+            return res.status(403).json({ message: "Only volunteers can view their projects" });
+        }
+        // Get all projects created by the volunteer
+        const projects = await Project
+            .find({ volunteers: { $in: [req.user.id] } })
+            .populate("organizationId", "name email")
+            .populate("volunteers", "name email")
+            /* .exec(); */
+        res.status(200).json(projects);
+    }
+    catch (error) {
+        console.error("Error fetching volunteer projects:", error);
+        res.status(500).json({ message: error.message });
+    }
+}
+    
