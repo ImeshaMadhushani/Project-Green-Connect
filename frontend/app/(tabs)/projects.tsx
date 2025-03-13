@@ -166,6 +166,11 @@ const Projects = () => {
                     <View style={styles.cardContent}>
                       <View>
                         <View style={styles.infoRow}>
+                          <Text style={styles.infoText1}>
+                            {project.projectType}
+                          </Text>
+                        </View>
+                        <View style={styles.infoRow}>
                           <Image source={calender} style={styles.smallIcon} />
                           <Text style={styles.infoText}>
                             {new Date(project.date).toDateString()}
@@ -288,9 +293,16 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 14,
     color: "#555",
-    flexShrink: 1, 
-    flexWrap: "wrap", 
+    flexShrink: 1,
+    flexWrap: "wrap",
     maxWidth: "90%",
+  },
+  infoText1: {
+    fontSize: 18,
+    fontWeight:500,
+    color: "#555",
+    textAlign: "center",
+    marginBottom: 15,
   },
   addButtonContainer: {
     position: "absolute",

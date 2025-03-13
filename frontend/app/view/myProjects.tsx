@@ -237,9 +237,9 @@ const MyProjects = () => {
               }
               content={
                 <View>
-                  <Text>📅 {item.date}</Text>
-                  <Text>⏰ {item.time}</Text>
-                  <Text>📍 {item.location}</Text>
+                  <Text style={styles.text2}>📅 {item.date}</Text>
+                  <Text style={styles.text2}>⏰ {item.time}</Text>
+                  <Text style={styles.text2}>📍 {item.location}</Text>
 
                   {/* Action Buttons based on Role */}
                   {/* Buttons based on Role */}
@@ -307,7 +307,7 @@ const MyProjects = () => {
               keyExtractor={(item) => item._id}
               renderItem={({ item }) => (
                 <View style={styles.userItem}>
-                    {/* <Image
+                  {/* <Image
                     source={{ uri: item.profile_picture }}
                     style={styles.profileImage}
                   /> */}
@@ -435,6 +435,11 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
   },
+  text2: {
+    fontSize: 14,
+    marginBottom: 8,
+    marginTop: 10,
+  }
 });
 
 export default MyProjects;
