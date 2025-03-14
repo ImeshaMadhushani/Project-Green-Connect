@@ -13,6 +13,9 @@ import cors from 'cors';
 
 
 import methodOverride from 'method-override';
+import  path  from 'path';
+import { fileURLToPath } from 'url';
+import morgan from 'morgan';
 
 
 
@@ -20,16 +23,24 @@ import methodOverride from 'method-override';
 dotenv.config();
 const app = express();
 
+
+app.use(express.json());
+
 app.use(cors()); 
 app.use(methodOverride('_method'));
-
+app.use(morgan("dev"));
 app.use(session({
     secret: 'yourSecretKey', 
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false } 
   }));
-app.use(bodyParser.json());
+
+
+
+app.use("/uploads", express.static("uploads"));
+
+
 
 //Middleware to verify JWT
 

@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@react-native-community/datetimepicker": "^8.3.0",
     "expo": "^52.0.18",
     "expo-image-picker": "^16.0.3",
     "nativewind": "^4.1.23"

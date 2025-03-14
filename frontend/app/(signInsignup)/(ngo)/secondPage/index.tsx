@@ -1,9 +1,8 @@
 import ButtonSuccess from "@/components/button-success";
-import ButtonText from "@/components/button-text";
 import TextInputStyled from "@/components/text-input";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 
 const Second = () => {
@@ -15,62 +14,61 @@ const Second = () => {
   const input2Ref = useRef<TextInput>(null);
   const input3Ref = useRef<TextInput>(null);
 
+  // Validation & Navigation
+  const handleNext = async () => {
+    const trimmedEmail = email.trim();
+    const trimmedPhoneNo = phoneNo.trim();
+    const trimmedPinCode = pinCode.trim();
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9]{10}$/; // Assumes a 10-digit phone number
+    const pinCodeRegex = /^[0-9]+$/; // Assumes a any digit pin code
+
+    if (!trimmedEmail || !trimmedPhoneNo || !trimmedPinCode) {
+      Alert.alert("Error", "Please fill all fields.");
+      return;
+    }
+
+    if (!emailRegex.test(trimmedEmail)) {
+      Alert.alert("Error", "Please enter a valid email address.");
+      return;
+    }
+
+    if (!phoneRegex.test(trimmedPhoneNo)) {
+      Alert.alert("Error", "Please enter a valid 10-digit phone number.");
+      return;
+    }
+
+    if (!pinCodeRegex.test(trimmedPinCode)) {
+      Alert.alert("Error", "Please enter a valid 6-digit pin code.");
+      return;
+    }
+
+    // Navigate to the next page with validated data
+    router.push({
+      pathname: "/thirdpage",
+      params: { email: trimmedEmail, phoneNo: trimmedPhoneNo, pinCode: trimmedPinCode },
+    });
+  };
+
   return (
-    <View
-      style={{
-        flex: 1,
-        width: "100%",
-        padding: 20,
-        alignItems: "center",
-      }}
-    >
+    <View style={styles.container}>
       {/* Progress Indicators */}
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          gap: 10,
-          margin: 10,
-        }}
-      >
-        <View
-          style={{
-            width: 15,
-            height: 15,
-            borderColor: "#0D7C66",
-            borderWidth: 2,
-            borderRadius: "100%",
-          }}
-        />
-        <View
-          style={{
-            width: 15,
-            height: 15,
-            borderColor: "#0D7C66",
-            borderWidth: 2,
-            borderRadius: "100%",
-            backgroundColor: "#0D7C66",
-          }}
-        />
-        <View
-          style={{
-            width: 15,
-            height: 15,
-            borderColor: "#0D7C66",
-            borderWidth: 2,
-            borderRadius: "100%",
-          }}
-        />
+      <View style={styles.progressContainer}>
+        <View style={[styles.progressDot, { backgroundColor: "transparent" }]} />
+        <View style={[styles.progressDot, { backgroundColor: "#0D7C66" }]} />
+        <View style={[styles.progressDot, { backgroundColor: "transparent" }]} />
       </View>
 
-      {/* Text Inputs */}
+      {/* Input Fields */}
       <TextInputStyled
         ref={input1Ref}
         returnKeyType="next"
         text="E-mail"
         onChangeText={setEmail}
         value={email}
-        placeholder={"Enter E-mail"}
+        placeholder="Enter E-mail"
+        onSubmitEditing={() => input2Ref.current?.focus()}
       />
       <TextInputStyled
         ref={input2Ref}
@@ -78,32 +76,34 @@ const Second = () => {
         text="Phone Number"
         onChangeText={setPhoneNo}
         value={phoneNo}
-        placeholder={"Enter the phone number"}
+        placeholder="Enter the phone number"
+        keyboardType="numeric"
+        onSubmitEditing={() => input3Ref.current?.focus()}
       />
       <TextInputStyled
         ref={input3Ref}
-        returnKeyType="next"
+        returnKeyType="done"
         text="Pin Code"
         onChangeText={setPinCode}
         value={pinCode}
-        placeholder={"Enter the pin code"}
+        placeholder="Enter the pin code"
+        keyboardType="numeric"
       />
 
       {/* Navigation Buttons */}
-      <View style={{ flex: 1, flexDirection: "row" }}>
+      <View style={styles.buttonContainer}>
         <ButtonSuccess
-          style={{ width: 100, height:45}}
+          style={styles.button}
           label="Back"
-          onPress={() => {
-            router.navigate("/firstPage", { relativeToDirectory: true });
-          }}
+          onPress={() => router.push("/firstPage")}
         />
         <ButtonSuccess
+          style={styles.button}
           label="Next"
-          style={{ width: 100, height:45}}
           onPress={() => {
-            router.navigate("/thirdpage", { relativeToDirectory: true });
-          }}
+          /* router.navigate("/secondPage", { relativeToDirectory: true }); */
+          handleNext();
+        }}
         />
       </View>
     </View>
@@ -112,20 +112,31 @@ const Second = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    paddingHorizontal: 16,
-  },
-  divider: {
     flex: 1,
-    height: 1,
-    backgroundColor: "#ccc",
+    width: "100%",
+    padding: 20,
+    alignItems: "center",
   },
-  text: {
-    marginHorizontal: 8,
-    fontSize: 16,
-    color: "#555",
+  progressContainer: {
+    flexDirection: "row",
+    gap: 10,
+    margin: 10,
+  },
+  progressDot: {
+    width: 15,
+    height: 15,
+    borderColor: "#0D7C66",
+    borderWidth: 2,
+    borderRadius: 15 / 2, // Fixed incorrect borderRadius
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 20,
+  },
+  button: {
+    width: 100,
+    height: 45,
   },
 });
 

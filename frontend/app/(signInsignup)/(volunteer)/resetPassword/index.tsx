@@ -2,16 +2,26 @@ import ButtonSuccess from "@/components/button-success";
 import TextInputStyled from "@/components/text-input";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
-import { Alert, Text, View, StyleSheet } from "react-native";
+import { Alert, Text, View, StyleSheet} from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 
+import axios from "axios";
+import { useLocalSearchParams } from "expo-router"; 
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL; 
+
 const ResetPassword = () => {
+  const { email, otpCode } = useLocalSearchParams();
 
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
-
+  const [loading, setLoading] = useState(false);
+  /* const [otp, setOtp] = useState(""); // If OTP is required
+  const [email, setEmail] = useState(""); // User's email
+ */
   const input1Ref = useRef<TextInput>(null);
   const input2Ref = useRef<TextInput>(null);
+
 
   const markError = (inputRef: React.RefObject<TextInput>) => {
     inputRef.current?.setNativeProps({
@@ -29,7 +39,50 @@ const ResetPassword = () => {
       },
     });
   };
-  
+
+  const handleResetPassword = async () => {
+    if (!password || !password2) {
+      Alert.alert("Error", "Both password fields are required.");
+      return;
+    }
+
+    if (password !== password2) {
+      Alert.alert("Error", "Passwords do not match.");
+      return;
+    }
+
+    if (!email || !otpCode) {
+      Alert.alert("Error", "Email and OTP are required.");
+      return;
+    }
+
+    console.log("Resetting password with data: ", { email, otpCode, password });
+
+    setLoading(true);
+
+    try {
+      const response = await axios.post(`${apiUrl}/api/user/reset-password`, {
+        email, // Add email field
+        otpCode, // If required
+        password,
+      });
+
+      Alert.alert("Success", "Password reset successfully!");
+      router.push("/logIn");
+    } catch (error: any) {
+      console.error(
+        "Reset Password Error:",
+        error.response?.data || error.message
+      );
+      Alert.alert(
+        "Error",
+        error.response?.data?.message || "Something went wrong."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   return (
     <View style={styles.container}>
@@ -69,19 +122,16 @@ const ResetPassword = () => {
         value={password2}
         placeholder={"Enter Password"}
       />
-      
-        <ButtonSuccess
-            label="Confirm"
-            onPress={() => {
-            router.navigate("/home", { relativeToDirectory: true });
-            }}
-        />
-        <View
+
+      <ButtonSuccess
+        label={loading ? "Processing..." : "Confirm"}
+        onPress={handleResetPassword}
+      />
+      <View
         style={{
           flexDirection: "row",
         }}
-      >
-        </View>
+      ></View>
     </View>
   );
 };

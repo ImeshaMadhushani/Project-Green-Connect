@@ -1,7 +1,9 @@
 import User from "../models/User.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
+import nodemailer from 'nodemailer';
+import crypto from 'crypto';
+import Project from "../models/Project.js";
 
 // Register a new user
 
@@ -44,6 +46,7 @@ export async function register(req, res) {
 
         const hashedPassword = bcrypt.hashSync(password, saltRound);
 
+        
         const newUser = new User({
             name,
             username,
@@ -79,10 +82,10 @@ export async function register(req, res) {
 
 // Login
 
-export function login(req, res) {
+/* export function login(req, res) {
     const credentials = req.body;
 
-    User.findOne({ username: credentials.username }).then(async (user) => {
+    User.findOne({ email: credentials.email , password: credentials.password }).then(async (user) => {
         if (!user) {
             return res.status(401).json({ message: 'Invalid credentials' });
         } 
@@ -109,6 +112,81 @@ export function login(req, res) {
         console.error("Error during login:", error);
         return res.status(500).json({ message: "Server error" });
     });
+} */
+
+export async function login(req, res) {
+    try {
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        // Check if password matches
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        // Check organization approval
+        if (user.role === "organization" && !user.isApproved) {
+            return res.status(403).json({ message: "Organization account is not approved yet." });
+        }
+
+        // Generate JWT token
+        const payload = {
+            id: user._id,
+            name: user.name,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            profile_picture: user.profile_picture
+        };
+        const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '48h' });
+
+        return res.json({ message: "User logged in successfully!", user, token });
+
+    } catch (error) {
+        console.error("Error during login:", error);
+        return res.status(500).json({ message: "Server error" });
+    }
+}
+
+//update user
+export async function updateUser(req, res) {
+    try {
+        const { id } = req.params;
+        const { name, username, email, password, district, city/*  profile_picture */ } = req.body;
+
+        const profile_picture = req.files?.profile_picture?.[0]?.path || null;
+        /*  const legalDocument = req.files?.legalDocument?.[0]?.path || req.body.legalDocument || null; */
+        
+        console.log("Uploaded files:", req.files);
+        console.log("Profile Picture Path:", profile_picture);
+
+
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Update user fields
+        user.name = name || user.name;
+        user.username = username || user.username;
+        user.email = email || user.email;
+        user.password = password || user.password;
+        user.district = district || user.district;
+        user.city = city || user.city;
+        if (profile_picture) user.profile_picture = profile_picture;
+
+        await user.save();
+
+        res.status(200).json({ message: 'User updated successfully!', user });
+    } catch (error) {
+        console.error("Error during user update:", error);
+        res.status(500).json({ message: 'Server error' });
+    }
 }
 
 // Get user
@@ -224,3 +302,152 @@ export async function getCounts(req, res) {
     }
 }
  */
+
+
+// Forgot Password - Request OTP
+export async function forgotPassword(req, res) {
+    const { email } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'Email not found' });
+        }
+
+        // Generate OTP
+        const otp = crypto.randomInt(1000, 9999).toString();
+
+        // Set OTP expiration time (e.g., 10 minutes)
+        const otpExpires = Date.now() + 10 * 60 * 1000;  // 10 minutes expiration
+
+        user.passwordResetOtp = otp;
+        user.passwordResetOtpExpires = otpExpires;
+        await user.save();
+
+        // Send OTP to user's email using nodemailer
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL, // Your email
+                pass: process.env.EMAIL_PASSWORD, // Your email password
+            },
+        });
+
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to: email,
+            subject: 'Password Reset OTP',
+            text: `Your OTP for password reset is: ${otp}. It is valid for 10 minutes.`,
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error("Error sending email:", error);
+                return res.status(500).json({ message: "Error sending OTP email", errorDetails: error.response || error.message, });
+            }
+            res.status(200).json({ message: "OTP sent to email" });
+        });
+    } catch (error) {
+        console.error("Error during forgot password:", error);
+        res.status(500).json({ message: "Error processing request", error: error.message });
+    }
+}
+
+
+// Verify OTP
+export async function verifyOtp(req, res) {
+    try {
+        console.log("Request body:", req.body);
+
+        const { email, otp } = req.body || {}; // Ensure `req.body` exists
+
+        if (!email || !otp) {
+            return res.status(400).json({ message: "Email and OTP are required" });
+        }
+
+        console.log("Received email for OTP verification:", email);
+
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (!user) {
+            return res.status(404).json({ message: "Email not found" });
+        }
+
+        if (!user.passwordResetOtp || !user.passwordResetOtpExpires) {
+            return res.status(400).json({ message: "No OTP found. Request a new one." });
+        }
+
+        if (user.passwordResetOtp !== otp) {
+            return res.status(400).json({ message: "Invalid OTP" });
+        }
+
+        if (user.passwordResetOtpExpires < Date.now()) {
+            return res.status(400).json({ message: "OTP has expired" });
+        }
+
+        res.status(200).json({ message: "OTP verified successfully" });
+
+    } catch (error) {
+        console.error("Error during OTP verification:", error);
+        res.status(500).json({ message: "Error verifying OTP", error: error.message });
+    }
+}
+
+
+
+// Reset Password
+export async function resetPassword(req, res) {
+    const { email, password, otpCode } = req.body;
+
+    if (!email || !password || !otpCode) {
+        return res.status(400).json({ message: 'Missing required fields.' });
+    }
+
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'Email not found' });
+        }
+
+        // Validate OTP and check expiry
+        if (user.passwordResetOtp !== otpCode) {
+            return res.status(400).json({ message: 'Invalid OTP' });
+        }
+
+        if (user.passwordResetOtpExpires < Date.now()) {
+            return res.status(400).json({ message: 'OTP has expired' });
+        }
+
+        // Hash new password
+        const saltRound = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRound);
+
+        user.password = hashedPassword;
+        user.passwordResetOtp = undefined;  // Clear OTP field
+        user.passwordResetOtpExpires = undefined;  // Clear OTP expiration field
+        await user.save();
+
+        res.status(200).json({ message: 'Password reset successfully' });
+
+    } catch (error) {
+        console.error("Error during password reset:", error);
+        res.status(500).json({ message: "Error resetting password", error: error.message });
+    }
+}
+
+
+//logout
+
+export async function logout(req, res) {
+    try {
+        // If you're storing JWT in cookies, clear the cookie
+        res.clearCookie('token'); // Replace 'token' with your actual cookie name
+
+        // Respond with a success message
+        res.status(200).json({ message: 'Logged out successfully' });
+    } catch (error) {
+        console.error("Error during logout:", error);
+        res.status(500).json({ message: 'Error logging out' });
+    }
+}
+

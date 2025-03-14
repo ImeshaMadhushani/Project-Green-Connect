@@ -1,14 +1,25 @@
 import ButtonSuccess from "@/components/button-success";
 import TextInputStyled from "@/components/text-input";
 import { router } from "expo-router";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
 
+import { useLocalSearchParams } from "expo-router"; 
+import axios from "axios";
+
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL; 
+
 const OTPPage = () => {
+  const { email } = useLocalSearchParams();
+  console.log("Email from params:", email);
   const [otp, setOtp] = useState(["", "", "", ""]);
   const inputs = [useRef<TextInput>(null), useRef<TextInput>(null), useRef<TextInput>(null), useRef<TextInput>(null)];
 
-  const handleOtpChange = (index, value) => {
+    
+
+  const handleOtpChange = (index: number, value: string) => {
+    value = value.trim(); // Trim spaces
     if (value.length <= 1) {
       const updatedOtp = [...otp];
       updatedOtp[index] = value;
@@ -21,29 +32,54 @@ const OTPPage = () => {
     }
   };
 
-  const handleOtpSubmit = () => {
+  const handleOtpSubmit = async () => {
+    const otpCode = otp.join(""); // Convert OTP array to string
+
     if (otp.some((digit) => digit === "")) {
       Alert.alert("Error", "Please fill all fields.");
-    } else {
-      Alert.alert("Success", `Your OTP is: ${otp.join("")}`);
-      router.navigate("/resetPassword", { relativeToDirectory: true });
+      return;
     }
-  };
 
-  const markError = (inputRef) => {
+    try {
+     
+      console.log("Verifying OTP for email:", email);
+      console.log("API URL:", apiUrl);
+     
+      const response = await axios.post(`${apiUrl}/api/user/verify-otp`, {
+        email, // Send email and OTP to backend
+        otp: otpCode,
+      });
+     
+
+      if (response.status === 200) {
+        Alert.alert("Success", "OTP verified successfully!");
+        router.push({
+          pathname: "/resetPassword",
+          params:{email, otpCode}
+        }); // Navigate to reset password page
+      }
+    } catch (error: any) {
+      console.error("OTP verification error:", error.response?.data || error);
+      Alert.alert("Error", error.response?.data?.message || "Failed to verify OTP.");
+      setOtp(["", "", "", ""]); // Clear OTP inputs on failure
+      inputs[0].current?.focus(); // Focus back on the first input
+    };
+  }
+
+/*   const markError = (inputRef) => {
     inputRef?.current?.setNativeProps({
       style: {
         borderColor: "tomato",
         borderWidth: 2,
       },
     });
-  };
+  }; */
 
-  const handleInputFocus = (index) => {
+/*   const handleInputFocus = (index) => {
     if (!otp[index]) {
       markError(inputs[index]);
     }
-  };
+  }; */
 
   const ui = (
     <View style={styles.container}>
@@ -60,17 +96,13 @@ const OTPPage = () => {
             style={styles.otpInput}
             keyboardType="numeric"
             maxLength={1}
-            value={value}
+            value={otp[index]}
             onChangeText={(text) => handleOtpChange(index, text)}
-            onFocus={() => handleInputFocus(index)}
           />
         ))}
       </View>
 
-      <ButtonSuccess
-        label="VERIFY OTP"
-        onPress={handleOtpSubmit}
-      />
+      <ButtonSuccess label="VERIFY OTP" onPress={handleOtpSubmit} />
     </View>
   );
 

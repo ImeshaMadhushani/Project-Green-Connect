@@ -7,6 +7,11 @@ import { useRef, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 
+
+import axios from "axios";
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
 const FogetPassword = () => {
   const [email, setEmail] = useState("");
   const input1Ref = useRef<TextInput>(null);
@@ -28,12 +33,47 @@ const FogetPassword = () => {
       },
     });
   };
+const handleSubmit = async () => {
+  if (email == null || email === "") {
+    markError(input1Ref);
+    Alert.alert("Error", "Enter Email");
+    input1Ref.current?.focus();
+  } else {
+    markOk(input1Ref);
+
+    try {
+      // Make a POST request to the backend to send OTP
+      const response = await axios.post(`${apiUrl}/api/user/forgot-password`, {
+        email,
+      });
+
+      if (response.status === 200) {
+        // If the OTP is sent successfully, navigate to OTP page
+        Alert.alert("Success", "OTP sent to your email!");
+        //router.navigate("/otpPage", { relativeToDirectory: true });
+        router.push({
+          pathname: "/otpPage",
+          params: { email },
+        });
+
+      } else {
+        // If there is an error, show an alert
+        Alert.alert("Error", response.data.message || "Something went wrong!");
+      }
+    } catch (error:any) {
+      // Handle any network or server errors
+       console.error("Error details:", error.response?.data || error.message);
+      Alert.alert("Error", "Failed to send OTP, please try again later.");
+    }
+  }
+};
+
 
   const ui = (
-    <View
-      style={styles.container}
-    >
-      <Text style={{ fontSize: 40, marginBottom: 20, fontWeight: "bold"}}>Forget Password</Text>
+    <View style={styles.container}>
+      <Text style={{ fontSize: 40, marginBottom: 20, fontWeight: "bold" }}>
+        Forget Password
+      </Text>
       <Text style={{ fontSize: 20, marginBottom: 60 }}>
         Enter Your Email Address To Reset Password
       </Text>
@@ -57,9 +97,7 @@ const FogetPassword = () => {
       <ButtonSuccess
         label="NEXT"
         style={styles.button}
-        onPress={() => {
-          router.navigate("/resetPassword", { relativeToDirectory: true });
-        }}
+        onPress={handleSubmit}
       />
     </View>
   );
