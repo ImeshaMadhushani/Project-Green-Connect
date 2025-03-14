@@ -42,8 +42,31 @@ const OverviewCard = ({ title, value, icon }: { title: string; value: string; ic
   
   const AdminDashboard = () => {
     return (
-      <Tab.Navigator>
+      <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName: string;
+          if (route.name === "Dashboard") iconName = "view-dashboard";
+          else if (route.name === "Users") iconName = "account-group";
+          else if (route.name === "Projects") iconName = "folder-multiple";
+          else if (route.name === "Articles") iconName = "file-document-multiple";
+          else if (route.name === "Feedback") iconName = "alert-circle-outline";
+          else if (route.name === "Settings") iconName = "cog-outline";
+          else iconName = "help-circle";
+
+          return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: "#66BB6A", // Light Green for selected
+        tabBarInactiveTintColor: "#2E7D32", // Dark Green for unselected
+        tabBarStyle: { backgroundColor: "#F1F8E9", height : 70, paddingTop: 9 }, // Soft Green Background
+        headerShown: false,
+      })}
+      >
         <Tab.Screen name="Dashboard" component={AdminHome} />
+      <Tab.Screen name="Users" component={ManageUsers} />
+      <Tab.Screen name="Projects" component={ManageProjects} />
+      <Tab.Screen name="Articles" component={ManageArticles} />
+      <Tab.Screen name="Feedback" component={FeedbackReports} />
       </Tab.Navigator>
     );
   };
