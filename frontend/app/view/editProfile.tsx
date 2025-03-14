@@ -58,14 +58,9 @@ const EditProfile = () => {
           </TouchableOpacity>
 
           <TextInputStyled
-            placeholder="First Name"
+            placeholder="Name"
             value=""
-            text="First Name"
-          />
-          <TextInputStyled
-            placeholder="Last Name"
-            value=""
-            text="Last Name"
+            text="Name"
           />
           <TextInputStyled
             placeholder="User Name"
@@ -83,9 +78,9 @@ const EditProfile = () => {
             text="District"
           />
           <TextInputStyled
-            placeholder="Area"
+            placeholder="City"
             value=""
-            text="Area"
+            text="City"
           />
           <ButtonSuccess label="Edit Profile" />
         </View>
