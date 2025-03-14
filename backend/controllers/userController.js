@@ -153,6 +153,41 @@ export async function login(req, res) {
     }
 }
 
+//update user
+export async function updateUser(req, res) {
+    try {
+        const { id } = req.params;
+        const { name, username, email, password, district, city/*  profile_picture */ } = req.body;
+
+        const profile_picture = req.files?.profile_picture?.[0]?.path || null;
+        /*  const legalDocument = req.files?.legalDocument?.[0]?.path || req.body.legalDocument || null; */
+        
+        console.log("Uploaded files:", req.files);
+        console.log("Profile Picture Path:", profile_picture);
+
+
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Update user fields
+        user.name = name || user.name;
+        user.username = username || user.username;
+        user.email = email || user.email;
+        user.password = password || user.password;
+        user.district = district || user.district;
+        user.city = city || user.city;
+        if (profile_picture) user.profile_picture = profile_picture;
+
+        await user.save();
+
+        res.status(200).json({ message: 'User updated successfully!', user });
+    } catch (error) {
+        console.error("Error during user update:", error);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
 
 // Get user
 export function getUser(req, res) {

@@ -11,6 +11,7 @@ const First = () => {
   const [regNo, setRegno] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
+  const [email, setEmail] = useState("");
 
   const input1Ref = useRef<TextInput>(null);
   const input2Ref = useRef<TextInput>(null);
@@ -21,8 +22,9 @@ const First = () => {
     const trimmedRegNo = regNo.trim();
     const trimmedPassword = password.trim();
     const trimmedPassword2 = password2.trim();
+    const trimmedEmail = email.trim();
 
-    if (!trimmedNgoName || !trimmedRegNo || !trimmedPassword || !trimmedPassword2) {
+    if (!trimmedNgoName || !trimmedRegNo || !trimmedPassword || !trimmedPassword2 || !trimmedEmail) {
       Alert.alert("Error", "Please fill all fields");
       return;
     }
@@ -42,15 +44,24 @@ const First = () => {
       return;
     }
 
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      Alert.alert("Error", "Please enter a valid email address");
+      return;
+    }
+
     router.push({
       pathname: "/(tabs)/home",
-      params: { ngoname: trimmedNgoName, regNo: trimmedRegNo },
+      params: {
+        ngoname: trimmedNgoName,
+        regNo: trimmedRegNo,
+        email: trimmedEmail,
+      },
     });
   };
 
   return (
     <View style={styles.container}>
-    {/*   <View style={styles.stepContainer}>
+      {/*   <View style={styles.stepContainer}>
         <View style={styles.stepCircleActive} />
         <View style={styles.stepCircle} />
         <View style={styles.stepCircle} />
@@ -72,6 +83,14 @@ const First = () => {
         placeholder="Enter the reg no"
       />
       <TextInputStyled
+        returnKeyType="next"
+        text="Email"
+        onChangeText={setEmail}
+        value={email}
+        placeholder="Enter your email"
+        keyboardType="email-address"
+      />
+      <TextInputStyled
         ref={input3Ref}
         returnKeyType="next"
         text="Password"
@@ -88,9 +107,15 @@ const First = () => {
         value={password2}
         placeholder="Confirm your password"
       />
-      
+
       <Text style={styles.loginText}>
-        Already have an account? <Text style={styles.loginLink} onPress={() => router.push("/(signInsignup)/(volunteer)/logIn")}>Login</Text>
+        Already have an account?{" "}
+        <Text
+          style={styles.loginLink}
+          onPress={() => router.push("/(signInsignup)/(volunteer)/logIn")}
+        >
+          Login
+        </Text>
       </Text>
 
       <View style={styles.buttonContainer}>

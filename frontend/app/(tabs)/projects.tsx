@@ -166,16 +166,25 @@ const Projects = () => {
                     <View style={styles.cardContent}>
                       <View>
                         <View style={styles.infoRow}>
+                          <Text style={styles.infoText1}>
+                            {project.projectType}
+                          </Text>
+                        </View>
+                        <View style={styles.infoRow}>
                           <Image source={calender} style={styles.smallIcon} />
-                          <Text>{new Date(project.date).toDateString()}</Text>
+                          <Text style={styles.infoText}>
+                            {new Date(project.date).toDateString()}
+                          </Text>
                         </View>
                         <View style={styles.infoRow}>
                           <Image source={clock} style={styles.smallIcon} />
-                          <Text>{project.time}</Text>
+                          <Text style={styles.infoText}>{project.time}</Text>
                         </View>
                         <View style={styles.infoRow}>
                           <Image source={pin} style={styles.smallIcon} />
-                          <Text>{project.location}</Text>
+                          <Text style={styles.infoText}>
+                            {project.location}
+                          </Text>
                         </View>
                       </View>
                     </View>
@@ -231,7 +240,10 @@ const Projects = () => {
 
       {userRole === "organization" && (
         <View style={styles.addButtonContainer}>
-          <Pressable onPress={() => setModalVisible(true)}>
+          <Pressable
+            onPress={() => setModalVisible(true)}
+            style={styles.addButtonWrapper}
+          >
             <Image source={plus} style={styles.addButton} />
           </Pressable>
         </View>
@@ -255,12 +267,14 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   contentContainer: {
-    paddingBottom: 20,
+    paddingBottom: 80,
+    margin: 10,
   },
   heading: {
     fontSize: 28,
     padding: 10,
-    fontWeight: 600,
+    fontWeight: "bold",
+    color: "#333",
   },
   cardContent: {
     flexDirection: "row",
@@ -277,10 +291,34 @@ const styles = StyleSheet.create({
     height: 20,
     marginRight: 10,
   },
+  infoText: {
+    fontSize: 14,
+    color: "#555",
+    flexShrink: 1,
+    flexWrap: "wrap",
+    maxWidth: "90%",
+  },
+  infoText1: {
+    fontSize: 18,
+    fontWeight:500,
+    color: "#555",
+    textAlign: "center",
+    marginBottom: 15,
+  },
   addButtonContainer: {
     position: "absolute",
     bottom: 20,
     right: 20,
+  },
+  addButtonWrapper: {
+    backgroundColor: "#74C476",
+    borderRadius: 30,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
   addButton: {
     width: 60,
