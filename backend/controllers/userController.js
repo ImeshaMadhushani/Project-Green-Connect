@@ -156,10 +156,17 @@ export async function login(req, res) {
 //update user
 export async function updateUser(req, res) {
     try {
-        const { userId } = req.params;
-        const { name, username, email, password, profile_picture } = req.body;
+        const { id } = req.params;
+        const { name, username, email, password, district, city/*  profile_picture */ } = req.body;
 
-        const user = await User.findById(userId);
+        const profile_picture = req.files?.profile_picture?.[0]?.path || null;
+        /*  const legalDocument = req.files?.legalDocument?.[0]?.path || req.body.legalDocument || null; */
+        
+        console.log("Uploaded files:", req.files);
+        console.log("Profile Picture Path:", profile_picture);
+
+
+        const user = await User.findById(id);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -169,7 +176,9 @@ export async function updateUser(req, res) {
         user.username = username || user.username;
         user.email = email || user.email;
         user.password = password || user.password;
-        user.profile_picture = profile_picture || user.profile_picture;
+        user.district = district || user.district;
+        user.city = city || user.city;
+        if (profile_picture) user.profile_picture = profile_picture;
 
         await user.save();
 

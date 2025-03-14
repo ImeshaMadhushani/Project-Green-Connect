@@ -15,7 +15,10 @@ userRouter.post('/register', upload.fields([
 userRouter.post('/login', login)
 userRouter.get('/getUser', getUser)
 userRouter.get('/getAllUsers', getAllUsers)
-userRouter.put('/update/:id',updateUser)
+userRouter.put('/update/:id', upload.fields([
+    { name: 'profile_picture', maxCount: 1 },
+    /* { name: 'legalDocument', maxCount: 1 } */
+]), updateUser)
 userRouter.put('/approveOrganization/:userId', approveOrganization)
 userRouter.delete('/delete/:userId', deleteUser)
 //userRouter.put('/assignAdmin/:userId',assignAdmin)
