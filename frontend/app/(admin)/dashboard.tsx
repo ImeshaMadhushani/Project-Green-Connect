@@ -5,6 +5,12 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Card, Text } from "react-native-paper";
 
+// Import screens
+import ManageUsers from "./manageUsers";
+import ManageProjects from "./manageProjects";
+import ManageArticles from "./manageArticles";
+import FeedbackReports from "./feedbackReports";
+
 // Tab Navigator
 const Tab = createBottomTabNavigator();
 
