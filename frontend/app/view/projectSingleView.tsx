@@ -1,11 +1,12 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import { SafeAreaView, ScrollView, View, Text, StyleSheet, Pressable, TouchableOpacity, Alert } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useLocalSearchParams, router } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import { Card } from 'react-native-paper';
 
-import axios from "axios";
+import axios from "axios"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
@@ -21,7 +22,28 @@ const projectIcons = {
 const ProjectSingleView = () => {
     const params = useLocalSearchParams();
     const project = params; // Since expo-router sends params as object
+    const [userRole, setUserRole] = useState(null); // State to store user role
 
+        // Fetch user role function
+    const fetchUserRole = async () => {
+        try {
+          const token = await AsyncStorage.getItem("authToken"); // Retrieve JWT token from AsyncStorage
+          if (!token) {
+            throw new Error("No token found");
+          }
+          const response = await axios.get(`${apiUrl}/api/user/getUser`, {
+            headers: {
+              Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
+            },
+          });
+          console.log("User Role:", response.data.user.role);
+           setUserRole(response.data.user.role); // Store user role
+        } catch (error) {
+          console.error("Failed to fetch user role", error);
+            Alert.alert("Error", "Failed to fetch user role.");
+          }
+    };
+  
     const handleEnroll = async () => {
         try {
             const token = await AsyncStorage.getItem("authToken");
@@ -63,7 +85,11 @@ const ProjectSingleView = () => {
               error.response?.data || error.message
             );
         }
-    };
+  };
+  
+      useEffect(() => {
+        fetchUserRole(); 
+      }, []);
 
     return (
       <SafeAreaView style={styles.container}>
@@ -91,9 +117,18 @@ const ProjectSingleView = () => {
           </Card>
 
           {/* Enroll Button */}
-          <TouchableOpacity style={styles.enrollButton} onPress={handleEnroll}>
+        {/*   <TouchableOpacity style={styles.enrollButton} onPress={handleEnroll}>
             <Text style={styles.enrollButtonText}>Enroll in Project</Text>
-          </TouchableOpacity>
+          </TouchableOpacity>  */}
+          
+          {userRole !== "organization" && (
+            <TouchableOpacity
+              style={styles.enrollButton}
+              onPress={handleEnroll}
+            >
+              <Text style={styles.enrollButtonText}>Enroll in Project</Text>
+            </TouchableOpacity>
+          )} 
         </ScrollView>
       </SafeAreaView>
     );
