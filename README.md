@@ -3,6 +3,7 @@ GreenConnect is a collaborative platform designed to empower communities to enga
 
 With features like resource sharing, article publishing, and a robust admin system for quality and sustainability oversight, GreenConnect bridges the gap between grassroots initiatives and impactful change.  
 
+
 ---
 
 ## 💡 **Key Features**  

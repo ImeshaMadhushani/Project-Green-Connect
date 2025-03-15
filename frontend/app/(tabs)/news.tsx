@@ -1,5 +1,4 @@
-import Card from "@/components/Card";
-import { router, Stack } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -10,216 +9,179 @@ import {
   TextInput,
   View,
 } from "react-native";
+import Card from "@/components/Card";
+import { router } from "expo-router";
+import axios from "axios";
 
 const plus = require("../../assets/images/plus.png");
 const scope = require("../../assets/images/scope.png");
 
 const News = () => {
-    const ui = (
-      <>
+  interface Post {
+    _id: string;
+    title: string;
+    image: string;
+    username: string;
+    content: string;
+  }
+  
+  const [posts, setPosts] = useState<Post[]>([]); // State to store posts
+  const [loading, setLoading] = useState(true); // State to track loading status
+  const [error, setError] = useState<string | null>(""); // State to handle errors
+
+  // Fetch posts from the backend
+  const fetchPosts = async () => {
+    try {
+      const response = await axios.get("http://192.168.43.190:5000/api/post/get-posts");
+      if (response.data.success) {
+        setPosts(response.data.posts); // Set the fetched posts
+      } else {
+        setError("Failed to fetch posts");
+      }
+    } catch (err) {
+      console.error("Error fetching posts:", err);
+      setError("An error occurred while fetching posts");
+    } finally {
+      setLoading(false); // Set loading to false after fetching
+    }
+  };
+
+  // Fetch posts when the component mounts
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  // Render loading state
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  // Render error state
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
+
+  // Render the UI
+  const ui = (
+    <>
       <View>
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <View style={styles.container}>
-            <View style={{ 
-                width: "100%", 
-                padding: 10 
-                }}
-                >
-              <Text style={{ 
-                fontSize: 25,
-                textAlign: "center",
-                fontWeight: "bold",
-                }}
-                >
-                    Articles/News
+            <View style={{ width: "100%", padding: 10 }}>
+              <Text style={{ fontSize: 25, textAlign: "center", fontWeight: "bold" }}>
+                Articles/News
               </Text>
-              <View style={{
-                padding: 3,
-                margin: 10,
-                borderWidth: 1,
-                borderColor: "black",
-                borderRadius: 20,
-                flexDirection: "row",
-                alignItems: "center",
-
-              }}
-              >
-              <TextInput
-                placeholder="Search"
-                style={{ 
-                    flex: 1, 
-                    borderWidth: 0 
+              <View
+                style={{
+                  padding: 3,
+                  margin: 10,
+                  borderWidth: 1,
+                  borderColor: "black",
+                  borderRadius: 20,
+                  flexDirection: "row",
+                  alignItems: "center",
                 }}
-              />
-              <Pressable onPress={() => {
-                //router.navigate('')
-              }}>
-                <Image source={scope} style={{ 
-                    width: 30, 
-                    height: 30 
-                    }} 
-                    />
-              </Pressable>
+              >
+                <TextInput placeholder="Search" style={{ flex: 1, borderWidth: 0 }} />
+                <Pressable onPress={() => {}}>
+                  <Image source={scope} style={{ width: 30, height: 30 }} />
+                </Pressable>
+              </View>
             </View>
+
+            {/* Render posts dynamically */}
+            {posts.map((post) => (
+              <Card
+                key={post._id}
+                onPress={() => {
+                  router.push({
+                    pathname: "/view/articleView",
+                    params: {
+                      title: post.title,
+                      image: post.image,
+                      author: post.username,
+                      time: "1hr", // You can add a timestamp field to your Post model
+                      content: post.content,
+                    },
+                  });
+                }}
+                heading={post.title}
+                bgColor="#d6e4e8"
+                content={
+                  <View style={styles.cardTextContent}>
+                    <Text style={styles.cardText}>{post.content}</Text>
+                  </View>
+                }
+              />
+            ))}
           </View>
-    
-          <Card
-          onPress={() => {
-            router.push({
-              pathname: "/view/articleView",
-              params: {
-                title: "Beach Cleanup: Taking Action to Protect Our Oceans",
-                image: "https://example.com/beach-cleanup.jpg",
-                author: "Hazel Kris",
-                time: "1hr",
-                content: "Plastic pollution is one of the most severe environmental issues affecting our oceans..."
-              },
-            });
-          }}
-            heading="Energy - Saving Tips for an eco-Friendly Home"
-            bgColor="#d6e4e8"
-            content={
-              <View style={styles.cardTextContent}>
-                <Text style={styles.cardText}>
-                  Reducing energy consumption at home not only lowers utility
-                  bills but also helps protect the environment. Simple
-                  changes...
-                </Text>
-              </View>
-            }
-          />
+        </ScrollView>
 
-          <Card
-            heading="Energy - Saving Tips for an eco-Friendly Home"
-            bgColor="#FFFDEC"
-            content={
-              <View style={styles.cardTextContent}>
-                <Text style={styles.cardText}>
-                  Reducing energy consumption at home not only lowers utility
-                  bills but also helps protect the environment. Simple
-                  changes...
-                </Text>
-              </View>
-            }
-          />
-
-          <Card
-            heading="Energy - Saving Tips for an eco-Friendly Home"
-            bgColor="#E4F1AC"
-            content={
-              <View style={styles.cardTextContent}>
-                <Text style={styles.cardText}>
-                  Reducing energy consumption at home not only lowers utility
-                  bills but also helps protect the environment. Simple
-                  changes...
-                </Text>
-              </View>
-            }
-          />
-
-          <Card
-            heading="Energy - Saving Tips for an eco-Friendly Home"
-            bgColor="#E1AFD1"
-            content={
-              <View style={styles.cardTextContent}>
-                <Text style={styles.cardText}>
-                  Reducing energy consumption at home not only lowers utility
-                  bills but also helps protect the environment. Simple
-                  changes...
-                </Text>
-              </View>
-            }
-          />
-
-          <Card
-            heading="Energy - Saving Tips for an eco-Friendly Home"
-            bgColor="#F4D9D0"
-            content={
-              <View style={styles.cardTextContent}>
-                <Text style={styles.cardText}>
-                  Reducing energy consumption at home not only lowers utility
-                  bills but also helps protect the environment. Simple
-                  changes...
-                </Text>
-              </View>
-            }
-          />
-
-          <Card
-            heading="Energy - Saving Tips for an eco-Friendly Home"
-            bgColor="#F7F9F2"
-            content={
-              <View style={styles.cardTextContent}>
-                <Text style={styles.cardText}>
-                  Reducing energy consumption at home not only lowers utility
-                  bills but also helps protect the environment. Simple
-                  changes...
-                </Text>
-              </View>
-            }
-          />
-
-        </View>
-      </ScrollView>
-
-        <View style={{
+        <View
+          style={{
             width: 75,
             height: 75,
             position: "absolute",
             bottom: 0,
             right: 0,
             padding: 8,
-        }}
+          }}
         >
-          <Pressable onPress={() => {
-            router.navigate("/createArticles", { relativeToDirectory: true })
-          }}>
-            <Image source={plus} style={{
-                 width: "100%", 
-                 height: "100%" 
-                 }} 
-                 />
+          <Pressable
+            onPress={() => {
+              router.navigate("/createArticles", { relativeToDirectory: true });
+            }}
+          >
+            <Image source={plus} style={{ width: "100%", height: "100%" }} />
           </Pressable>
         </View>
-    </View>
+      </View>
     </>
   );
+
   return ui;
 };
 
 const styles = StyleSheet.create({
-    container: {
-      width: "100%",
-      alignItems: "center",
-      paddingVertical: 10,
-    },
-    contentContainer: {
-      paddingBottom: 20,
-    },
-    cardContent: {
-      margin: 15,
-    },
-    map: {
-      width: "100%",
-      height: "100%",
-    },
-    infoRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      marginBottom: 10,
-    },
-    icon: {
-      width: 30,
-      height: 30,
-      marginRight: 10,
-    },
-    cardTextContent: {
-      marginTop: 10,
-    },
-    cardText: {
-      fontSize: 16,
-    },
-  });
-  
-  export default News;
-  
+  container: {
+    width: "100%",
+    alignItems: "center",
+    paddingVertical: 10,
+  },
+  contentContainer: {
+    paddingBottom: 20,
+  },
+  cardContent: {
+    margin: 15,
+  },
+  cardTextContent: {
+    marginTop: 10,
+  },
+  cardText: {
+    fontSize: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 16,
+  },
+});
+
+export default News;
