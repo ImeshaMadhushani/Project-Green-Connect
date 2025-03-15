@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet ,Pressable, Alert} from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
 
 const usersData = [
   { id: "1", name: "John Doe", role: "Volunteer", status: "Active", email: "john@example.com" },
@@ -9,6 +11,10 @@ const usersData = [
 
 const ManageUsers = () => {
   const [users, setUsers] = useState(usersData);
+
+  const handleAction = (id, action) => {
+    Alert.alert(`${action} User`, `Are you sure you want to ${action} this user?`);
+  };
 
   return (
     <View style={styles.container}>
@@ -25,6 +31,22 @@ const ManageUsers = () => {
                 Status: {item.status}
               </Text>
             </View>
+            <View style={styles.actions}>
+              {/* 📝 Edit Button - Navigates to Edit Profile */}
+              <Pressable onPress={() => router.push({ pathname: "/view/editProfile", params: item })}>
+                <MaterialCommunityIcons name="pencil" size={22} color="#0496FF" />
+              </Pressable>
+
+              {/* 🚫 Suspend Button */}
+              <Pressable onPress={() => handleAction(item.id, "Suspend")}>
+                <MaterialCommunityIcons name="block-helper" size={22} color="red" />
+              </Pressable>
+
+              {/* 🗑 Delete Button */}
+              <Pressable onPress={() => handleAction(item.id, "Delete")}>
+                <MaterialCommunityIcons name="delete" size={22} color="black" />
+              </Pressable>
+            </View>
           </View>
         )}
       />
@@ -39,6 +61,7 @@ const styles = StyleSheet.create({
   userName: { fontSize: 18, fontWeight: "bold" },
   role: { fontSize: 14, color: "#555" },
   status: { fontSize: 14 },
+  actions: { flexDirection: "row", gap: 15 },
 });
 
 export default ManageUsers;
