@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, FlatList, StyleSheet ,Pressable, Alert} from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 
 const usersData = [
@@ -10,6 +11,7 @@ const usersData = [
 ];
 
 const ManageUsers = () => {
+    const router = useRouter();
   const [users, setUsers] = useState(usersData);
 
   const handleAction = (id, action) => {
