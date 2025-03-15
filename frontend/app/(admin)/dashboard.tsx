@@ -4,6 +4,10 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Card, Text } from "react-native-paper";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 // Import screens
 import ManageUsers from "./manageUsers";
@@ -27,14 +31,58 @@ const OverviewCard = ({ title, value, icon }: { title: string; value: string; ic
     </Card>
   );
 
-  const AdminHome = () => {
+const AdminHome = () => {
+      const [counts, setCounts] = useState({
+        volunteerCount: 0,
+        organizationCount: 0,
+        approvedProjects: 0,
+      });
+  
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        const userResponse = await axios.get(`${apiUrl}/api/user/counts`);
+         const projectsResponse = await axios.get(
+           `${apiUrl}/api/project/approved/count`
+         );
+        setCounts({
+          volunteerCount: userResponse.data.volunteerCount,
+          organizationCount: userResponse.data.organizationCount,
+          approvedProjects: projectsResponse.data.totalApprovedProjects,
+        });
+      } catch (error) {
+        console.error("Error fetching counts:", error);
+      }
+    };
+    fetchCounts();
+  }, []);
+  
+  
+  
+  
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Admin Dashboard</Text>
-        <OverviewCard title="Total Volunteers" value="100" icon="account-group" />
-        <OverviewCard title="Total Organizations" value="50" icon="domain"/>
-        <OverviewCard title="Total Projects" value="75" icon="folder-multiple" />
-        <OverviewCard title="Articles" value="120" icon="file-document-multiple" />
+        <OverviewCard
+          title="Total Volunteers"
+          value={counts.volunteerCount.toString()}
+          icon="account-group"
+        />
+        <OverviewCard
+          title="Total Organizations"
+          value={counts.organizationCount.toString()}
+          icon="domain"
+        />
+        <OverviewCard
+          title="Total Projects"
+          value={counts.approvedProjects.toString()}
+          icon="folder-multiple"
+        />
+        <OverviewCard
+          title="Articles"
+          value="120"
+          icon="file-document-multiple"
+        />
         <OverviewCard title="Feedback" value="30" icon="alert-circle-outline" />
       </View>
     );
