@@ -8,10 +8,8 @@ import ButtonText from "@/components/button-text";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
 
-
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage"; 
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
@@ -76,10 +74,15 @@ const LogIn = () => {
         const { token, user } = response.data; // Assuming backend returns token and user info
         await AsyncStorage.setItem("authToken", token);
         Alert.alert("Success", "Login successful");
-        router.push("/home");
+        // Redirect based on user role
+        if (user.role === "admin") {
+          router.push("/(admin)/dashboard");
+        } else {
+          router.push("/home");
+        }
       }
     } catch (error: any) {
-      console.error(error.response?.data); 
+      console.error(error.response?.data);
       Alert.alert(
         "Login Failed",
         error.response?.data?.message || "Something went wrong"
@@ -111,7 +114,7 @@ const LogIn = () => {
         />
         <TouchableOpacity
           onPress={() => setShowPassword(!showPassword)}
-          style={{ position: "absolute", right: 10, top: '45%' }}
+          style={{ position: "absolute", right: 10, top: "45%" }}
         >
           <Ionicons
             name={showPassword ? "eye-off" : "eye"}
