@@ -370,3 +370,16 @@ export async function getEnrolledUsers(req, res) {
         res.status(500).json({ success: false, message: "Internal server error", error: error.message });
     }
 }
+
+
+//count of approved project
+
+export const getApprovedProjectsCount = async (req, res) => {
+    try {
+        const approvedProjectsCount = await Project.countDocuments({ isApproved: true });
+        res.status(200).json({ totalApprovedProjects: approvedProjectsCount });
+    } catch (error) {
+        console.error("Error fetching approved projects count:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
