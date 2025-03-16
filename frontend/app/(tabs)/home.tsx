@@ -136,7 +136,7 @@
 
 // export default Home;
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { router } from "expo-router";
 import {
   Alert,
@@ -148,17 +148,23 @@ import {
   Pressable,
 } from "react-native";
 import { Image } from "react-native-elements";
-import MapView from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons";
 import Card from "@/components/Card";
+
+
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage"; 
 
 const calender = require("../../assets/images/calender.png");
 const clock = require("../../assets/images/clock.png");
 const pin = require("../../assets/images/pin.png");
 
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
 const Home = () => {
   // Dummy data for events and news
-  const [events] = useState([
+/*   const [events] = useState([
     {
       id: "1",
       title: "Plastic-Free Market Campaign",
@@ -180,8 +186,18 @@ const Home = () => {
       time: "11.30 a.m.",
       location: "Kandy Town Hall",
     },
-  ]);
+  ]); */
 
+  const projectIcons = {
+    "Waste Reduction": "recycle",
+    "Plantation": "tree",
+    "Disaster Preparedness": "alert-circle-outline",
+    "Environmental Awareness Campaigns": "bullhorn-outline",
+    "Sustainable Gardening & Agriculture": "sprout",
+  };
+
+
+  const [events, setEvents] = useState([]);
   const [news] = useState([
     {
       id: "1",
@@ -203,6 +219,21 @@ const Home = () => {
     },
   ]);
 
+   useEffect(() => {
+     const fetchProjects = async () => {
+       try {
+         const response = await axios.get(`${apiUrl}/api/project/`);// Replace with your API URL
+         setEvents(response.data);
+         
+       } catch (error) {
+         console.error(error);
+         Alert.alert("Error fetching projects.");
+       }
+     };
+
+     fetchProjects();
+   }, []);
+
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
       <View style={styles.container}>
@@ -213,7 +244,7 @@ const Home = () => {
 
         {/* Upcoming Events Section */}
         <Pressable
-          onPress={() => router.push("/projects")}
+          onPress={() => router.push("/(tabs)/projects")}
           style={styles.sectionHeader}
         >
           <Text style={styles.sectionTitle}>Upcoming Events</Text>
@@ -229,33 +260,36 @@ const Home = () => {
           style={{ height: 250 }}
           renderItem={({ item }) => (
             <View style={{ width: 350, marginRight: 10 }}>
-            <Card
-              bgColor="#dce8d6"
-              heading={item.title}
-              content={
-                <View style={styles.cardContent}>
-                  <View style={styles.infoRow}>
-                    <Image source={calender} style={styles.icon} />
-                    <Text>{item.date}</Text>
+              <Card
+                bgColor="#dce8d6"
+                heading={item.projectName}
+                iconName={projectIcons[item.projectType] || "help-circle"}
+                content={
+                  <View style={styles.cardContent}>
+                    <View style={styles.infoRow}>
+                      <Image source={calender} style={styles.icon} />
+                      <Text>{item.date}</Text>
+                    </View>
+                    <View style={styles.infoRow}>
+                      <Image source={clock} style={styles.icon} />
+                      <Text>{item.time}</Text>
+                    </View>
+                    <View style={styles.infoRow}>
+                      <Image source={pin} style={styles.icon} />
+                      <Text>{item.location}</Text>
+                    </View>
                   </View>
-                  <View style={styles.infoRow}>
-                    <Image source={clock} style={styles.icon} />
-                    <Text>{item.time}</Text>
-                  </View>
-                  <View style={styles.infoRow}>
-                    <Image source={pin} style={styles.icon} />
-                    <Text>{item.location}</Text>
-                  </View>
-                </View>
-              }
-              
-            />
-             </View>
+                }
+              />
+            </View>
           )}
         />
 
         {/* What's New Section */}
-        <Pressable onPress={() => router.push("/news")} style={styles.sectionHeader}>
+        <Pressable
+          onPress={() => router.push("/news")}
+          style={styles.sectionHeader}
+        >
           <Text style={styles.sectionTitle}>What's New</Text>
           <Ionicons name="chevron-forward-outline" size={24} color="#333" />
         </Pressable>
@@ -269,16 +303,15 @@ const Home = () => {
           style={{ height: 250 }}
           renderItem={({ item }) => (
             <View style={{ width: 350, marginRight: 10 }}>
-            <Card
-              bgColor="#d6e4e8"
-              heading={item.title}
-              content={
-                <View style={styles.cardTextContent}>
-                  <Text style={styles.cardText}>{item.content}</Text>
-                </View>
-              }
-            
-            />
+              <Card
+                bgColor="#d6e4e8"
+                heading={item.title}
+                content={
+                  <View style={styles.cardTextContent}>
+                    <Text style={styles.cardText}>{item.content}</Text>
+                  </View>
+                }
+              />
             </View>
           )}
         />

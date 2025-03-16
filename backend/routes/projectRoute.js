@@ -1,5 +1,5 @@
 import express from "express";
-import { createProject, getProjects, getProjectById, updateProject, deleteProject, updateProjectStatus, getNotApprovedProjects, enrollProject, unenrollProject, getOrganizationProjects, getVolunteerProjects,  getEnrolledUsers  } from "../controllers/projectController.js";
+import { createProject, getProjects, getProjectById, updateProject, deleteProject, updateProjectStatus, getNotApprovedProjects, enrollProject, unenrollProject, getOrganizationProjects, getVolunteerProjects,  getEnrolledUsers, getApprovedProjectsCount, getEnrolledUsersCount, getAllProjects  } from "../controllers/projectController.js";
 
 const projectRouter = express.Router();
 
@@ -11,6 +11,10 @@ projectRouter.get("/", getProjects);
 
 // Get all projects that are not approved
 projectRouter.get("/notapp", getNotApprovedProjects);
+
+
+//get all projects
+projectRouter.get("/all", getAllProjects);
 
 // Get a specific project by ID
 projectRouter.get("/:id", getProjectById);
@@ -38,5 +42,14 @@ projectRouter.get("/:id/enrolled-users", getVolunteerProjects);
 
 // Get all projects volunteers are enrolled in
 projectRouter.get("/volunteer/:id", getEnrolledUsers);
+
+//get count of approved projects
+
+projectRouter.get("/approved/count", getApprovedProjectsCount);
+
+//get count of enrolled users for a specific project
+
+projectRouter.get("/:id/enrolledcount", getEnrolledUsersCount);
+
 
 export default projectRouter;

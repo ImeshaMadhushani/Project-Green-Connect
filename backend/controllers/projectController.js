@@ -37,6 +37,16 @@ export const createProject = async (req, res) => {
     }
 };
 
+//get all projects
+export const getAllProjects = async (req, res) => { 
+    try {
+        const projects = await Project.find();
+        res.status(200).json(projects);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 
 // Get all projects (only approved projects should be visible)
 export const getProjects = async (req, res) => {
@@ -367,6 +377,46 @@ export async function getEnrolledUsers(req, res) {
         });
     } catch (error) {
         console.error("Error fetching enrolled users:", error);
+        res.status(500).json({ success: false, message: "Internal server error", error: error.message });
+    }
+}
+
+
+//count of approved project
+
+export const getApprovedProjectsCount = async (req, res) => {
+    try {
+        const approvedProjectsCount = await Project.countDocuments({ isApproved: true });
+        res.status(200).json({ totalApprovedProjects: approvedProjectsCount });
+    } catch (error) {
+        console.error("Error fetching approved projects count:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
+//get count of enrolling users for a specific project
+export async function getEnrolledUsersCount(req, res) {
+    try {
+        const { id } = req.params; // Extract project ID from request params
+        console.log('Received projectId:', id);
+
+        // Find project and get count of enrolled users
+        const project = await Project.findById(id);
+
+        if (!project) {
+            return res.status(404).json({ message: "Project not found" });
+        }
+
+        const enrolledUsersCount = project.volunteers ? project.volunteers.length : 0;
+
+        res.status(200).json({
+            success: true,
+            message: "Enrolled users count fetched successfully",
+            count: enrolledUsersCount,
+        });
+    } catch (error) {
+        console.error("Error fetching enrolled users count:", error);
         res.status(500).json({ success: false, message: "Internal server error", error: error.message });
     }
 }
