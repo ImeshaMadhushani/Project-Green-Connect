@@ -20,6 +20,8 @@ const ProjectSchema = mongoose.Schema(
         date: { type: Date, required: true },
         time: { type: String, required: true },
         location: { type: String, required: true },
+        latitude: { type: Number, required: true },  // Added latitude field
+        longitude: { type: Number, required: true }, // Added longitude field
         status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
         isApproved: { type: Boolean, default: false },
         approveDate: { type: Date, default: null },

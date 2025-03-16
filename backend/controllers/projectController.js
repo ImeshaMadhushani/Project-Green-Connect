@@ -6,7 +6,8 @@ export const createProject = async (req, res) => {
     try {
         console.log("Incoming request body:", req.body); 
 
-        const { projectName, description, date, time, location, projectType, noOfVolunteers, projectDuration } = req.body;
+        const { projectName, description, date, time, location, latitude, 
+            longitude, projectType, noOfVolunteers, projectDuration } = req.body;
 
         // Ensure the user creating the project is an organization
         const user = await User.findById(req.user.id);  // assuming req.user.id is the logged-in user id
@@ -22,6 +23,8 @@ export const createProject = async (req, res) => {
             date,
             time,
             location,
+            latitude,   
+            longitude,  
             projectType,
             noOfVolunteers,
             projectDuration,
