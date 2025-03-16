@@ -39,6 +39,7 @@ const AdminHome = () => {
         volunteerCount: 0,
         organizationCount: 0,
         approvedProjects: 0,
+        approvedFeedback: 0,
       });
   
   useEffect(() => {
@@ -47,11 +48,15 @@ const AdminHome = () => {
         const userResponse = await axios.get(`${apiUrl}/api/user/counts`);
          const projectsResponse = await axios.get(
            `${apiUrl}/api/project/approved/count`
-         );
+        );
+        const feedbackResponse = await axios.get(
+          `${apiUrl}/api/feedback/feedback/approved/count`
+        );
         setCounts({
           volunteerCount: userResponse.data.volunteerCount,
           organizationCount: userResponse.data.organizationCount,
           approvedProjects: projectsResponse.data.totalApprovedProjects,
+          approvedFeedback: feedbackResponse.data.approvedCount,
         });
       } catch (error) {
         console.error("Error fetching counts:", error);
@@ -116,11 +121,13 @@ const AdminHome = () => {
           value="120"
           icon="file-document-multiple"
         />
-        <OverviewCard title="Feedback" value="30" icon="alert-circle-outline" />
-
+        <OverviewCard
+          title="Approved Feedback"
+          value={counts.approvedFeedback.toString()}
+          icon="check-circle-outline"
+        />
         {/* Logout Button */}
         <Button title="Logout" color="#D32F2F" onPress={handleLogout} />
-      
       </View>
     );
   };
