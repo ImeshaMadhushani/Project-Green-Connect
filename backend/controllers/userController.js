@@ -208,14 +208,18 @@ export function getAllUsers(req, res) {
 
 // Admin: Approve Organization
 export async function approveOrganization(req, res) {
-    const { userId } = req.params;
+    const { id } = req.params;
 
     try {
+        if (!req.user || !req.user.role) {
+            return res.status(400).json({ message: "Role not found in user data" });
+        }
+
         if (req.user.role !== "admin") {
             return res.status(403).json({ message: "Access denied. Admin or Superadmin only." });
         }
 
-        const user = await User.findById(userId);
+        const user = await User.findById(id);
         if (!user || user.role !== "organization") {
             return res.status(404).json({ message: "Organization not found" });
         }
@@ -230,16 +234,45 @@ export async function approveOrganization(req, res) {
     }
 }
 
+// Admin: suspend Organization
+export async function suspendOrganization(req, res) {
+    const { id } = req.params;
+
+    try {
+        if (!req.user || !req.user.role) {
+            return res.status(400).json({ message: "Role not found in user data" });
+        }
+
+        if (req.user.role !== "admin") {
+            return res.status(403).json({ message: "Access denied. Admin or Superadmin only." });
+        }
+
+        const user = await User.findById(id);
+        if (!user || user.role !== "organization") {
+            return res.status(404).json({ message: "Organization not found" });
+        }
+
+        user.isApproved = false;
+        await user.save();
+
+        res.status(200).json({ message: "Organization suspend successfully!", user });
+    } catch (error) {
+        console.error("Error during approval:", error);
+        res.status(500).json({ message: "Error suspending organization", error: error.message });
+    }
+}
+
+
 // Delete user (Admin only)
 export async function deleteUser(req, res) {
-    const { userId } = req.params;
+    const { id } = req.params;
 
     try {
         if (req.user.role !== "admin") {
             return res.status(403).json({ message: "Access denied. Admin or Superadmin only." });
         }
 
-        const user = await User.findByIdAndDelete(userId);
+        const user = await User.findByIdAndDelete(id);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
