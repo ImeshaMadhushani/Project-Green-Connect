@@ -30,7 +30,7 @@ const plus = require("../../assets/images/plus.png");
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
-const openMap = async (latitude, longitude) => {
+const openMap = async (latitude: number, longitude: number) => {
   try {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
@@ -48,7 +48,7 @@ const openMap = async (latitude, longitude) => {
   }
 };
 
-const projectIcons = {
+const projectIcons: { [key: string]: string } = {
   "Waste Reduction": "recycle",
   "Plantation": "tree",
   "Disaster Preparedness": "alert-circle-outline",
@@ -73,7 +73,7 @@ const Projects = () => {
     duration: "",
     description: "",
   });
-    const [projects, setProjects] = useState([]);
+    const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
    const [userRole, setUserRole] = useState(""); 
   
@@ -186,7 +186,7 @@ const Projects = () => {
                   onPress={() =>
                     router.push({
                       pathname: "/view/projectSingleView",
-                      params: project,
+                      params: { ...project },
                     })
                   }
                   bgColor={getRandomColor()}
