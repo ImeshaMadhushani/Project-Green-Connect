@@ -121,7 +121,7 @@ const ProjectSingleView = () => {
             <Text style={styles.enrollButtonText}>Enroll in Project</Text>
           </TouchableOpacity>  */}
           
-          {userRole !== "organization" && (
+          {userRole == "volunteer" && (
             <TouchableOpacity
               style={styles.enrollButton}
               onPress={handleEnroll}
