@@ -13,6 +13,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
@@ -91,10 +92,29 @@ const ManageUsers = () => {
           text: "Confirm",
           onPress: async () => {
             try {
+            const token = await AsyncStorage.getItem("authToken");
+            if (!token) {
+              console.error("No token found!");
+              return;
+            }
+                 
               if (action === "Suspend") {
-                await axios.patch(`${apiUrl}/api/user/suspend/${id}`);
+                await axios.put(
+                  `${apiUrl}/api/user/suspendOrganization/${id}`,
+                  {},
+                  { headers: { Authorization: `Bearer ${token}` } }
+                );
               } else if (action === "Delete") {
-                await axios.delete(`${apiUrl}/api/user/delete/${id}`);
+                await axios.delete(
+                  `${apiUrl}/api/user/delete/${id}`,
+                  { headers: { Authorization: `Bearer ${token}` } }
+                );
+              } else if (action === "Approve") {
+                await axios.put(
+                  `${apiUrl}/api/user/approveOrganization/${id}`,
+                  {},
+                  { headers: { Authorization: `Bearer ${token}` } }
+                );
               }
               fetchUsers();
               Alert.alert("Success", `User ${action.toLowerCase()}ed successfully.`);
@@ -130,7 +150,7 @@ const ManageUsers = () => {
           <Picker.Item label="All Statuses" value="All" />
           <Picker.Item label="Active" value="Active" />
           <Picker.Item label="Pending" value="Pending" />
-         {/*  <Picker.Item label="Approved" value="Approved" /> */}
+          {/*  <Picker.Item label="Approved" value="Approved" /> */}
           <Picker.Item label="Rejected" value="Rejected" />
         </Picker>
       </View>
@@ -182,14 +202,26 @@ const ManageUsers = () => {
                 />
               </Pressable> */}
 
-              {/* 🚫 Suspend Button */}
-              <Pressable onPress={() => handleAction(item._id, "Suspend")}>
-                <MaterialCommunityIcons
-                  name="block-helper"
-                  size={22}
-                  color="red"
-                />
-              </Pressable>
+              {item.role === "organization" && (
+                <Pressable onPress={() => handleAction(item._id, "Approve")}>
+                  <MaterialCommunityIcons
+                    name="check-circle"
+                    size={22}
+                    color="green"
+                  />
+                </Pressable>
+              )}
+
+              {/* Suspend Button */}
+              {item.role === "organization" && (
+                <Pressable onPress={() => handleAction(item._id, "Suspend")}>
+                  <MaterialCommunityIcons
+                    name="block-helper"
+                    size={22}
+                    color="red"
+                  />
+                </Pressable>
+              )}
 
               {/* 🗑 Delete Button */}
               <Pressable onPress={() => handleAction(item._id, "Delete")}>
