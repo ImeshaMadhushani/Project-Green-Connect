@@ -238,6 +238,7 @@ const Home = () => {
 
   const [userLocation, setUserLocation] = useState<Location | null>(null);
   const [loading, setLoading] = useState(true);
+  const [feedback, setFeedback] = useState([]);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -273,6 +274,19 @@ const Home = () => {
       }
     };
     fetchUserLocation();
+  }, []);
+
+  useEffect(() => {
+    const fetchFeedback = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/feedback/feedback/approved`);
+        setFeedback(response.data);
+      } catch (error) {
+        console.error("Error fetching feedback:", error);
+      }
+    };
+
+    fetchFeedback();
   }, []);
 
   // Haversine formula to calculate distance between two points (in kilometers)
@@ -406,6 +420,33 @@ const Home = () => {
             </View>
           )}
         />
+
+        {/* Approved Feedback Section */}
+        <Pressable style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>User Feedback</Text>
+        </Pressable>
+
+        <FlatList
+          data={feedback}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.slider}
+          style={{ height: 200 }}
+          renderItem={({ item }) => (
+            <View style={styles.cardWrapper}>
+              <Card
+                bgColor="#f7e6c3"
+                heading={`⭐ ${item.rating} - ${item.username}`}
+                content={
+                  <View style={styles.cardTextContent}>
+                    <Text style={styles.cardText}>"{item.comment}"</Text>
+                  </View>
+                }
+              />
+            </View>
+          )}
+        />
       </View>
     </ScrollView>
   );
@@ -419,6 +460,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingBottom: 20,
+    justifyContent: "center",
   },
   mapContainer: {
     width: "100%",
@@ -446,11 +488,19 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   slider: {
-    paddingLeft: 15,
+    paddingLeft: 5,
+    paddingRight: 5,
   },
   // cardStyle: {
   //   marginRight: 15,
   // },
+
+  cardWrapper: {
+    width: 350,
+    marginRight: 10,
+    borderRadius: 10,
+    overflow: "hidden", // Ensures the shadow stays within the rounded corners
+  },
   cardContent: {
     margin: 15,
   },
@@ -466,9 +516,12 @@ const styles = StyleSheet.create({
   },
   cardTextContent: {
     marginTop: 10,
+    padding: 10,
   },
   cardText: {
     fontSize: 16,
+    fontStyle: "italic",
+    color: "#333",
   },
 });
 

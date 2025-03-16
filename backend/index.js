@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import bodyParser from 'body-parser';
 import userRouter from './routes/userRoute.js';
 import projectRouter from './routes/projectRoute.js';
+import feedbackRouter from './routes/feedbackRoute.js';
 
 import postRoute from './routes/postRoute.js';
 
@@ -16,6 +17,7 @@ import methodOverride from 'method-override';
 import  path  from 'path';
 import { fileURLToPath } from 'url';
 import morgan from 'morgan';
+
 
 
 
@@ -74,6 +76,8 @@ app.use((req, res, next) => {
 app.use("/api/user", userRouter);
 app.use("/api/project", projectRouter);
 app.use('/api/post', postRoute)
+app.use('/api/feedback', feedbackRouter);
+
 
 
 
