@@ -1,13 +1,14 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Alert, Button } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Card, Text } from "react-native-paper";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 
-const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 // Import screens
 import ManageUsers from "./manageUsers";
@@ -15,11 +16,13 @@ import ManageProjects from "./manageProjects";
 import ManageArticles from "./manageArticles";
 import FeedbackReports from "./feedbackReports";
 
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
 // Tab Navigator
 const Tab = createBottomTabNavigator();
 
 // Overview Cards
-const OverviewCard = ({ title, value, icon }: { title: string; value: string; icon: string }) => (
+const OverviewCard = ({ title, value, icon }: { title: string; value: string; icon: keyof typeof MaterialCommunityIcons.glyphMap }) => (
     <Card style={styles.card}>
       <Card.Content style={styles.cardContent}>
         <MaterialCommunityIcons name={icon} size={50} color="#388E3C" />
@@ -57,8 +60,38 @@ const AdminHome = () => {
     fetchCounts();
   }, []);
   
-  
-  
+   // Logout function
+  const handleLogout = async () => {
+    try {
+      // Get the token from AsyncStorage
+      const token = await AsyncStorage.getItem("authToken");
+
+      if (!token) {
+        console.error("No token found!");
+        return;
+      }
+
+      // Log out user
+      await axios.post(
+        `${apiUrl}/api/user/logout`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Clear token after logging out
+      await AsyncStorage.removeItem("authToken");
+
+      router.replace("/logIn");
+
+      console.log("Logged out successfully");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
   
     return (
       <View style={styles.container}>
@@ -84,6 +117,10 @@ const AdminHome = () => {
           icon="file-document-multiple"
         />
         <OverviewCard title="Feedback" value="30" icon="alert-circle-outline" />
+
+        {/* Logout Button */}
+        <Button title="Logout" color="#D32F2F" onPress={handleLogout} />
+      
       </View>
     );
   };
@@ -93,7 +130,7 @@ const AdminHome = () => {
       <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName: string;
+          let iconName: keyof typeof MaterialCommunityIcons.glyphMap;
           if (route.name === "Dashboard") iconName = "view-dashboard";
           else if (route.name === "Users") iconName = "account-group";
           else if (route.name === "Projects") iconName = "folder-multiple";
@@ -118,6 +155,8 @@ const AdminHome = () => {
       </Tab.Navigator>
     );
   };
+
+  export default AdminDashboard;
   
   // Styles
   const styles = StyleSheet.create({
@@ -154,6 +193,4 @@ const AdminHome = () => {
       color: "#1B5E20",
     },
   });
-  
-  export default AdminDashboard;
   
