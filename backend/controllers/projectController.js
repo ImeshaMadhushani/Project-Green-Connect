@@ -40,7 +40,9 @@ export const createProject = async (req, res) => {
 //get all projects
 export const getAllProjects = async (req, res) => { 
     try {
-        const projects = await Project.find();
+        const projects = await Project.find()
+            .populate('organizationId', 'name') // Populating organizationId with 'name' field
+            .exec(); // Execute the query
         res.status(200).json(projects);
     } catch (error) {
         res.status(500).json({ message: error.message });
