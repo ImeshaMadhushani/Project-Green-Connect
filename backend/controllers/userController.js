@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
-import Project from "../models/Project.js";
+
 
 // Register a new user
 
@@ -484,3 +484,14 @@ export async function logout(req, res) {
     }
 }
 
+//get approve organizations
+export async function getApproveOrganizations(req, res) {
+    try {
+        const organizations = await User.find({ role: 'organization', isApproved: true });
+        res.status(200).json({ message: 'Organizations fetched successfully', organizations });
+    }
+    catch (error) {
+        console.error("Error fetching organizations:", error);
+        res.status(500).json({ message: 'Error fetching organizations', error: error.message });
+    }
+}

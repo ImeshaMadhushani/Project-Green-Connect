@@ -22,7 +22,7 @@ type RootStackParamList = {
   "view/articleView": undefined;
 };
 
-const apiUrl = Constants.expoConfig?.extra?.EXPO_PUBLIC_API_URL || "http://192.168.43.190:5000";
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;;
 
 if (!apiUrl) {
   console.error("API URL is not defined. Check your .env file.");
@@ -38,7 +38,7 @@ const CreateArticle = () => {
   const router = useRouter();
 
   useEffect(() => {
-    setUsername("Gayan"); // Ensure this exists in User collection
+    setUsername(""); 
   }, []);
 
   const pickImage = async () => {

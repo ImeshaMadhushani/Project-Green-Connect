@@ -146,11 +146,13 @@ import {
   Text,
   View,
   Pressable,
+  ActivityIndicator,
 } from "react-native";
 import { Image } from "react-native-elements";
 import MapView, { Marker } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons";
 import Card from "@/components/Card";
+import * as Location from "expo-location";
 
 
 import axios from "axios";
@@ -164,7 +166,7 @@ const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 const Home = () => {
   // Dummy data for events and news
-/*   const [events] = useState([
+  /*   const [events] = useState([
     {
       id: "1",
       title: "Plastic-Free Market Campaign",
@@ -190,14 +192,24 @@ const Home = () => {
 
   const projectIcons = {
     "Waste Reduction": "recycle",
-    "Plantation": "tree",
+    Plantation: "tree",
     "Disaster Preparedness": "alert-circle-outline",
     "Environmental Awareness Campaigns": "bullhorn-outline",
     "Sustainable Gardening & Agriculture": "sprout",
   };
 
+  interface Event {
+    id: string;
+    projectName: string;
+    projectType: string;
+    date: string;
+    time: string;
+    location: string;
+    latitude: number;
+    longitude: number;
+  }
 
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [news] = useState([
     {
       id: "1",
@@ -219,27 +231,120 @@ const Home = () => {
     },
   ]);
 
-   useEffect(() => {
-     const fetchProjects = async () => {
-       try {
-         const response = await axios.get(`${apiUrl}/api/project/`);// Replace with your API URL
-         setEvents(response.data);
-         
-       } catch (error) {
-         console.error(error);
-         Alert.alert("Error fetching projects.");
-       }
-     };
+  interface Location {
+    latitude: number;
+    longitude: number;
+  }
 
-     fetchProjects();
-   }, []);
+  const [userLocation, setUserLocation] = useState<Location | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [feedback, setFeedback] = useState([]);
 
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/project/`); // Replace with your API URL
+        setEvents(response.data);
+      } catch (error) {
+        console.error(error);
+        Alert.alert("Error fetching projects.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  useEffect(() => {
+    // Fetch user's current location using Expo Location API
+    const fetchUserLocation = async () => {
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          Alert.alert("Permission to access location was denied");
+          return;
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+        setUserLocation(location.coords);
+      } catch (error) {
+        console.error("Error fetching user location:", error);
+        Alert.alert("Error fetching user location.");
+      }
+    };
+    fetchUserLocation();
+  }, []);
+
+  useEffect(() => {
+    const fetchFeedback = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/feedback/feedback/approved`);
+        setFeedback(response.data);
+      } catch (error) {
+        console.error("Error fetching feedback:", error);
+      }
+    };
+
+    fetchFeedback();
+  }, []);
+
+  // Haversine formula to calculate distance between two points (in kilometers)
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Radius of the Earth in kilometers
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) *
+        Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in kilometers
+  };
+
+  // Filter events based on proximity to the user's location (within 50 km)
+  const filteredProjects = events.filter((project) => {
+    if (!userLocation) return false; // Ensure userLocation is available
+    const distance = calculateDistance(
+      userLocation.latitude,
+      userLocation.longitude,
+      project.latitude,
+      project.longitude
+    );
+    return distance <= 50; // Adjust the value as needed (50 km in this case)
+  });
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
       <View style={styles.container}>
         {/* Map Section */}
         <View style={styles.mapContainer}>
-          <MapView style={styles.map} />
+          <MapView
+            style={styles.map}
+            region={{
+              latitude: userLocation ? userLocation.latitude : 7.8731,
+              longitude: userLocation ? userLocation.longitude : 80.7718,
+              latitudeDelta: 2, // Adjusted to zoom out to fit the whole island
+              longitudeDelta: 2, // Adjusted for a better zoom level for Sri Lanka
+            }}
+          >
+            {filteredProjects.map((item) => (
+              <Marker
+                key={item.id}
+                coordinate={{
+                  latitude: item.latitude,
+                  longitude: item.longitude,
+                }}
+                title={item.projectName}
+                description={item.location}
+              />
+            ))}
+          </MapView>
         </View>
 
         {/* Upcoming Events Section */}
@@ -315,6 +420,33 @@ const Home = () => {
             </View>
           )}
         />
+
+        {/* Approved Feedback Section */}
+        <Pressable style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>User Feedback</Text>
+        </Pressable>
+
+        <FlatList
+          data={feedback}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.slider}
+          style={{ height: 200 }}
+          renderItem={({ item }) => (
+            <View style={styles.cardWrapper}>
+              <Card
+                bgColor="#f7e6c3"
+                heading={`⭐ ${item.rating} - ${item.username}`}
+                content={
+                  <View style={styles.cardTextContent}>
+                    <Text style={styles.cardText}>"{item.comment}"</Text>
+                  </View>
+                }
+              />
+            </View>
+          )}
+        />
       </View>
     </ScrollView>
   );
@@ -328,6 +460,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingBottom: 20,
+    justifyContent: "center",
   },
   mapContainer: {
     width: "100%",
@@ -355,11 +488,19 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   slider: {
-    paddingLeft: 15,
+    paddingLeft: 5,
+    paddingRight: 5,
   },
   // cardStyle: {
   //   marginRight: 15,
   // },
+
+  cardWrapper: {
+    width: 350,
+    marginRight: 10,
+    borderRadius: 10,
+    overflow: "hidden", // Ensures the shadow stays within the rounded corners
+  },
   cardContent: {
     margin: 15,
   },
@@ -375,9 +516,12 @@ const styles = StyleSheet.create({
   },
   cardTextContent: {
     marginTop: 10,
+    padding: 10,
   },
   cardText: {
     fontSize: 16,
+    fontStyle: "italic",
+    color: "#333",
   },
 });
 

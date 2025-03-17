@@ -68,6 +68,7 @@ const handleSaveLocation = async (selectedLocation: {
 
     setLocation(selectedLocation);
     setFields("location", placeName);
+    setFields("locationCoordinates", JSON.stringify(selectedLocation));
     setIsMapPickerVisible(false);
   } catch (error) {
     console.error("Error fetching location name:", error);
@@ -100,6 +101,8 @@ const handleSaveLocation = async (selectedLocation: {
         date: fields.date,
         time: fields.time,
         location: fields.location,
+        latitude: location ? location.lat : null, 
+        longitude: location ? location.lng : null, 
         projectType: fields.projectType,
         noOfVolunteers: fields.volunteers,
         projectDuration: fields.duration,
@@ -183,6 +186,7 @@ const handleSaveLocation = async (selectedLocation: {
                         )}, Lng: ${location.lng.toFixed(4)}`
                       : "Select Location"}
                   </Text>
+                  {fields.location && <Text>{fields.location}</Text>}
                 </Pressable>
 
                 {/* Map Picker Modal */}
