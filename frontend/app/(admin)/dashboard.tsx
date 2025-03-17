@@ -66,6 +66,10 @@ const AdminHome = () => {
       }
     };
     fetchCounts();
+     const interval = setInterval(fetchCounts, 5000);
+
+     // Cleanup function to clear interval when component unmounts
+     return () => clearInterval(interval);
   }, []);
   
    // Logout function
