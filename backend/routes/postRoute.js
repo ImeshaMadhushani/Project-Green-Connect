@@ -7,6 +7,7 @@ import {
   deletePost,
   getPost,
   updatePost,
+  search
 } from "../controllers/postController/postController.js";
 import {
   addComment,
@@ -62,6 +63,8 @@ router.post("/:id/comment", addComment);
 router.delete("/:postId/comment/:commentId/delete", deleteComment);
 router.post("/:postId/like", likeController);
 router.get('/leaderboard', getLeaderboard);
+router.get('/search', search);
+
 
 
 export default router;

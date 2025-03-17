@@ -146,3 +146,40 @@ export const updatePost = async (req, res) => {
     });
   }
 };
+
+
+// Search posts by title or category
+
+export const search = async (req, res) => {
+  try {
+    const { query } = req.query; // Get the search query from the request
+
+    if (!query) {
+      return res.status(400).send({
+        success: false,
+        message: "Search query is required",
+      });
+    }
+
+    // Search for posts where the title or category matches the query
+    const posts = await Post.find({
+      $or: [
+        { title: { $regex: query, $options: "i" } }, // Case-insensitive search
+        { category: { $regex: query, $options: "i" } },
+      ],
+    });
+
+    res.status(200).send({
+      success: true,
+      message: "Posts fetched successfully",
+      posts,
+    });
+  } catch (err) {
+    console.error("Error searching posts:", err);
+    res.status(500).send({
+      success: false,
+      message: "Server Error",
+      error: err.message,
+    });
+  }
+};
