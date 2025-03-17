@@ -35,7 +35,8 @@ const UserSchema = mongoose.Schema(
     },
     passwordResetOtp: String, // Store OTP here
     passwordResetOtpExpires: Date, // OTP expiration time
-    
+    latitude: { type: Number, required: false }, 
+    longitude: { type: Number, required: false },
   },
   { timestamps: true }
 );

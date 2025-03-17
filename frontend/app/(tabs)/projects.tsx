@@ -7,11 +7,14 @@ import {
   View,
   Pressable,
   ActivityIndicator,
+  Linking,
 } from "react-native";
 import Card from "@/components/Card";
 import ModalComponent from "@/components/ProjectModal";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
+
+import * as Location from "expo-location";
 
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -27,13 +30,40 @@ const plus = require("../../assets/images/plus.png");
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
-const projectIcons = {
+const openMap = async (latitude: number, longitude: number) => {
+  try {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert(
+        "Permission Denied",
+        "Enable location permissions to use maps."
+      );
+      return;
+    }
+   
+     const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+    Linking.openURL(url);
+  } catch (error) {
+    console.error("Error opening map:", error);
+  }
+};
+
+const projectIcons: { [key: string]: string } = {
   "Waste Reduction": "recycle",
   "Plantation": "tree",
   "Disaster Preparedness": "alert-circle-outline",
   "Environmental Awareness Campaigns": "bullhorn-outline",
   "Sustainable Gardening & Agriculture": "sprout",
 };
+
+interface Project {
+  _id: string;
+  projectName: string;
+  projectType: string;
+  date: string;
+  time: string;
+  location: string;
+}
 
 const Projects = () => {
   const router = useRouter();
@@ -43,7 +73,7 @@ const Projects = () => {
     duration: "",
     description: "",
   });
-    const [projects, setProjects] = useState([]);
+    const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
    const [userRole, setUserRole] = useState(""); 
   
@@ -156,7 +186,7 @@ const Projects = () => {
                   onPress={() =>
                     router.push({
                       pathname: "/view/projectSingleView",
-                      params: project,
+                      params: { ...project },
                     })
                   }
                   bgColor={getRandomColor()}
@@ -182,10 +212,29 @@ const Projects = () => {
                         </View>
                         <View style={styles.infoRow}>
                           <Image source={pin} style={styles.smallIcon} />
+                          {/* Use latitude and longitude from project */}
                           <Text style={styles.infoText}>
                             {project.location}
                           </Text>
                         </View>
+                          <Pressable
+                            onPress={
+                              () => openMap(project.latitude, project.longitude) // Pass coordinates here
+                            }
+                          >
+                            <Text
+                              style={[
+                                styles.infoText,
+                                {
+                                  color: "blue",
+                                  textDecorationLine: "underline",
+                                },
+                              ]}
+                            >
+                              View on Map
+                            </Text>
+                          </Pressable>
+                       
                       </View>
                     </View>
                   }
@@ -234,7 +283,6 @@ const Projects = () => {
 
             </Pressable>
           ))} */}
-
         </View>
       </ScrollView>
 

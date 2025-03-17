@@ -65,8 +65,9 @@ const LogIn = () => {
     if (!validateInputs()) return;
 
     try {
+      const normalizedEmail = email.toLowerCase(); 
       const response = await axios.post(`${apiUrl}/api/user/login`, {
-        email,
+        email: normalizedEmail,
         password,
       });
 

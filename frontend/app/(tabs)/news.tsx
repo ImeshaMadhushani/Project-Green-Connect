@@ -16,6 +16,8 @@ import axios from "axios";
 const plus = require("../../assets/images/plus.png");
 const scope = require("../../assets/images/scope.png");
 
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
 const News = () => {
   interface Post {
     _id: string;
@@ -32,7 +34,7 @@ const News = () => {
   // Fetch posts from the backend
   const fetchPosts = async () => {
     try {
-      const response = await axios.get("http://192.168.43.190:5000/api/post/get-posts");
+      const response = await axios.get(`${apiUrl}/api/post/get-posts`);
       if (response.data.success) {
         setPosts(response.data.posts); // Set the fetched posts
       } else {
