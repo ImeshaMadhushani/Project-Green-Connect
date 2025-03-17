@@ -16,13 +16,13 @@ import { Picker } from "@react-native-picker/picker";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import axios from "axios";
-import Constants from "expo-constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type RootStackParamList = {
   "view/articleView": undefined;
 };
 
-const apiUrl = process.env.EXPO_PUBLIC_API_URL;;
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 if (!apiUrl) {
   console.error("API URL is not defined. Check your .env file.");
@@ -32,13 +32,36 @@ const CreateArticle = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
-  const [username, setUsername] = useState("");
   const [image, setImage] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null); // Automatically set username
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const router = useRouter();
 
   useEffect(() => {
-    setUsername(""); 
+    const fetchUserData = async () => {
+      try {
+        const token = await AsyncStorage.getItem("authToken");
+
+        if (!token) {
+          console.error("No token found!");
+          return;
+        }
+
+        const response = await axios.get(`${apiUrl}/api/user/getUser`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data.user) {
+          setUsername(response.data.user.name); // Set the username automatically
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   const pickImage = async () => {
@@ -63,7 +86,6 @@ const CreateArticle = () => {
     setTitle("");
     setContent("");
     setCategory("");
-    setUsername("");
     setImage(null);
   };
 
@@ -72,7 +94,7 @@ const CreateArticle = () => {
 
     if (!title || !content || !category || !username) {
       console.log("Validation failed:", { title, content, category, username });
-      Alert.alert("Error", "Please fill all required fields: title, content, category, username");
+      Alert.alert("Error", "Please fill all required fields: title, content, category");
       return;
     }
 
@@ -110,7 +132,6 @@ const CreateArticle = () => {
         setTitle("");
         setContent("");
         setCategory("");
-        setUsername("");
         setImage(null);
       }
     } catch (error) {
@@ -132,7 +153,6 @@ const CreateArticle = () => {
           {image ? <Image source={{ uri: image }} style={styles.uploadedImage} /> : <Text style={styles.imageText}>+ Add post images</Text>}
         </Pressable>
         <TextInput style={styles.input} placeholder="Add Title" value={title} onChangeText={setTitle} />
-        <TextInput style={styles.input} placeholder="Username" value={username} onChangeText={setUsername} />
         <View style={styles.pickerContainer}>
           <Picker selectedValue={category} onValueChange={setCategory} style={styles.picker}>
             <Picker.Item label="Select Category" value="" />
