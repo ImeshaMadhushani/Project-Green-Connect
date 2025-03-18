@@ -19,7 +19,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type RootStackParamList = {
-  "view/articleView": undefined;
+  "(tabs)/news": undefined;
 };
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
@@ -127,7 +127,7 @@ const CreateArticle = () => {
       console.log("Response:", response.data);
       if (response.status === 200) {
         Alert.alert("Success", "Article Posted Successfully!", [
-          { text: "OK", onPress: () => router.push("/view/articleView") },
+          { text: "OK", onPress: () => router.push("/(tabs)/news") },
         ]);
         setTitle("");
         setContent("");

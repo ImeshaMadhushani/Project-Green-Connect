@@ -60,7 +60,7 @@ router.get('/get-posts', getPost);
 router.delete("/:id/delete", deletePost);
 router.post("/:id/update", upload.single("image"), updatePost);
 router.post("/:id/comment", addComment);
-router.delete("/:postId/comment/:commentId/delete", deleteComment);
+router.delete("/:postId/comment/:commentId", deleteComment);
 router.post("/:postId/like", likeController);
 router.get('/leaderboard', getLeaderboard);
 router.get('/search', search);
