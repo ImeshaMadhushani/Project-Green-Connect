@@ -40,6 +40,7 @@ app.use(session({
 
 
 app.use("/uploads", express.static("uploads"));
+app.use("/qrcodes", express.static("public/qrcodes"));
 
 
 

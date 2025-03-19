@@ -1,6 +1,10 @@
 import Project from "../models/Project.js";
 import User from "../models/User.js";
 
+import QRCode from "qrcode";
+/* import path from "path";
+import fs from "fs"; */
+
 // Create a new project (only organization can create projects)
 export const createProject = async (req, res) => {
     try {
@@ -32,6 +36,25 @@ export const createProject = async (req, res) => {
             isApproved: false,
         });
 
+        // Generate QR Code for the project
+        const qrData = JSON.stringify({
+            organizationId: user._id,
+            projectName,
+            description,
+            date,
+            time,
+        });
+
+        try {
+            const qrCodeUrl = await QRCode.toDataURL(qrData);
+            // Save QR Code in the database
+            newProject.qrCode = qrCodeUrl;
+        } catch (qrError) {
+            console.error("Error generating QR code:", qrError);
+            return res.status(500).json({ message: "Failed to generate QR code." });
+        }
+
+    
         await newProject.save();
         res.status(201).json(newProject);
     } catch (error) {
