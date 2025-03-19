@@ -448,3 +448,47 @@ export async function getEnrolledUsersCount(req, res) {
         res.status(500).json({ success: false, message: "Internal server error", error: error.message });
     }
 }
+
+
+
+export const markAttendance = async (req, res) => {
+    try {
+        const { qrCodeData } = req.body;  // The scanned QR code data
+
+        // Find the project using the QR code data
+        const project = await Project.findOne({ qrCode: qrCodeData });
+
+        if (!project) {
+            return res.status(404).json({ message: "Invalid QR code or project not found" });
+        }
+
+        // Ensure the user is enrolled in the project
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (user.role !== "volunteer") {
+            return res.status(403).json({ message: "Only volunteers can mark attendance" });
+        }
+
+        if (!project.volunteers.includes(req.user.id)) {
+            return res.status(403).json({ message: "You are not enrolled in this project" });
+        }
+
+        // Check if the volunteer has already marked attendance for this project
+        if (project.attendance.includes(req.user.id)) {
+            return res.status(400).json({ message: "You have already marked your attendance" });
+        }
+
+        // Mark the user's attendance
+        project.attendance.push(req.user.id);
+        await project.save();
+
+        res.status(200).json({ message: "Attendance marked successfully" });
+    } catch (error) {
+        console.error("Error marking attendance:", error);
+        res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};
+
