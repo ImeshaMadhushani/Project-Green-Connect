@@ -53,7 +53,8 @@ projectRouter.get("/:id/enrolledcount", getEnrolledUsersCount);
 
 
 //mark attendance
-projectRouter.put("/:id/markattendance", markAttendance);
+//projectRouter.put("/:id/markattendance", markAttendance);
+projectRouter.post("/markattendance", markAttendance);
 
 
 export default projectRouter;
