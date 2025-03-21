@@ -240,7 +240,7 @@ const MyProjects = () => {
       // Share the saved QR code image
       await shareAsync(filename);
 
-      Alert.alert("Success", "QR Code downloaded and shared successfully!");
+      //Alert.alert("Success", "QR Code downloaded and shared successfully!");
     } catch (error) {
       console.error("Failed to download or share QR code", error);
       Alert.alert("Error", "Failed to download or share QR code.");
@@ -299,7 +299,7 @@ const MyProjects = () => {
                       </Pressable>
 
                       <Button
-                        title="Download QR Code"
+                        title="QR Code"
                         onPress={() => downloadQRCode(item.qrCode)}
                       />
 
