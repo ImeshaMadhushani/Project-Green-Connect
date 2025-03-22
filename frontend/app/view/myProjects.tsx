@@ -167,21 +167,12 @@ const MyProjects = () => {
 
   //Edit Project for organization
   const handleEditProject = (id: string) => {
-    Alert.alert("Edit Project", "Are you sure you want to edit this project?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Edit",
-        style: "default",
-        onPress: () => {
-          // Navigate to the edit screen and pass project details
-          router.push({
-            pathname: "/view/projectEdit", // Ensure this route exists
-            params: { id }, // You can pass project ID and other details if needed
-          });
-        },
-      },
-    ]);
+    router.push({
+      pathname: "/view/projectEdit", 
+      params: { id },
+    });
   };
+
 
   const viewEnrolledUsers = async (id: string) => {
     try {

@@ -8,6 +8,7 @@ import userRouter from './routes/userRoute.js';
 import projectRouter from './routes/projectRoute.js';
 
 import postRoute from './routes/postRoute.js';
+import organizationRoute from './routes/organizationRoute.js'
 
 import cors from 'cors'; 
 
@@ -77,6 +78,9 @@ app.use("/api/user", userRouter);
 app.use("/api/project", projectRouter);
 app.use('/api/post', postRoute)
 app.use ('/api/feedback', feedbackRouter)
+app.use('/api/organization',organizationRoute)
+
+
 
 
 // Connect to MongoDB
