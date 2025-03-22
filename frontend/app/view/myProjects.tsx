@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Modal,
   Image,
+  Button,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
@@ -17,6 +18,10 @@ import { useRouter } from "expo-router";
 
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { shareAsync } from "expo-sharing";
+import * as FileSystem from "expo-file-system";
+
 
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
@@ -38,6 +43,7 @@ interface Project {
   time: string;
   location: string;
   projectType: string;
+  qrCode?: string; // Added qrCode property
 }
 
 const MyProjects = () => {
@@ -203,6 +209,35 @@ const MyProjects = () => {
     }
   };
 
+  const downloadQRCode = async (qrCodeBase64: string) => {
+    try {
+      // Check if qrCodeBase64 is provided and is a valid string
+      if (!qrCodeBase64 || !qrCodeBase64.startsWith("data:image/png;base64,")) {
+        Alert.alert("Error", "Invalid QR Code data.");
+        return;
+      }
+
+      // Construct the file path
+      const filename = FileSystem.documentDirectory + "project_qr.png";
+
+      // Remove the base64 prefix (data:image/png;base64,)
+      const base64Data = qrCodeBase64.replace("data:image/png;base64,", "");
+
+      // Write the QR code to the file system
+      await FileSystem.writeAsStringAsync(filename, base64Data, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      // Share the saved QR code image
+      await shareAsync(filename);
+
+      //Alert.alert("Success", "QR Code downloaded and shared successfully!");
+    } catch (error) {
+      console.error("Failed to download or share QR code", error);
+      Alert.alert("Error", "Failed to download or share QR code.");
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -253,6 +288,12 @@ const MyProjects = () => {
                           color="white"
                         />
                       </Pressable>
+
+                      <Button
+                        title="QR Code"
+                        onPress={() => downloadQRCode(item.qrCode)}
+                      />
+
                       <Pressable
                         style={styles.viewUsersButton}
                         onPress={() => viewEnrolledUsers(item._id)}

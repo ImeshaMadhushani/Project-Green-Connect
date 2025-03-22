@@ -24,7 +24,7 @@ const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 ]; */
 
 const ManageUsers = () => {
-  const [users, setUsers] = useState<{ _id: string; name: string; role: string; status?: string }[]>([]);
+  const [users, setUsers] = useState<{ _id: string; name: string; role: string; status?: string; isApproved?: boolean }[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -79,7 +79,7 @@ const ManageUsers = () => {
   });
 
 
-  const handleAction = (id, action) => {
+  const handleAction = (id: string, action: "Suspend" | "Delete" | "Approve") => {
     Alert.alert(
       `${action} User`,
       `Are you sure you want to ${action} this user?`,
@@ -131,11 +131,11 @@ const ManageUsers = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Manage Users</Text>
 
-      <View style={styles.filterContainer}>
+      <View>
         <Picker
           selectedValue={roleFilter}
           onValueChange={(itemValue) => setRoleFilter(itemValue)}
-          style={styles.filter}
+          /* style={styles.filter} */
         >
           <Picker.Item label="All Roles" value="All" />
           <Picker.Item label="Volunteer" value="Volunteer" />
@@ -145,7 +145,7 @@ const ManageUsers = () => {
         <Picker
           selectedValue={statusFilter}
           onValueChange={(itemValue) => setStatusFilter(itemValue)}
-          style={styles.filter}
+         /*  style={styles.filter} */
         >
           <Picker.Item label="All Statuses" value="All" />
           <Picker.Item label="Active" value="Active" />

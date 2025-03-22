@@ -51,7 +51,13 @@ const ProjectSchema = mongoose.Schema(
         },
         noOfVolunteers: { type: Number, required: true },
         projectDuration: { type: String, required: true },
-        volunteers: { type: [mongoose.Schema.Types.ObjectId], ref: "User", default: [] }  // Volunteers field added
+        volunteers: { type: [mongoose.Schema.Types.ObjectId], ref: "User", default: [] },  // Volunteers field added
+        qrCode: { type: String, required: true },
+        attendance: {
+            type: [mongoose.Schema.Types.ObjectId],
+            ref: "User",
+            default: []
+        }
         
     },
     { timestamps: true }

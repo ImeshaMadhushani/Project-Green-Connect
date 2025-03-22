@@ -1,6 +1,15 @@
 import Project from "../models/Project.js";
 import User from "../models/User.js";
 
+import dotenv from "dotenv";
+dotenv.config();
+
+import nodemailer from 'nodemailer';
+
+import QRCode from "qrcode";
+/* import path from "path";
+import fs from "fs"; */
+
 // Create a new project (only organization can create projects)
 export const createProject = async (req, res) => {
     try {
@@ -32,6 +41,25 @@ export const createProject = async (req, res) => {
             isApproved: false,
         });
 
+        // Generate QR Code for the project
+        const qrData = JSON.stringify({
+            organizationId: user._id,
+            projectName,
+            description,
+            date,
+            time,
+        });
+
+        try {
+            const qrCodeUrl = await QRCode.toDataURL(qrData);
+            // Save QR Code in the database
+            newProject.qrCode = qrCodeUrl;
+        } catch (qrError) {
+            console.error("Error generating QR code:", qrError);
+            return res.status(500).json({ message: "Failed to generate QR code." });
+        }
+
+    
         await newProject.save();
         res.status(201).json(newProject);
     } catch (error) {
@@ -109,6 +137,25 @@ export const updateProject = async (req, res) => {
         project.time = time || project.time;
         project.location = location || project.location;
 
+
+        // Generate a new QR Code for the updated project data
+        const qrData = JSON.stringify({
+            organizationId: user._id,
+            projectName: project.projectName,
+            description: project.description,
+            date: project.date,
+            time: project.time,
+        });
+
+        try {
+            const qrCodeUrl = await QRCode.toDataURL(qrData);
+            // Update the QR code in the database
+            project.qrCode = qrCodeUrl;
+        } catch (qrError) {
+            console.error("Error generating QR code:", qrError);
+            return res.status(500).json({ message: "Failed to generate QR code." });
+        }
+
         await project.save();
         res.status(200).json(project);
     } catch (error) {
@@ -138,6 +185,49 @@ export const deleteProject = async (req, res) => {
         res.status(200).json({ message: "Project deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+};
+
+
+ const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL, // Your email
+                pass: process.env.EMAIL_PASSWORD, // Your email password
+            },
+ });
+        
+console.log("Email:", process.env.EMAIL); // Debugging: Check if the value is being read
+console.log("Password:", process.env.EMAIL_PASSWORD ? "Exists" : "Missing"); // Should print "Exists"
+
+const sendApprovalEmail = async (project) => {
+    try {
+        const users = await User.find({}, 'email');
+        const mailOptions = {
+            from: process.env.EMAIL,
+            subject: '🎉 A New Project Has Been Approved! Check It Out!',
+            text: `Exciting news! The project "${project.projectName}" has just been approved and is now live! 🚀
+
+This project is full of opportunities, and we're inviting all of you to explore, collaborate, and be part of something amazing.
+
+Stay tuned for more updates and get involved in "${project.projectName}"!
+
+Best regards,  
+The Green Connect Team`,
+        };
+
+        users.forEach((user) => {
+            mailOptions.to = user.email;
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.error(`Error sending email to ${user.email}:`, error);
+                } else {
+                    console.log(`Email sent to ${user.email}:`, info.response);
+                }
+            });
+        });
+    } catch (error) {
+        console.error('Error sending approval email:', error);
     }
 };
 
@@ -184,7 +274,8 @@ export const updateProjectStatus = async (req, res) => {
            
             project.approveDate = approvalDate;
             project.endDate = endDate;  // Assign `endDate` before saving
-           
+            await sendApprovalEmail(project);
+
             /* project.approveDate = new Date();
             project.endDate = new Date(project.approveDate);
             project.endDate.setDate(project.endDate.getDate() + 14); */ // Set the end date 14 days from approval date
@@ -425,3 +516,63 @@ export async function getEnrolledUsersCount(req, res) {
         res.status(500).json({ success: false, message: "Internal server error", error: error.message });
     }
 }
+
+
+
+export const markAttendance = async (req, res) => {
+    try {
+        const { qrCodeData } = req.body;  // The scanned QR code data
+
+        // Find the project using the QR code data
+        const project = await Project.findOne({ qrCode: qrCodeData });
+        console.log('Project found:', project);
+
+        if (!project) {
+            return res.status(404).json({ message: "Invalid QR code or project not found" });
+        }
+
+        // Ensure the user is enrolled in the project
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (user.role !== "volunteer") {
+            return res.status(403).json({ message: "Only volunteers can mark attendance" });
+        }
+
+        if (!project.volunteers.includes(req.user.id)) {
+            return res.status(403).json({ message: "You are not enrolled in this project" });
+        }
+
+        // Check if the volunteer has already marked attendance for this project
+        if (!Array.isArray(project.attendance)) {
+            project.attendance = [];
+        }
+
+        // Check if the volunteer has already marked attendance for this project
+        if (project.attendance.includes(req.user.id)) {
+            return res.status(400).json({ message: "You have already marked your attendance" });
+        }
+
+        // Mark the user's attendance
+        project.attendance.push(req.user.id);
+        console.log('Updated project:', project);
+        //await project.save();
+        try {
+            await project.save();
+            res.status(200).json({ message: "Attendance marked successfully" });
+        } catch (saveError) {
+            console.error('Error saving project:', saveError);
+            return res.status(500).json({ message: "Error saving attendance", error: saveError.message });
+        }
+
+        res.status(200).json({ message: "Attendance marked successfully" });
+    } catch (error) {
+        console.error("Error marking attendance:", error);
+        res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};
+
+
+

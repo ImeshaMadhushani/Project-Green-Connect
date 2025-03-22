@@ -4,34 +4,52 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 
+import { useRouter } from "expo-router";
+import AsyncStorage from '@react-native-async-storage/async-storage';  
+import axios from 'axios';
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
+
 const FeedbackScreen = () => {
+  const router = useRouter();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
 
   const submitFeedback = async () => {
-    if (rating === 0 || comment.trim() === '') {
-      Alert.alert('Error', 'Please provide a rating and comment.');
+    if (rating === 0 || comment.trim() === "") {
+      Alert.alert("Error", "Please provide a rating and comment.");
       return;
     }
 
-    const feedbackData = { rating, comment };
-//backend connect url
+    //backend connect url
     try {
-      const response = await fetch('https://your-backend.com/api/feedback', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(feedbackData),
-      });
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+        throw new Error("No token found");
+      }
+      
+    const feedbackData = { rating, comment };
+      const response = await axios.post(
+        `${apiUrl}/api/feedback/`,
+        feedbackData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Send token in Authorization header
+          },
+        }
+      );
 
-      if (response.ok) {
-        Alert.alert('Success', 'Thank you for your feedback!');
+      if (response.status === 200) {
+        Alert.alert("Success", "Thank you for your feedback!");
         setRating(0);
-        setComment('');
+        setComment("");
       } else {
-        Alert.alert('Error', 'Failed to submit feedback.');
+        Alert.alert("Error", "Failed to submit feedback.");
       }
     } catch (error) {
-      Alert.alert('Error', 'Network error. Please try again.');
+      Alert.alert("Error", "Network error. Please try again.");
     }
   };
 
@@ -42,6 +60,7 @@ const FeedbackScreen = () => {
           <FontAwesome name="arrow-left" size={20} color="#000" />
         </Pressable>
       </View>
+      
     <View style={{ flex: 1, padding: 20 }}>
       <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>Rate Our App</Text>
 
