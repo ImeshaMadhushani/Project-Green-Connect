@@ -7,13 +7,20 @@ import {
   Pressable,
   Alert,
   RefreshControl,
+  Modal,
+  Linking,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+
+
 
 
 import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { WebView } from 'react-native-webview';
+
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
@@ -24,13 +31,24 @@ const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 ]; */
 
 const ManageUsers = () => {
-  const [users, setUsers] = useState<{ _id: string; name: string; role: string; status?: string; isApproved?: boolean }[]>([]);
+  const [users, setUsers] = useState<
+    Array<{
+      _id: string;
+      name: string;
+      role: string;
+      status?: string;
+      isApproved?: boolean;
+      legalDocument?: string;
+    }>
+  >([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const [roleFilter, setRoleFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
 
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [legalDocument, setLegalDocument] = useState("");
 
   // Fetch users from backend
   const fetchUsers = async () => {
@@ -49,19 +67,19 @@ const ManageUsers = () => {
     fetchUsers();
   }, []);
 
-    const onRefresh = useCallback(() => {
-      setRefreshing(true);
-      fetchUsers();
-    }, []);
-  
-    // Filter users based on selected role and status
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchUsers();
+  }, []);
+
+  // Filter users based on selected role and status
   const filteredUsers = users.filter((user) => {
     const matchesRole =
       roleFilter === "All" ||
       user.role.toLowerCase() === roleFilter.toLowerCase();
-    
-     let matchesStatus = true;
-     if (statusFilter !== "All") {
+
+    let matchesStatus = true;
+    if (statusFilter !== "All") {
       if (user.role === "organization") {
         if (statusFilter === "Active") {
           matchesStatus = user.isApproved === true;
@@ -78,8 +96,10 @@ const ManageUsers = () => {
     return matchesRole && matchesStatus;
   });
 
-
-  const handleAction = (id: string, action: "Suspend" | "Delete" | "Approve") => {
+  const handleAction = (
+    id: string,
+    action: "Suspend" | "Delete" | "Approve"
+  ) => {
     Alert.alert(
       `${action} User`,
       `Are you sure you want to ${action} this user?`,
@@ -92,12 +112,12 @@ const ManageUsers = () => {
           text: "Confirm",
           onPress: async () => {
             try {
-            const token = await AsyncStorage.getItem("authToken");
-            if (!token) {
-              console.error("No token found!");
-              return;
-            }
-                 
+              const token = await AsyncStorage.getItem("authToken");
+              if (!token) {
+                console.error("No token found!");
+                return;
+              }
+
               if (action === "Suspend") {
                 await axios.put(
                   `${apiUrl}/api/user/suspendOrganization/${id}`,
@@ -105,10 +125,9 @@ const ManageUsers = () => {
                   { headers: { Authorization: `Bearer ${token}` } }
                 );
               } else if (action === "Delete") {
-                await axios.delete(
-                  `${apiUrl}/api/user/delete/${id}`,
-                  { headers: { Authorization: `Bearer ${token}` } }
-                );
+                await axios.delete(`${apiUrl}/api/user/delete/${id}`, {
+                  headers: { Authorization: `Bearer ${token}` },
+                });
               } else if (action === "Approve") {
                 await axios.put(
                   `${apiUrl}/api/user/approveOrganization/${id}`,
@@ -117,7 +136,10 @@ const ManageUsers = () => {
                 );
               }
               fetchUsers();
-              Alert.alert("Success", `User ${action.toLowerCase()}ed successfully.`);
+              Alert.alert(
+                "Success",
+                `User ${action.toLowerCase()}ed successfully.`
+              );
             } catch (error) {
               Alert.alert("Error", `Failed to ${action.toLowerCase()} user.`);
             }
@@ -126,6 +148,30 @@ const ManageUsers = () => {
       ]
     );
   };
+
+  const fetchLegalDocument = async (id: string) => {
+    try {
+      const response = await axios.get(
+        `${apiUrl}/api/user/legalDocument/${id}`
+      );
+       console.log("Legal Document URL:", response.data.legalDocument);
+      setLegalDocument(response.data.legalDocument);
+      setModalVisible(true);
+    } catch (error) {
+      Alert.alert("Error", "Failed to fetch legal document.");
+      console.error("Fetch legal document error:", error);
+    }
+  };
+
+  const viewLegalDocument = (id: string) => {
+    fetchLegalDocument(id);
+  };
+
+    const openDocument = () => {
+      Linking.openURL(legalDocument).catch((err) =>
+        console.error("Failed to open URL:", err)
+      );
+    };
 
   return (
     <View style={styles.container}>
@@ -145,7 +191,7 @@ const ManageUsers = () => {
         <Picker
           selectedValue={statusFilter}
           onValueChange={(itemValue) => setStatusFilter(itemValue)}
-         /*  style={styles.filter} */
+          /*  style={styles.filter} */
         >
           <Picker.Item label="All Statuses" value="All" />
           <Picker.Item label="Active" value="Active" />
@@ -223,6 +269,16 @@ const ManageUsers = () => {
                 </Pressable>
               )}
 
+              {item.role === "organization" && (
+                <Pressable onPress={() => viewLegalDocument(item._id)}>
+                  <MaterialCommunityIcons
+                    name="file-document"
+                    size={22}
+                    color="blue"
+                  />
+                </Pressable>
+              )}
+
               {/* 🗑 Delete Button */}
               <Pressable onPress={() => handleAction(item._id, "Delete")}>
                 <MaterialCommunityIcons name="delete" size={22} color="black" />
@@ -231,6 +287,21 @@ const ManageUsers = () => {
           </View>
         )}
       />
+
+      <Modal
+        visible={isModalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Legal Document</Text>
+          <Pressable onPress={openDocument}>
+            <Text style={styles.link}>Open Legal Document</Text>
+          </Pressable>
+          <Pressable onPress={() => setModalVisible(false)}>
+            <Text style={styles.closeButton}>Close</Text>
+          </Pressable>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -257,12 +328,33 @@ const styles = StyleSheet.create({
   role: { fontSize: 14, color: "#555" },
   status: { fontSize: 14 },
   actions: { flexDirection: "row", gap: 15 },
- /*  filterContainer: {
+  /*  filterContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 15,
   },
   filter: { width: 150, height: 40 }, */
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  closeButton: {
+    marginTop: 20,
+    color: "#0496FF",
+    fontSize: 16,
+  },
+  link: {
+    color: "#0496FF",
+    fontSize: 16,
+    textDecorationLine: "underline",
+  },
 });
 
 export default ManageUsers;
