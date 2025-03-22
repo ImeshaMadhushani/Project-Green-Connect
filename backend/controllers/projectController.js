@@ -575,4 +575,35 @@ export const markAttendance = async (req, res) => {
 };
 
 
+export const getAttendance = async (req, res) => {
+    try {
+        const { id } = req.params; // Extract project ID from request params
+        console.log('Received projectId:', id);
+
+        // Find project and get attendance data
+        const project = await Project.findById(id).populate('volunteers', 'username email'); // Assuming you want to include volunteer details like username and email
+
+        if (!project) {
+            return res.status(404).json({ message: "Project not found" });
+        }
+
+        // Extract attendance data
+        const attendance = project.attendance || []; // If no attendance is marked yet, default to an empty array
+        console.log('Attendance data:', attendance);
+
+        // Populate user details for each volunteer who marked attendance
+        const volunteersWithAttendance = await User.find({ _id: { $in: attendance } }).select('username email');
+
+        // Send the list of volunteers who marked their attendance
+        return res.status(200).json({
+            message: "Attendance fetched successfully",
+            attendance: volunteersWithAttendance,
+        });
+    } catch (error) {
+        console.error("Error fetching attendance:", error);
+        return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};
+
+
 
