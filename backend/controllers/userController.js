@@ -497,7 +497,7 @@ export async function getApproveOrganizations(req, res) {
 }
 
 // Assuming the legalDocument is stored as a file path or URL in the user's document
-export async function getLegalDocument(req, res) {
+/* export async function getLegalDocument(req, res) {
     try {
         const { id } = req.params;
         const user = await User.findById(id);
@@ -518,4 +518,4 @@ export async function getLegalDocument(req, res) {
         console.error("Error fetching legal document:", error);
         res.status(500).json({ message: "Server error" });
     }
-}
+} */

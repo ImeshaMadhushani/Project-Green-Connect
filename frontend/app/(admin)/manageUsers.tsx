@@ -19,7 +19,7 @@ import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { WebView } from 'react-native-webview';
+/* import { WebView } from 'react-native-webview'; */
 
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
@@ -38,7 +38,7 @@ const ManageUsers = () => {
       role: string;
       status?: string;
       isApproved?: boolean;
-      legalDocument?: string;
+     /*  legalDocument?: string; */
     }>
   >([]);
   const [loading, setLoading] = useState(true);
@@ -48,7 +48,7 @@ const ManageUsers = () => {
   const [statusFilter, setStatusFilter] = useState("All");
 
   const [isModalVisible, setModalVisible] = useState(false);
-  const [legalDocument, setLegalDocument] = useState("");
+  /* const [legalDocument, setLegalDocument] = useState(""); */
 
   // Fetch users from backend
   const fetchUsers = async () => {
@@ -149,7 +149,7 @@ const ManageUsers = () => {
     );
   };
 
-  const fetchLegalDocument = async (id: string) => {
+  /* const fetchLegalDocument = async (id: string) => {
     try {
       const response = await axios.get(
         `${apiUrl}/api/user/legalDocument/${id}`
@@ -172,7 +172,7 @@ const ManageUsers = () => {
         console.error("Failed to open URL:", err)
       );
     };
-
+ */
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Manage Users</Text>
@@ -269,7 +269,7 @@ const ManageUsers = () => {
                 </Pressable>
               )}
 
-              {item.role === "organization" && (
+              {/* {item.role === "organization" && (
                 <Pressable onPress={() => viewLegalDocument(item._id)}>
                   <MaterialCommunityIcons
                     name="file-document"
@@ -277,7 +277,7 @@ const ManageUsers = () => {
                     color="blue"
                   />
                 </Pressable>
-              )}
+              )} */}
 
               {/* 🗑 Delete Button */}
               <Pressable onPress={() => handleAction(item._id, "Delete")}>
@@ -288,7 +288,7 @@ const ManageUsers = () => {
         )}
       />
 
-      <Modal
+     {/*  <Modal
         visible={isModalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
@@ -301,7 +301,7 @@ const ManageUsers = () => {
             <Text style={styles.closeButton}>Close</Text>
           </Pressable>
         </View>
-      </Modal>
+      </Modal> */}
     </View>
   );
 };
