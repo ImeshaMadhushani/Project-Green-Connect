@@ -17,6 +17,7 @@ const LogIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isOrganization, setIsOrganization] = useState(false);
 
   const input1Ref = useRef<TextInput>(null);
   const input2Ref = useRef<TextInput>(null);
@@ -65,13 +66,53 @@ const LogIn = () => {
     if (!validateInputs()) return;
 
     try {
-      const normalizedEmail = email.toLowerCase(); 
-      const response = await axios.post(`${apiUrl}/api/user/login`, {
+      const normalizedEmail = email.toLowerCase();
+      /*  const response = await axios.post(`${apiUrl}/api/user/login`, {
+        email: normalizedEmail,
+        password,
+      }); */
+
+      
+      console.log("Email to be sent:", normalizedEmail);
+      console.log("Password to be sent:", password);
+
+      const loginEndpoint = isOrganization
+        ? "/api/organization/login"
+        : "/api/user/login";
+
+      const response = await axios.post(`${apiUrl}${loginEndpoint}`, {
         email: normalizedEmail,
         password,
       });
 
       if (response.status === 200) {
+        const { token, user,org } = response.data; // Assuming backend returns token and user info
+        await AsyncStorage.setItem("authToken", token);
+        Alert.alert("Success", "Login successful");
+        // Redirect based on user role
+         if (user) {
+        // Handle normal user
+        if (user.role === "admin") {
+          router.push("/(admin)/dashboard");
+        } else {
+          router.push("/home");
+        }
+      } else if (org) {
+        // Handle organization model
+        if (org.role === "organization") {
+          router.push("/home");
+        }
+      }
+      }
+    } catch (error: any) {
+      console.error(error.response?.data);
+      Alert.alert(
+        "Login Failed",
+        error.response?.data?.message || "Something went wrong"
+      );
+    }
+
+      /* if (response.status === 200) {
         const { token, user } = response.data; // Assuming backend returns token and user info
         await AsyncStorage.setItem("authToken", token);
         Alert.alert("Success", "Login successful");
@@ -88,13 +129,22 @@ const LogIn = () => {
         "Login Failed",
         error.response?.data?.message || "Something went wrong"
       );
-    }
+    } */
   };
   return (
     <View style={{ flex: 1, width: "100%", padding: 20, alignItems: "center" }}>
       <Text style={{ fontSize: 40, marginBottom: 60, fontWeight: "bold" }}>
         Welcome Back
       </Text>
+      <TouchableOpacity
+        style={styles.toggleButton} // Add style to TouchableOpacity
+        onPress={() => setIsOrganization(!isOrganization)}
+      >
+        <Text style={styles.toggleButtonText}>
+          {isOrganization ? "Switch to User" : "Switch to Organization"}
+        </Text>
+      </TouchableOpacity>
+
       <TextInputStyled
         ref={input1Ref}
         returnKeyType="next"
@@ -152,3 +202,21 @@ const LogIn = () => {
 };
 
 export default LogIn;
+
+
+const styles = StyleSheet.create({
+  toggleButton: {
+    backgroundColor: "#4CAF50",
+    paddingVertical: 10, 
+    paddingHorizontal: 20, 
+    borderRadius: 5, 
+    alignItems: "center", 
+    justifyContent: "center", 
+    marginTop: 10, 
+  },
+  toggleButtonText: {
+    color: "#fff", 
+    fontSize: 16, 
+    fontWeight: "bold", 
+  },
+});

@@ -7,14 +7,60 @@ import ButtonSuccess from "@/components/button-success";
 import ButtonText from "@/components/button-text";
 
 import axios from "axios";
-import * as DocumentPicker from "expo-document-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+/* import * as DocumentPicker from "expo-document-picker"; */
 import { Button } from "react-native-paper";
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 
 const First = () => {
-  const [name, setNgoname] = useState("");
+    const [registrationNumber, setRegistrationNo] = useState("");
+    const [password, setPassword] = useState("");
+   const [conformPassword, setConformPassword] = useState("");
+  
+    const input1Ref = useRef<TextInput>(null);
+    const input2Ref = useRef<TextInput>(null);
+  
+  const handleLogin = async () => {
+      if (!registrationNumber.trim() || !password.trim()) {
+        Alert.alert("Error", "Please fill in all fields");
+        return;
+    }
+    console.log("Login Payload:", { registrationNumber, password });
+    try {
+      const response = await axios.post(
+        `${apiUrl}/api/organization/reg`,
+        {
+          registrationNumber,
+          password,
+          conformPassword,
+        },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      console.log("Login Response:", response.data);
+
+      
+         if (response.data && response.data.success) {
+           
+           Alert.alert("Success", "Registration successful");
+           router.push("/home");
+         } else {
+          
+           Alert.alert("Error", "Something went wrong. Please try again.");
+         }
+      
+    } catch (error: any) {
+      console.error("Login Error:", error.response?.data || error.message);
+      Alert.alert(
+        "Error",
+        error.response?.data?.message || "Network error. Please try again."
+      );
+    }
+  }
+  
+  /* const [name, setNgoname] = useState("");
   const [username, setUsername] = useState("");
   const [registrationNumber, setRegno] = useState("");
   const [password, setPassword] = useState("");
@@ -128,7 +174,7 @@ const First = () => {
       );
     }
   };
-
+ */
   return (
     <View style={styles.container}>
       {/*   <View style={styles.stepContainer}>
@@ -139,12 +185,12 @@ const First = () => {
       <TextInputStyled
         ref={input1Ref}
         returnKeyType="next"
-        text="Organization Name"
-        onChangeText={setNgoname}
-        value={name}
-        placeholder="Enter the name of your NGO"
+        text="Registration Number"
+        onChangeText={setRegistrationNo}
+        value={registrationNumber}
+        placeholder="Enter the Registration No of your NGO"
       />
-      <TextInputStyled
+      {/*<TextInputStyled
         text="Username"
         onChangeText={setUsername}
         value={username}
@@ -165,9 +211,9 @@ const First = () => {
         value={email}
         placeholder="Enter your email"
         keyboardType="email-address"
-      />
+      />*/}
       <TextInputStyled
-        ref={input3Ref}
+        ref={input2Ref}
         returnKeyType="next"
         text="Password"
         secureTextEntry
@@ -179,11 +225,11 @@ const First = () => {
         returnKeyType="done"
         text="Confirm Password"
         secureTextEntry
-        onChangeText={setPassword2}
-        value={password2}
+        onChangeText={setConformPassword}
+        value={conformPassword}
         placeholder="Confirm your password"
       />
-      <TextInputStyled
+      {/*} <TextInputStyled
         returnKeyType="next"
         text="Registration Date"
         onChangeText={setRegistrationDate}
@@ -201,7 +247,7 @@ const First = () => {
         ) : (
           <Text style={{ marginTop: 10, color: "gray" }}>No file selected</Text>
         )}
-      </View>
+      </View>*/}
 
       <Text style={styles.loginText}>
         Already have an account?{" "}
@@ -222,7 +268,7 @@ const First = () => {
         <ButtonSuccess
           style={styles.button}
           label="Sign Up"
-          onPress={handleNext}
+          onPress={handleLogin}
         />
       </View>
     </View>
