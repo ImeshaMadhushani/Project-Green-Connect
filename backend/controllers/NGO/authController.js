@@ -1,6 +1,7 @@
 import ngo from "../../models/ngo.js";
 import bcrypt from "bcrypt";
 import organizationModel from "../../models/organizationModel.js.js";
+import jwt from "jsonwebtoken";
 
 export const authController = async (req, res) => {
   try {
@@ -10,7 +11,7 @@ export const authController = async (req, res) => {
     if (!registrationNumber || !password || !conformPassword) {
       return res.status(400).json({ message: "Please fill in all fields" });
     }
-console.log(registrationNumber)
+    console.log(registrationNumber)
     // Find the NGO by RegistrationNumber
     const org = await ngo.findOne({ RegistrationNumber: registrationNumber });
     console.log(org)
@@ -55,9 +56,14 @@ console.log(registrationNumber)
     // Save the new organization
     await newOrganization.save();
 
+    /* // Generate JWT token
+    const payload = { registrationNumber: org.RegistrationNumber, id: newOrganization._id };
+    const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: "48h" });
+ */
     res.status(201).json({
       success: true,
       message: "Organization registered successfully",
+     /*  token, */
      data:newOrganization
     });
 
@@ -70,3 +76,48 @@ console.log(registrationNumber)
     });
   }
 };
+
+
+
+
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+
+    const org = await organizationModel.findOne({ "ContactDetails.Email": email.toLowerCase() });
+    console.log("Searching for organization with email:", email.toLowerCase());
+
+    if (!org) {
+      return res.status(404).json({ message: "Organization not found" });
+    }
+
+    console.log("Found organization:", org); 
+
+    const isPasswordValid = await bcrypt.compare(password, org.password);
+
+    console.log("Email:", email);
+    console.log("Password check result:", isPasswordValid);
+
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+
+
+    const payload = {
+                id: org._id,
+                name: org.NameOfOrganization,
+                email: org.ContactDetails.Email,
+            };
+            const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '48h' });
+    return res.json({ message: "Organization logged in successfully!", org, token });
+
+  } catch (error) {
+    console.error("Error during login:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+}
+
+
+//

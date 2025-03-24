@@ -34,16 +34,23 @@ const organizationSchema = new mongoose.Schema({
     ContactDetails:{
         Landline:{
             type:String,
-            required:true
+            required:false
         },
         Email:{
             type:String,
-            required:true
+            required: true,
+            unique: true,  // Ensure uniqueness for the email
+            lowercase: true // Store email in lowercase
         }
     },
     password:{
         type:String,
         required:true
+    },
+    role: {
+        type: String,
+        required: true,
+        default: 'organization'
     }
 })
 

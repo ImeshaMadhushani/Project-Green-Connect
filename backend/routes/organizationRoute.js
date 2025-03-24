@@ -1,10 +1,11 @@
 import express from 'express';
-import { authController } from '../controllers/NGO/authController.js';
+import { authController, login } from '../controllers/NGO/authController.js';
 
 const router = express.Router();
 
 
-router.post('/login',authController);
+router.post('/reg', authController);
+router.post('/login', login);
 
 
 
