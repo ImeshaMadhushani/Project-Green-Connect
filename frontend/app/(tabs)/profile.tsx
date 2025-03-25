@@ -72,7 +72,7 @@ const ProfileScreen = () => {
         return;
       }
 
-      // Log out user
+    /*   // Log out user
       await axios.post(
         `${apiUrl}/api/user/logout`,
         {},
@@ -81,7 +81,7 @@ const ProfileScreen = () => {
             Authorization: `Bearer ${token}`,
           },
         }
-      );
+      ); */
 
       // Clear token after logging out
       await AsyncStorage.removeItem("authToken");

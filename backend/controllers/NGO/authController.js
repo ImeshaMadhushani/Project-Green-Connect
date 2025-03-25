@@ -109,6 +109,8 @@ export const login = async (req, res) => {
                 id: org._id,
                 name: org.NameOfOrganization,
                 email: org.ContactDetails.Email,
+                role: org.role,
+                profile_picture: org.profile_picture
             };
             const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '48h' });
     return res.json({ message: "Organization logged in successfully!", org, token });
@@ -120,4 +122,38 @@ export const login = async (req, res) => {
 }
 
 
-//
+//get organization
+export const getOrganization = async (req, res) => {
+  if (!req.org) {
+    return res.status(403).json({ message: "User not authenticated" });
+  }
+  res.status(200).json({ message: "Org found", org: req.org });
+
+}
+
+
+//update organization
+
+export async function updateOrganization(req, res) { 
+  try {
+    const { id } = req.params;
+   
+    const profile_picture = req.files?.profile_picture?.[0]?.path || null;
+
+    // Check if the organization exists
+    const org = await organizationModel.findById(id);
+    if (!org) {
+      return res.status(404).json({ message: "Organization not found" });
+    }
+
+    // Update the organization details
+    if (profile_picture) org.profile_picture = profile_picture;
+
+    await org.save();
+
+    res.status(200).json({ message: "Organization updated successfully", org });
+  } catch (error) {
+    console.error("Error updating organization:", error);
+    res.status(500).json({ message: "Error updating organization" });
+  }
+}

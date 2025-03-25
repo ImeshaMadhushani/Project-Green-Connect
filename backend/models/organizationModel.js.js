@@ -51,7 +51,8 @@ const organizationSchema = new mongoose.Schema({
         type: String,
         required: true,
         default: 'organization'
-    }
+    },
+    profile_picture: { type: String, required: false },
 })
 
 export default mongoose.model("Organization",organizationSchema);
