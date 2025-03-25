@@ -110,7 +110,9 @@ export const login = async (req, res) => {
                 name: org.NameOfOrganization,
                 email: org.ContactDetails.Email,
                 role: org.role,
-                profile_picture: org.profile_picture
+                profile_picture: org.profile_picture,
+                regNo: org.RegistrationNumber,
+                
             };
             const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '48h' });
     return res.json({ message: "Organization logged in successfully!", org, token });
@@ -124,12 +126,32 @@ export const login = async (req, res) => {
 
 //get organization
 export const getOrganization = async (req, res) => {
-  if (!req.org) {
-    return res.status(403).json({ message: "User not authenticated" });
-  }
-  res.status(200).json({ message: "Org found", org: req.org });
+  try {
+    if (!req.org) {
+      return res.status(403).json({ message: "User not authenticated" });
+    }
 
-}
+    res.status(200).json({ message: "Org found", org: req.org });
+  } catch (error) {
+    console.error("Error fetching organization:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+//get all organizations
+export const getAllOrganizations = async (req, res) => {
+  try {
+    const organizations = await organizationModel.find(); // Fetch all organizations
+    if (!organizations.length) {
+      return res.status(404).json({ message: "No organizations found" });
+    }
+
+    res.status(200).json({ message: "Organizations found", org: organizations });
+  } catch (error) {
+    console.error("Error fetching organizations:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 
 //update organization
