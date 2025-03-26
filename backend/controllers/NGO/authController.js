@@ -3,6 +3,9 @@ import bcrypt from "bcrypt";
 import organizationModel from "../../models/organizationModel.js.js";
 import jwt from "jsonwebtoken";
 
+import nodemailer from 'nodemailer';
+
+
 export const authController = async (req, res) => {
   try {
     const { registrationNumber, password, conformPassword } = req.body;
@@ -155,7 +158,8 @@ export const getAllOrganizations = async (req, res) => {
 export async function updateOrganization(req, res) { 
   try {
     const { id } = req.params;
-   
+    const { email } = req.body;
+
     const profile_picture = req.files?.profile_picture?.[0]?.path || null;
 
     // Check if the organization exists
@@ -166,6 +170,7 @@ export async function updateOrganization(req, res) {
 
     // Update the organization details
     if (profile_picture) org.profile_picture = profile_picture;
+    if (email) org.ContactDetails.Email = email;
 
     await org.save();
 
@@ -174,4 +179,143 @@ export async function updateOrganization(req, res) {
     console.error("Error updating organization:", error);
     res.status(500).json({ message: "Error updating organization" });
   }
+}
+
+
+// Forgot Password - Request OTP -Organization
+export async function forgotPassword(req, res) {
+  const { email } = req.body;
+  console.log("Email:", email);  // Add this line to check email value
+
+
+    try {
+      const user = await organizationModel.findOne({ "ContactDetails.Email": email.toLowerCase() });
+
+        if (!user) {
+            return res.status(404).json({ message: 'Email not found' });
+        }
+
+        // Generate OTP
+      const otp = Math.floor(1000 + Math.random() * 9000); // Generates a 4-digit OTP
+
+
+        // Set OTP expiration time (e.g., 10 minutes)
+        const otpExpires = Date.now() + 10 * 60 * 1000;  // 10 minutes expiration
+
+        user.passwordResetOtp = otp;
+        user.passwordResetOtpExpires = otpExpires;
+        await user.save();
+
+        // Send OTP to user's email using nodemailer
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL, // Your email
+                pass: process.env.EMAIL_PASSWORD, // Your email password
+            },
+        });
+
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to: email,
+            subject: 'Password Reset OTP',
+            text: `Your OTP for password reset is: ${otp}. It is valid for 10 minutes.`,
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error("Error sending email:", error);
+                return res.status(500).json({ message: "Error sending OTP email", errorDetails: error.response || error.message, });
+            }
+            res.status(200).json({ message: "OTP sent to email" });
+        });
+    } catch (error) {
+        console.error("Error during forgot password:", error);
+        res.status(500).json({ message: "Error processing request", error: error.message });
+    }
+}
+
+
+// Verify OTP
+export async function verifyOtp(req, res) {
+  try {
+    console.log("Request body:", req.body);
+
+    const { email, otp } = req.body || {}; // Ensure `req.body` exists
+
+    if (!email || !otp) {
+      return res.status(400).json({ message: "Email and OTP are required" });
+    }
+
+    console.log("Received email for OTP verification:", email);
+
+    
+
+    const user = await organizationModel.findOne({ "ContactDetails.Email": email.toLowerCase() });
+    console.log("Found user:", user);
+    if (!user) {
+            return res.status(404).json({ message: "Email not found" });
+        }
+
+        if (!user.passwordResetOtp || !user.passwordResetOtpExpires) {
+            return res.status(400).json({ message: "No OTP found. Request a new one." });
+        }
+
+        if (user.passwordResetOtp !== otp) {
+            return res.status(400).json({ message: "Invalid OTP" });
+        }
+
+        if (user.passwordResetOtpExpires < Date.now()) {
+            return res.status(400).json({ message: "OTP has expired" });
+        }
+
+        res.status(200).json({ message: "OTP verified successfully" });
+
+    } catch (error) {
+        console.error("Error during OTP verification:", error);
+        res.status(500).json({ message: "Error verifying OTP", error: error.message });
+    }
+}
+
+
+
+// Reset Password
+export async function resetPassword(req, res) {
+    const { email, password, otpCode } = req.body;
+
+    if (!email || !password || !otpCode) {
+        return res.status(400).json({ message: 'Missing required fields.' });
+    }
+
+
+    try {
+        const user = await organizationModel.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'Email not found' });
+        }
+
+        // Validate OTP and check expiry
+        if (user.passwordResetOtp !== otpCode) {
+            return res.status(400).json({ message: 'Invalid OTP' });
+        }
+
+        if (user.passwordResetOtpExpires < Date.now()) {
+            return res.status(400).json({ message: 'OTP has expired' });
+        }
+
+        // Hash new password
+        const saltRound = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRound);
+
+        user.password = hashedPassword;
+        user.passwordResetOtp = undefined;  // Clear OTP field
+        user.passwordResetOtpExpires = undefined;  // Clear OTP expiration field
+        await user.save();
+
+        res.status(200).json({ message: 'Password reset successfully' });
+
+    } catch (error) {
+        console.error("Error during password reset:", error);
+        res.status(500).json({ message: "Error resetting password", error: error.message });
+    }
 }

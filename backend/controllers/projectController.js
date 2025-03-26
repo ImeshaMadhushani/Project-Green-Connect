@@ -373,7 +373,7 @@ export const getOrganizationProjects = async (req, res) => {
             return res.status(401).json({ message: "Unauthorized access" });
         }
         // Check if the user is an organization
-        const user = await User.findById(req.user.id);
+        const user = await organizationModel.findById(req.user.id);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -484,7 +484,7 @@ export async function getEnrolledUsers(req, res) {
 
 //count of approved project
 
-export const getApprovedProjectsCount = async (req, res) => {
+/* export const getApprovedProjectsCount = async (req, res) => {
     try {
         const approvedProjectsCount = await Project.countDocuments({ isApproved: true });
         res.status(200).json({ totalApprovedProjects: approvedProjectsCount });
@@ -493,7 +493,7 @@ export const getApprovedProjectsCount = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
-
+ */
 
 //get count of enrolling users for a specific project
 export async function getEnrolledUsersCount(req, res) {

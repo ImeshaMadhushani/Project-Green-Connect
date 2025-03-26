@@ -14,9 +14,9 @@ const UserSchema = mongoose.Schema(
     role: {
       type: String,
       required: true,
-      enum: ["volunteer", "organization", "admin"]
+      enum: ["volunteer", "admin"]
     },
-    registrationNumber: {
+    /* registrationNumber: {
       type: String,
       required: function () { return this.role === "organization"; },
       unique: true
@@ -32,7 +32,7 @@ const UserSchema = mongoose.Schema(
     legalDocument: {
       type: String,
       required: function () { return this.role === "organization"; }
-    },
+    }, */
     passwordResetOtp: String, // Store OTP here
     passwordResetOtpExpires: Date, // OTP expiration time
     latitude: { type: Number, required: false }, 
