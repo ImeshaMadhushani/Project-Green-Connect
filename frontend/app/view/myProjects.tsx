@@ -50,7 +50,7 @@ const MyProjects = () => {
   const router = useRouter();
   const navigation = useNavigation();
   const [projects, setProjects] = useState<Project[]>([]);
-  const [userRole, setUserRole] = useState(null);
+  const [userRole, setUserRole] = useState<"volunteer" | "organization" | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -64,7 +64,7 @@ const MyProjects = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   // Fetch User Role
-  useEffect(() => {
+/*   useEffect(() => {
     const fetchUserRole = async () => {
       try {
         const token = await AsyncStorage.getItem("authToken");
@@ -83,6 +83,58 @@ const MyProjects = () => {
         console.log("User ID:", response.data.user.id);
 
         fetchProjects(response.data.user.role, response.data.user.id);
+      } catch (error) {
+        console.error("Failed to fetch user role", error);
+        Alert.alert("Error", "Failed to fetch user role.");
+        setLoading(false);
+      }
+
+      
+    };
+
+    fetchUserRole();
+  }, []); */
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const token = await AsyncStorage.getItem("authToken");
+        if (!token) throw new Error("No token found");
+
+        let response;
+
+        // Try fetching user from User model (volunteer/admin)
+        try {
+          response = await axios.get(`${apiUrl}/api/user/getUser`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          if (response.data.user) {
+            console.log("User Data:", response.data.user);
+            setUserRole(response.data.user.role);
+            setUserId(response.data.user.id);
+            fetchProjects(response.data.user.role, response.data.user.id);
+            return;
+          }
+        } catch (error) {
+          console.log(
+            "User not found in User model, checking Organization model..."
+          );
+        }
+
+        // If not found, try fetching user from Organization model
+        response = await axios.get(`${apiUrl}/api/organization/get`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.data.organization) {
+          console.log("Organization Data:", response.data.organization);
+          setUserRole("organization"); // Set a fixed role
+          setUserId(response.data.organization.id);
+          fetchProjects("organization", response.data.organization.id);
+        } else {
+          throw new Error("User not found in either model");
+        }
       } catch (error) {
         console.error("Failed to fetch user role", error);
         Alert.alert("Error", "Failed to fetch user role.");
