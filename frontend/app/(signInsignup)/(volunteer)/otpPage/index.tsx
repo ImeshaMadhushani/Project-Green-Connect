@@ -4,11 +4,10 @@ import { router } from "expo-router";
 import { useState, useRef, useEffect } from "react";
 import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { useLocalSearchParams } from "expo-router"; 
+import { useLocalSearchParams } from "expo-router";
 import axios from "axios";
 
-
-const apiUrl = process.env.EXPO_PUBLIC_API_URL; 
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 const OTPPage = () => {
   /* const { email } = useLocalSearchParams();
@@ -54,17 +53,15 @@ const OTPPage = () => {
       //console.log("API URL:", apiUrl);
       console.log("User Type:", userType);
 
-        setLoading(true); // Set loading state
-       let endpoint = "";
-    if (userType === "organization") {
-      endpoint = "/api/organization/verify-otp";
-    } else if (userType === "admin") {
-      endpoint = "/api/user/verify-otp";
-    } else {
-      endpoint = "/api/user/verify-otp";
-    }
-
- 
+      setLoading(true); // Set loading state
+      let endpoint = "";
+      if (userType === "organization") {
+        endpoint = "/api/organization/verify-otp";
+      } else if (userType === "admin") {
+        endpoint = "/api/user/verify-otp";
+      } else {
+        endpoint = "/api/user/verify-otp";
+      }
 
       console.log("API Endpoint:", endpoint);
 
@@ -73,11 +70,12 @@ const OTPPage = () => {
         otp: otpCode,
       });
  */
-      
-        const response = await axios.post(`${apiUrl}${endpoint}`, {
-          email, // Send email and OTP to backend
-          otp: otpCode,
-        });
+
+      const response = await axios.post(`${apiUrl}${endpoint}`, {
+        email, // Send email and OTP to backend
+        otp: otpCode,
+        userType,
+      });
 
       if (response.status === 200) {
         Alert.alert("Success", "OTP verified successfully!");

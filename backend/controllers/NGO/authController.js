@@ -289,7 +289,7 @@ export async function resetPassword(req, res) {
 
 
     try {
-        const user = await organizationModel.findOne({ email });
+      const user = await organizationModel.findOne({ "ContactDetails.Email": email.toLowerCase() });
         if (!user) {
             return res.status(404).json({ message: 'Email not found' });
         }

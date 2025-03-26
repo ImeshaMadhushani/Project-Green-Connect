@@ -11,7 +11,7 @@ import { useLocalSearchParams } from "expo-router";
 const apiUrl = process.env.EXPO_PUBLIC_API_URL; 
 
 const ResetPassword = () => {
-  const { email, otpCode } = useLocalSearchParams();
+  const { email, otpCode, userType } = useLocalSearchParams();
 
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
@@ -60,27 +60,42 @@ const ResetPassword = () => {
 
     setLoading(true);
 
-    try {
+    /* try {
       const response = await axios.post(`${apiUrl}/api/user/reset-password`, {
         email, // Add email field
         otpCode, // If required
         password,
-      });
+      }); */
+    
+    try {
+        let endpoint = "";
+      if (userType === "organization") {
+        endpoint = "/api/organization/reset-password";
+      } else if (userType === "admin") {
+        endpoint = "/api/user/reset-password";
+      } else {
+        endpoint = "/api/user/reset-password";
+      }
+       const response = await axios.post(`${apiUrl}${endpoint}`, {
+         email,
+         otpCode,
+         password,
+       });
 
-      Alert.alert("Success", "Password reset successfully!");
-      router.push("/logIn");
-    } catch (error: any) {
-      console.error(
-        "Reset Password Error:",
-        error.response?.data || error.message
-      );
-      Alert.alert(
-        "Error",
-        error.response?.data?.message || "Something went wrong."
-      );
-    } finally {
-      setLoading(false);
-    }
+       Alert.alert("Success", "Password reset successfully!");
+       router.push("/logIn");
+     } catch (error: any) {
+       console.error(
+         "Reset Password Error:",
+         error.response?.data || error.message
+       );
+       Alert.alert(
+         "Error",
+         error.response?.data?.message || "Something went wrong."
+       );
+     } finally {
+       setLoading(false);
+     }
   };
 
 
