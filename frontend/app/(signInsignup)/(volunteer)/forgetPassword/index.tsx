@@ -64,7 +64,7 @@ const handleSubmit = async () => {
         //router.navigate("/otpPage", { relativeToDirectory: true });
         router.push({
           pathname: "/otpPage",
-          params: { email },
+          params: { email, userType },
         });
       } else {
         // If there is an error, show an alert
