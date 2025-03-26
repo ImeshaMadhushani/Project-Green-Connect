@@ -7,6 +7,7 @@ dotenv.config();
 import nodemailer from 'nodemailer';
 
 import QRCode from "qrcode";
+import organizationModel from "../models/organizationModel.js.js";
 /* import path from "path";
 import fs from "fs"; */
 
@@ -19,7 +20,10 @@ export const createProject = async (req, res) => {
             longitude, projectType, noOfVolunteers, projectDuration } = req.body;
 
         // Ensure the user creating the project is an organization
-        const user = await User.findById(req.user.id);  // assuming req.user.id is the logged-in user id
+        const user = await organizationModel.findById(req.user.id) // assuming req.user.id is the logged-in user id
+        console.log("Organization ID from request:", req.user);
+
+        console.log("User:", user);
         if (user.role !== "organization") {
             return res.status(403).json({ message: "Only organizations can create projects." });
         }

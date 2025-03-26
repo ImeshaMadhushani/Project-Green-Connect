@@ -1,15 +1,16 @@
 import mongoose from "mongoose";
 import User from "../models/User.js";
+import organizationModel from "./organizationModel.js.js";
 
 const ProjectSchema = mongoose.Schema(
     {
         organizationId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            ref: "Organization",
             required: true,
             validate: {
                 validator: async function (value) {
-                    const organization = await User.findById(value);
+                    const organization = await  organizationModel.findById(value);
                     return organization && organization.role === "organization";
                 },
                 message: "Only organizations can create projects"

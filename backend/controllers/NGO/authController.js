@@ -56,10 +56,6 @@ export const authController = async (req, res) => {
     // Save the new organization
     await newOrganization.save();
 
-    /* // Generate JWT token
-    const payload = { registrationNumber: org.RegistrationNumber, id: newOrganization._id };
-    const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: "48h" });
- */
     res.status(201).json({
       success: true,
       message: "Organization registered successfully",
