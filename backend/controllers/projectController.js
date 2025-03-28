@@ -48,6 +48,7 @@ export const createProject = async (req, res) => {
         // Generate QR Code for the project
         const qrData = JSON.stringify({
             organizationId: user._id,
+            organizationName: user.NameOfOrganization, 
             projectName,
             description,
             date,
@@ -527,6 +528,55 @@ export const markAttendance = async (req, res) => {
     try {
         const { qrCodeData } = req.body;  // The scanned QR code data
 
+        const handleScanQR = async (id: string) => {
+  const scanUrl = "https://qrcodescan.in/"; // QR code scan URL
+  try {
+    // Open the scanner in the default browser
+    const supported = await Linking.canOpenURL(scanUrl);
+    if (!supported) {
+      Alert.alert("Error", "Unable to open QR code scanner.");
+      return;
+    }
+
+    // Open the scanner
+    await Linking.openURL(scanUrl);
+
+    // Simulate capturing the scanned QR code data
+    const qrCodeData = prompt("Enter the scanned QR code data:"); // Replace this with actual QR code scanning logic
+
+    if (!qrCodeData) {
+      Alert.alert("Error", "No QR code data received.");
+      return;
+    }
+
+    // Send the scanned QR code data to the backend
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) throw new Error("No token found");
+
+      const response = await axios.put(
+        `${apiUrl}/api/project/${id}/markattendance`,
+        { qrCodeData }, // Send the scanned QR code data
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        Alert.alert("Success", "Attendance marked successfully!");
+      } else {
+        throw new Error("Failed to mark attendance");
+      }
+    } catch (error) {
+      console.error("Error marking attendance", error);
+      Alert.alert("Error", "Failed to mark attendance.");
+    }
+  } catch (error) {
+    console.error("Failed to open QR scanner", error);
+    Alert.alert("Error", "Failed to open QR code scanner.");
+  }
+};
+        
         // Find the project using the QR code data
         const project = await Project.findOne({ qrCode: qrCodeData });
         console.log('Project found:', project);
@@ -560,9 +610,25 @@ export const markAttendance = async (req, res) => {
         }
 
         // Mark the user's attendance
-        project.attendance.push(req.user.id);
+        // Mark the user's attendance
+        project.attendance.push({
+            volunteerId: req.user.id,
+            email: user.email,  // Add the volunteer's email
+            isAttendance: true  // Mark the attendance as true
+        });
         console.log('Updated project:', project);
-        //await project.save();
+        await project.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Attendance marked successfully",
+            volunteer: {
+                id: req.user.id,
+                email: user.email,
+                isAttendance: true,
+            }
+        });
+      /*   //await project.save();
         try {
             await project.save();
             res.status(200).json({ message: "Attendance marked successfully" });
@@ -571,7 +637,7 @@ export const markAttendance = async (req, res) => {
             return res.status(500).json({ message: "Error saving attendance", error: saveError.message });
         }
 
-        res.status(200).json({ message: "Attendance marked successfully" });
+        res.status(200).json({ message: "Attendance marked successfully" }); */
     } catch (error) {
         console.error("Error marking attendance:", error);
         res.status(500).json({ message: "Internal server error", error: error.message });
