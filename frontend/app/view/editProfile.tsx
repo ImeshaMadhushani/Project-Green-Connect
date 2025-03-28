@@ -26,6 +26,7 @@ const EditProfile = () => {
     district: "",
     city: "",
     profile_picture: "",
+    role: "",
   });
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -50,6 +51,7 @@ const EditProfile = () => {
              district: response.data.user.district || "",
              city: response.data.user.city || "",
              profile_picture: response.data.user.profile_picture || "",
+             role: response.data.user.role || "", // Set role
            });
          } else {
            console.error("No user found in response data");
@@ -89,18 +91,29 @@ const EditProfile = () => {
       const token = await AsyncStorage.getItem("authToken");
       if (!token) return console.error("No token found!");
 
-        if (!userData.id) {
-          alert("User ID is missing!");
-          return;
+      if (!userData.id) {
+        alert("User ID is missing!");
+        return;
       }
-      
+
       const formData = new FormData();
-      formData.append("name", userData.name);
+      /* formData.append("name", userData.name);
       formData.append("username", userData.username);
       formData.append("email", userData.email);
       formData.append("district", userData.district);
       formData.append("city", userData.city);
-
+ */
+      // Organization can only update name, email, and profile picture
+      if (userData.role === "organization") {
+        formData.append("name", userData.name);
+        formData.append("email", userData.email);
+      } else {
+        formData.append("name", userData.name);
+        formData.append("username", userData.username);
+        formData.append("email", userData.email);
+        formData.append("district", userData.district);
+        formData.append("city", userData.city);
+      }
       if (selectedImage) {
         formData.append("profile_picture", {
           uri: selectedImage,
@@ -109,9 +122,15 @@ const EditProfile = () => {
         });
       }
 
-      console.log(`${apiUrl}/api/user/update/${userData.id}`);
+      // Update request to organization or regular user API route based on role
+      const endpoint =
+        userData.role === "organization"
+          ? `/api/organization/update/${userData.id}`
+          : `/api/user/update/${userData.id}`;
 
-      await axios.put(`${apiUrl}/api/user/update/${userData.id}`, formData, {
+      console.log(`${apiUrl}${endpoint}`);
+
+      await axios.put(`${apiUrl}${endpoint}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -167,6 +186,7 @@ const EditProfile = () => {
             <TextInputStyled
               placeholder="Username"
               value={userData.username}
+              editable={userData.role !== "organization"}
               onChangeText={(text) =>
                 setUserData({ ...userData, username: text })
               }
@@ -178,6 +198,7 @@ const EditProfile = () => {
             />
             <TextInputStyled
               placeholder="District"
+              editable={userData.role !== "organization"}
               value={userData.district}
               onChangeText={(text) =>
                 setUserData({ ...userData, district: text })
@@ -185,6 +206,7 @@ const EditProfile = () => {
             />
             <TextInputStyled
               placeholder="City"
+              editable={userData.role !== "organization"}
               value={userData.city}
               onChangeText={(text) => setUserData({ ...userData, city: text })}
             />

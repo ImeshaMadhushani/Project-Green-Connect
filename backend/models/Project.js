@@ -1,15 +1,16 @@
 import mongoose from "mongoose";
 import User from "../models/User.js";
+import organizationModel from "./organizationModel.js.js";
 
 const ProjectSchema = mongoose.Schema(
     {
         organizationId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            ref: "Organization",
             required: true,
             validate: {
                 validator: async function (value) {
-                    const organization = await User.findById(value);
+                    const organization = await  organizationModel.findById(value);
                     return organization && organization.role === "organization";
                 },
                 message: "Only organizations can create projects"
@@ -53,11 +54,13 @@ const ProjectSchema = mongoose.Schema(
         projectDuration: { type: String, required: true },
         volunteers: { type: [mongoose.Schema.Types.ObjectId], ref: "User", default: [] },  // Volunteers field added
         qrCode: { type: String, required: true },
-        attendance: {
-            type: [mongoose.Schema.Types.ObjectId],
-            ref: "User",
-            default: []
-        }
+        attendance: [
+            {
+                volunteerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+                email: { type: String },
+                isAttendance: { type: Boolean, default: false },
+            }
+        ]
         
     },
     { timestamps: true }

@@ -10,6 +10,7 @@ import {
   Modal,
   Image,
   Button,
+  Linking,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
@@ -22,19 +23,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { shareAsync } from "expo-sharing";
 import * as FileSystem from "expo-file-system";
 
-
-
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 // Project type icons
 const projectIcons: { [key: string]: string } = {
   "Waste Reduction": "recycle",
-  "Plantation": "tree",
+  Plantation: "tree",
   "Disaster Preparedness": "alert-circle-outline",
   "Environmental Awareness Campaigns": "bullhorn-outline",
   "Sustainable Gardening & Agriculture": "sprout",
 };
-
 
 interface Project {
   _id: string;
@@ -50,7 +48,9 @@ const MyProjects = () => {
   const router = useRouter();
   const navigation = useNavigation();
   const [projects, setProjects] = useState<Project[]>([]);
-  const [userRole, setUserRole] = useState(null);
+  const [userRole, setUserRole] = useState<"volunteer" | "organization" | null>(
+    null
+  );
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -59,12 +59,12 @@ const MyProjects = () => {
     name: string;
     email: string;
   }
-  
+
   const [enrolledUsers, setEnrolledUsers] = useState<EnrolledUser[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
 
   // Fetch User Role
-  useEffect(() => {
+  /*   useEffect(() => {
     const fetchUserRole = async () => {
       try {
         const token = await AsyncStorage.getItem("authToken");
@@ -83,6 +83,58 @@ const MyProjects = () => {
         console.log("User ID:", response.data.user.id);
 
         fetchProjects(response.data.user.role, response.data.user.id);
+      } catch (error) {
+        console.error("Failed to fetch user role", error);
+        Alert.alert("Error", "Failed to fetch user role.");
+        setLoading(false);
+      }
+
+      
+    };
+
+    fetchUserRole();
+  }, []); */
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const token = await AsyncStorage.getItem("authToken");
+        if (!token) throw new Error("No token found");
+
+        let response;
+
+        // Try fetching user from User model (volunteer/admin)
+        try {
+          response = await axios.get(`${apiUrl}/api/user/getUser`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          if (response.data.user) {
+            console.log("User Data:", response.data.user);
+            setUserRole(response.data.user.role);
+            setUserId(response.data.user.id);
+            fetchProjects(response.data.user.role, response.data.user.id);
+            return;
+          }
+        } catch (error) {
+          console.log(
+            "User not found in User model, checking Organization model..."
+          );
+        }
+
+        // If not found, try fetching user from Organization model
+        response = await axios.get(`${apiUrl}/api/organization/get`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.data.organization) {
+          console.log("Organization Data:", response.data.organization);
+          setUserRole("organization"); // Set a fixed role
+          setUserId(response.data.organization.id);
+          fetchProjects("organization", response.data.organization.id);
+        } else {
+          throw new Error("User not found in either model");
+        }
       } catch (error) {
         console.error("Failed to fetch user role", error);
         Alert.alert("Error", "Failed to fetch user role.");
@@ -168,11 +220,10 @@ const MyProjects = () => {
   //Edit Project for organization
   const handleEditProject = (id: string) => {
     router.push({
-      pathname: "/view/projectEdit", 
+      pathname: "/view/projectEdit",
       params: { id },
     });
   };
-
 
   const viewEnrolledUsers = async (id: string) => {
     try {
@@ -192,17 +243,17 @@ const MyProjects = () => {
 
       console.log("API Response:", response.data);
 
-    if (response.status === 200 && response.data?.success) {
-      // Check if the enrolledProjects array exists
-      if (response.data.enrolledUsers) {
-        setEnrolledUsers(response.data.enrolledUsers);
-        setModalVisible(true);
+      if (response.status === 200 && response.data?.success) {
+        // Check if the enrolledProjects array exists
+        if (response.data.enrolledUsers) {
+          setEnrolledUsers(response.data.enrolledUsers);
+          setModalVisible(true);
+        } else {
+          throw new Error("Enrolled projects not found in response");
+        }
       } else {
-        throw new Error("Enrolled projects not found in response");
+        throw new Error("Failed to fetch enrolled users");
       }
-    } else {
-      throw new Error("Failed to fetch enrolled users");
-    }
     } catch (error) {
       console.error("Error fetching enrolled users", error);
       Alert.alert("Error", "Failed to load enrolled users.");
@@ -238,6 +289,98 @@ const MyProjects = () => {
     }
   };
 
+/*   const markAttendance = async (id: string) => {
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) throw new Error("No token found");
+
+      const response = await axios.put(
+        `${apiUrl}/api/project/${id}/marktatendance`,
+        { isAttendance: true }, // Marking attendance as true
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        Alert.alert("Success", "Attendance marked successfully!");
+      } else {
+        throw new Error("Failed to mark attendance");
+      }
+    } catch (error) {
+      console.error("Error marking attendance", error);
+      Alert.alert("Error", "Failed to mark attendance.");
+    }
+  }; */
+
+  // This function will open the QR code scanner website in the browser
+/*   const handleScanQR = async (id: string) => {
+    const scanUrl = "https://qrcodescan.in/"; // QR code scan URL
+    try {
+      // Open the scanner in the default browser
+      const supported = await Linking.canOpenURL(scanUrl);
+      if (supported) {
+        await Linking.openURL(scanUrl);
+        markAttendance(id);
+      } else {
+        Alert.alert("Error", "Unable to open QR code scanner.");
+      }
+    } catch (error) {
+      console.error("Failed to open QR scanner", error);
+      Alert.alert("Error", "Failed to open QR code scanner.");
+    }
+  };
+ */
+  
+  const handleScanQR = async (id: string) => {
+    const scanUrl = "https://qrcodescan.in/"; // QR code scan URL
+    try {
+      // Open the scanner in the default browser
+      const supported = await Linking.canOpenURL(scanUrl);
+      if (!supported) {
+        Alert.alert("Error", "Unable to open QR code scanner.");
+        return;
+      }
+
+      // Open the scanner
+      await Linking.openURL(scanUrl);
+
+      // Simulate capturing the scanned QR code data
+      const qrCodeData = prompt("Enter the scanned QR code data:"); // Replace this with actual QR code scanning logic
+
+      if (!qrCodeData) {
+        Alert.alert("Error", "No QR code data received.");
+        return;
+      }
+
+      // Send the scanned QR code data to the backend
+      try {
+        const token = await AsyncStorage.getItem("authToken");
+        if (!token) throw new Error("No token found");
+
+        const response = await axios.put(
+          `${apiUrl}/api/project/${id}/markattendance`,
+          { qrCodeData }, // Send the scanned QR code data
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (response.status === 200) {
+          Alert.alert("Success", "Attendance marked successfully!");
+        } else {
+          throw new Error("Failed to mark attendance");
+        }
+      } catch (error) {
+        console.error("Error marking attendance", error);
+        Alert.alert("Error", "Failed to mark attendance.");
+      }
+    } catch (error) {
+      console.error("Failed to open QR scanner", error);
+      Alert.alert("Error", "Failed to open QR code scanner.");
+    }
+  };
+  
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -270,12 +413,22 @@ const MyProjects = () => {
                   {/* Action Buttons based on Role */}
                   {/* Buttons based on Role */}
                   {userRole === "volunteer" ? (
-                    <Pressable
-                      style={styles.unenrollButton}
-                      onPress={() => handleUnenroll(item._id)}
-                    >
-                      <Text style={styles.unenrollText}>Unenroll</Text>
-                    </Pressable>
+                    <>
+                      <Pressable
+                        style={styles.unenrollButton}
+                        onPress={() => handleUnenroll(item._id)}
+                      >
+                        <Text style={styles.unenrollText}>Unenroll</Text>
+                      </Pressable>
+
+                      {/* Add the "Scan QR" button */}
+                      <Pressable
+                        style={styles.scanButton}
+                        onPress={() => handleScanQR(item._id)}
+                      >
+                        <Text style={styles.scanButtonText}>Scan QR</Text>
+                      </Pressable>
+                    </>
                   ) : (
                     <View style={styles.orgActions}>
                       <Pressable
@@ -471,7 +624,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 8,
     marginTop: 10,
-  }
+  },
+  scanButton: {
+    marginTop: 20,
+    backgroundColor: "#28a745",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  scanButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });
 
 export default MyProjects;
