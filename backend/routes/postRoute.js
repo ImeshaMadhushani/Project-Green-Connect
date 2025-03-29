@@ -7,7 +7,8 @@ import {
   deletePost,
   getPost,
   updatePost,
-  search
+  search,
+  getUserPosts
 } from "../controllers/postController/postController.js";
 import {
   addComment,
@@ -64,6 +65,7 @@ router.delete("/:postId/comment/:commentId", deleteComment);
 router.post("/:postId/like", likeController);
 router.get('/leaderboard', getLeaderboard);
 router.get('/search', search);
+router.get('/user/:username', getUserPosts);
 
 
 
