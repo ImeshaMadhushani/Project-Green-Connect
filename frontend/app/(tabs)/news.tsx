@@ -166,22 +166,21 @@ const News = () => {
       Alert.alert("Error", "Please enter a comment");
       return;
     }
-
+  
     try {
       const token = await AsyncStorage.getItem("authToken");
       if (!token) {
         Alert.alert("Error", "Please log in to comment");
         return;
       }
-
+  
       const response = await axios.post(
         `${apiUrl}/api/post/${postId}/comment`,
         { content: commentContent, username: currentUser },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
+  
       if (response.data.success && response.data.comment) {
-        // Ensure the comment has a valid _id before adding it to the state
         const newComment = {
           ...response.data.comment,
           _id: response.data.comment._id || `temp-${Date.now()}` // Fallback ID if needed
@@ -194,7 +193,8 @@ const News = () => {
               : post
           )
         );
-
+  
+        // Clear the comment input for this post
         setNewComments((prevComments) => ({ ...prevComments, [postId]: "" }));
       } else {
         Alert.alert("Error", "Failed to add comment. Please try again.");
@@ -207,55 +207,50 @@ const News = () => {
 
   // Handle delete comment - Fixed implementation
   const handleDeleteComment = async (postId: string, commentId: string) => {
-    if (!commentId) {
-      console.error("Invalid comment ID:", commentId);
-      Alert.alert("Error", "Cannot delete this comment at the moment.");
+  if (!commentId) {
+    console.error("Invalid comment ID:", commentId);
+    Alert.alert("Error", "Cannot delete this comment at the moment.");
+    return;
+  }
+
+  try {
+    setDeleteInProgress(commentId);
+    const token = await AsyncStorage.getItem("authToken");
+    if (!token) {
+      Alert.alert("Error", "Please log in to delete comments");
+      setDeleteInProgress(null);
       return;
     }
-  
-    try {
-      setDeleteInProgress(commentId);
-      const token = await AsyncStorage.getItem("authToken");
-      if (!token) {
-        Alert.alert("Error", "Please log in to delete comments");
-        setDeleteInProgress(null);
-        return;
-      }
-  
-      console.log(`Deleting comment: POST ID: ${postId}, Comment ID: ${commentId}`);
-  
-      const response = await axios.delete(
-        `${apiUrl}/api/post/${postId}/comment/${commentId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+
+    const response = await axios.delete(
+      `${apiUrl}/api/post/${postId}/comment/${commentId}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    if (response.data.success) {
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post._id === postId
+            ? {
+                ...post,
+                comments: post.comments.filter((comment) => comment._id !== commentId),
+              }
+            : post
+        )
       );
-  
-      if (response.data.success) {
-        setPosts((prevPosts) =>
-          prevPosts.map((post) =>
-            post._id === postId
-              ? {
-                  ...post,
-                  comments: post.comments.filter((comment) => comment._id !== commentId),
-                }
-              : post
-          )
-        );
-        console.log("Comment deleted successfully");
-      } else {
-        console.error("Server responded with error:", response.data);
-        Alert.alert("Error", response.data.message || "Failed to delete comment");
-      }
-    } catch (err: any) {
-      console.error("Error deleting comment:", err);
-      console.error("Error response:", err.response?.data);
-      Alert.alert(
-        "Error",
-        err.response?.data?.message || "Failed to delete comment. Please try again."
-      );
-    } finally {
-      setDeleteInProgress(null);
+    } else {
+      Alert.alert("Error", response.data.message || "Failed to delete comment");
     }
-  };
+  } catch (err: any) {
+    console.error("Error deleting comment:", err);
+    Alert.alert(
+      "Error",
+      err.response?.data?.message || "Failed to delete comment. Please try again."
+    );
+  } finally {
+    setDeleteInProgress(null);
+  }
+};
 
   // Toggle post expansion
   const togglePostExpansion = (postId: string) => {
