@@ -100,14 +100,34 @@ const Projects = () => {
           if (!token) {
             throw new Error("No token found");
           }
-          const response = await axios.get(`${apiUrl}/api/user/getUser`, {
+         /*  const response = await axios.get(`${apiUrl}/api/user/getUser`, {
             headers: {
               Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
             },
           });
        
         console.log("User Role:", response.data.user.role);
-          setUserRole(response.data.user.role);
+          setUserRole(response.data.user.role); */
+      
+         const userResponse = await axios.get(`${apiUrl}/api/user/getUser`, {
+           headers: { Authorization: `Bearer ${token}` },
+         });
+
+         if (userResponse.data?.user?.role) {
+           setUserRole(userResponse.data.user.role);
+           return;
+         }
+
+         const orgResponse = await axios.get(
+           `${apiUrl}/api/organization/get`,
+           {
+             headers: { Authorization: `Bearer ${token}` },
+           }
+         );
+
+         if (orgResponse.data?.org) {
+           setUserRole("organization");
+         }
       } catch (error) {
         console.error("Failed to fetch user role", error);
         Alert.alert("Error", "Failed to fetch user role.");

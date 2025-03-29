@@ -190,7 +190,7 @@ const Home = () => {
     },
   ]); */
 
-  const projectIcons = {
+  const projectIcons: { [key: string]: string } = {
     "Waste Reduction": "recycle",
     Plantation: "tree",
     "Disaster Preparedness": "alert-circle-outline",
@@ -368,7 +368,7 @@ const Home = () => {
               <Card
                 bgColor="#dce8d6"
                 heading={item.projectName}
-                iconName={projectIcons[item.projectType] || "help-circle"}
+                iconName={projectIcons[item.projectType as keyof typeof projectIcons] || "help-circle"}
                 content={
                   <View style={styles.cardContent}>
                     <View style={styles.infoRow}>

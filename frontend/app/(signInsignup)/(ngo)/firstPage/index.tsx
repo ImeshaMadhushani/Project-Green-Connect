@@ -6,25 +6,110 @@ import { router } from "expo-router";
 import ButtonSuccess from "@/components/button-success";
 import ButtonText from "@/components/button-text";
 
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+/* import * as DocumentPicker from "expo-document-picker"; */
+import { Button } from "react-native-paper";
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
+
 const First = () => {
-  const [ngoname, setNgoname] = useState("");
-  const [regNo, setRegno] = useState("");
+    const [registrationNumber, setRegistrationNo] = useState("");
+    const [password, setPassword] = useState("");
+   const [conformPassword, setConformPassword] = useState("");
+  
+    const input1Ref = useRef<TextInput>(null);
+    const input2Ref = useRef<TextInput>(null);
+  
+  const handleLogin = async () => {
+      if (!registrationNumber.trim() || !password.trim()) {
+        Alert.alert("Error", "Please fill in all fields");
+        return;
+    }
+    console.log("Login Payload:", { registrationNumber, password });
+    try {
+      const response = await axios.post(
+        `${apiUrl}/api/organization/reg`,
+        {
+          registrationNumber,
+          password,
+          conformPassword,
+        },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      console.log("Login Response:", response.data);
+
+      
+         if (response.data && response.data.success) {
+           
+           Alert.alert("Success", "Registration successful");
+           router.push("/home");
+         } else {
+          
+           Alert.alert("Error", "Something went wrong. Please try again.");
+         }
+      
+    } catch (error: any) {
+      console.error("Login Error:", error.response?.data || error.message);
+      Alert.alert(
+        "Error",
+        error.response?.data?.message || "Network error. Please try again."
+      );
+    }
+  }
+  
+  /* const [name, setNgoname] = useState("");
+  const [username, setUsername] = useState("");
+  const [registrationNumber, setRegno] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
   const [email, setEmail] = useState("");
+  const [registrationDate, setRegistrationDate] = useState("");
+  const [legalDocument, setLegalDocument] = useState<{ uri: string; name?: string }>({ uri: "", name: "" });
+  const [role] = useState("organization");
+
 
   const input1Ref = useRef<TextInput>(null);
   const input2Ref = useRef<TextInput>(null);
   const input3Ref = useRef<TextInput>(null);
 
+  // Function to pick a file
+  const pickDocument = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "application/pdf", // Adjust MIME type if needed
+        copyToCacheDirectory: true,
+      });
+
+      if (result.canceled) return;
+
+      const { uri, name } = result.assets[0];
+      setLegalDocument({ uri, name });
+    } catch (error) {
+      console.error("File Selection Error:", error);
+      Alert.alert("Error", "Failed to pick a document");
+    }
+  };
+
   const handleNext = async () => {
-    const trimmedNgoName = ngoname.trim();
-    const trimmedRegNo = regNo.trim();
+    const trimmedNgoName = name.trim();
+    const trimmedRegNo = registrationNumber.trim();
     const trimmedPassword = password.trim();
     const trimmedPassword2 = password2.trim();
     const trimmedEmail = email.trim();
+    const trimmedRegistrationDate = registrationDate.trim();
 
-    if (!trimmedNgoName || !trimmedRegNo || !trimmedPassword || !trimmedPassword2 || !trimmedEmail) {
+    if (
+      !trimmedNgoName ||
+      !trimmedRegNo ||
+      !trimmedPassword ||
+      !trimmedPassword2 ||
+      !trimmedEmail ||
+      !trimmedRegistrationDate ||
+      !legalDocument
+    ) {
       Alert.alert("Error", "Please fill all fields");
       return;
     }
@@ -34,8 +119,15 @@ const First = () => {
       return;
     }
 
-    if (!/[A-Z]/.test(trimmedPassword) || !/[a-z]/.test(trimmedPassword) || !/[0-9]/.test(trimmedPassword)) {
-      Alert.alert("Error", "Password must contain at least one uppercase letter, one lowercase letter, and one number");
+    if (
+      !/[A-Z]/.test(trimmedPassword) ||
+      !/[a-z]/.test(trimmedPassword) ||
+      !/[0-9]/.test(trimmedPassword)
+    ) {
+      Alert.alert(
+        "Error",
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+      );
       return;
     }
 
@@ -49,16 +141,40 @@ const First = () => {
       return;
     }
 
-    router.push({
-      pathname: "/(tabs)/home",
-      params: {
-        ngoname: trimmedNgoName,
-        regNo: trimmedRegNo,
-        email: trimmedEmail,
-      },
-    });
-  };
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("username", username);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("registrationNumber", registrationNumber);
+    formData.append("registrationDate", registrationDate);
+    formData.append("legalDocument", {
+      uri: legalDocument.uri,
+      type: "application/pdf", // Adjust the MIME type if necessary
+      name: legalDocument.name || "document.pdf",
+    } as any);
+    formData.append("role", "organization"); // Fixed role
 
+    console.log("SignUp Payload:", formData);
+
+    try {
+      await axios.post(`${apiUrl}/api/user/register`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      Alert.alert(
+        "Success",
+        "Account created successfully! Awaiting admin approval."
+      );
+      router.push("/logIn");
+    } catch (error: any) {
+      console.error("SignUp Error: ", error.response?.data || error.message);
+      Alert.alert(
+        "Sign Up Failed",
+        error.response?.data?.message || "Network error"
+      );
+    }
+  };
+ */
   return (
     <View style={styles.container}>
       {/*   <View style={styles.stepContainer}>
@@ -69,17 +185,23 @@ const First = () => {
       <TextInputStyled
         ref={input1Ref}
         returnKeyType="next"
-        text="Organization Name"
-        onChangeText={setNgoname}
-        value={ngoname}
-        placeholder="Enter the name of your NGO"
+        text="Registration Number"
+        onChangeText={setRegistrationNo}
+        value={registrationNumber}
+        placeholder="Enter the Registration No of your NGO"
+      />
+      {/*<TextInputStyled
+        text="Username"
+        onChangeText={setUsername}
+        value={username}
+        placeholder="Enter Your Username"
       />
       <TextInputStyled
         ref={input2Ref}
         returnKeyType="next"
         text="Registration No"
         onChangeText={setRegno}
-        value={regNo}
+        value={registrationNumber}
         placeholder="Enter the reg no"
       />
       <TextInputStyled
@@ -89,9 +211,9 @@ const First = () => {
         value={email}
         placeholder="Enter your email"
         keyboardType="email-address"
-      />
+      />*/}
       <TextInputStyled
-        ref={input3Ref}
+        ref={input2Ref}
         returnKeyType="next"
         text="Password"
         secureTextEntry
@@ -103,10 +225,29 @@ const First = () => {
         returnKeyType="done"
         text="Confirm Password"
         secureTextEntry
-        onChangeText={setPassword2}
-        value={password2}
+        onChangeText={setConformPassword}
+        value={conformPassword}
         placeholder="Confirm your password"
       />
+      {/*} <TextInputStyled
+        returnKeyType="next"
+        text="Registration Date"
+        onChangeText={setRegistrationDate}
+        value={registrationDate}
+        placeholder="Enter the registration date"
+      />
+      <View style={{ width: "100%", marginTop: 10 }}>
+        <Button mode="contained" onPress={pickDocument}>
+          Upload Legal Document
+        </Button>
+        {legalDocument.uri ? (
+          <Text style={{ marginTop: 10 }}>
+            Selected File: {legalDocument.name}
+          </Text>
+        ) : (
+          <Text style={{ marginTop: 10, color: "gray" }}>No file selected</Text>
+        )}
+      </View>*/}
 
       <Text style={styles.loginText}>
         Already have an account?{" "}
@@ -127,12 +268,14 @@ const First = () => {
         <ButtonSuccess
           style={styles.button}
           label="Sign Up"
-          onPress={handleNext}
+          onPress={handleLogin}
         />
       </View>
     </View>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   container: {

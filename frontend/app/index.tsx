@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, ImageBackground, Image } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import Button from "@/components/button-login";
+import ButtonText from "@/components/button-text";
 import { router } from "expo-router";
 
 const bgImage = require("../assets/images/bg.jpg");
@@ -12,16 +13,31 @@ const Index = () => {
       <View style={styles.container}>
         <Image style={styles.logo} resizeMode="contain" source={logo} />
         <Text style={styles.tagline}>Together We Can Make a Difference</Text>
-            <Button onPress={()=>{
-              router.navigate("/signUp", { relativeToDirectory: true })
-            }} label="Volunteer" />
+        <Button
+          onPress={() => {
+            router.navigate("/signUp", { relativeToDirectory: true });
+          }}
+          label="Volunteer"
+        />
 
-            <Text style={styles.orText}>OR</Text>
+        <Text style={styles.orText}>OR</Text>
 
-            <Button label="Organization" onPress={()=>{
-              router.navigate("/firstPage", { relativeToDirectory: true })
-            }}/>
-            
+        <Button
+          label="Organization"
+          onPress={() => {
+            router.navigate("/firstPage", { relativeToDirectory: true });
+          }}
+        />
+
+        <View style={styles.loginContainer}>
+          <Text style={styles.loginText}>Already Have An Account?</Text>
+          <ButtonText
+            label="Login"
+            onPress={() =>
+              router.navigate("/logIn", { relativeToDirectory: true })
+            }
+          />
+        </View>
       </View>
     </ImageBackground>
   );
@@ -52,6 +68,13 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     marginVertical: 10,
+  },
+  loginContainer: {
+    flexDirection: "row",
+  },
+  loginText: {
+    fontSize: 20,
+    color: "white",
   },
 });
 

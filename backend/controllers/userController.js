@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
+import organizationModel from "../models/organizationModel.js.js";
 
 
 // Register a new user
@@ -247,7 +248,7 @@ export async function suspendOrganization(req, res) {
             return res.status(403).json({ message: "Access denied. Admin or Superadmin only." });
         }
 
-        const user = await User.findById(id);
+        const user = await organizationModel.findById(id);
         if (!user || user.role !== "organization") {
             return res.status(404).json({ message: "Organization not found" });
         }
@@ -288,7 +289,7 @@ export async function deleteUser(req, res) {
 export async function getCounts(req, res) {
     try {
         const volunteerCount = await User.countDocuments({ role: 'volunteer' });
-        const organizationCount = await User.countDocuments({ role: 'organization' });
+        const organizationCount = await organizationModel.countDocuments({ role: 'organization' });
 
         res.status(200).json({
             message: "Counts fetched successfully!",
@@ -337,7 +338,7 @@ export async function getCounts(req, res) {
  */
 
 
-// Forgot Password - Request OTP
+// Forgot Password - Request OTP - volunteer,admin
 export async function forgotPassword(req, res) {
     const { email } = req.body;
 
@@ -485,7 +486,7 @@ export async function logout(req, res) {
 }
 
 //get approve organizations
-export async function getApproveOrganizations(req, res) {
+/* export async function getApproveOrganizations(req, res) {
     try {
         const organizations = await User.find({ role: 'organization', isApproved: true });
         res.status(200).json({ message: 'Organizations fetched successfully', organizations });
@@ -494,4 +495,28 @@ export async function getApproveOrganizations(req, res) {
         console.error("Error fetching organizations:", error);
         res.status(500).json({ message: 'Error fetching organizations', error: error.message });
     }
-}
+} */
+
+// Assuming the legalDocument is stored as a file path or URL in the user's document
+/* export async function getLegalDocument(req, res) {
+    try {
+        const { id } = req.params;
+        const user = await User.findById(id);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (!user.legalDocument) {
+            return res.status(404).json({ message: "Legal document not found" });
+        }
+
+        const documentUrl = `${process.env.BASE_URL}/${user.legalDocument}`;
+        res.json({ legalDocument: documentUrl });
+
+       // res.status(200).json({ legalDocument: user.legalDocument });
+    } catch (error) {
+        console.error("Error fetching legal document:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+} */

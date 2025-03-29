@@ -46,12 +46,15 @@ const AdminHome = () => {
     const fetchCounts = async () => {
       try {
         const userResponse = await axios.get(`${apiUrl}/api/user/counts`);
+        console.log("API URL:", `${apiUrl}/api/user/counts`);
+
          const projectsResponse = await axios.get(
            `${apiUrl}/api/project/approved/count`
         );
         const feedbackResponse = await axios.get(
           `${apiUrl}/api/feedback/feedback/approved/count`
         );
+        
         setCounts({
           volunteerCount: userResponse.data.volunteerCount,
           organizationCount: userResponse.data.organizationCount,
@@ -63,6 +66,10 @@ const AdminHome = () => {
       }
     };
     fetchCounts();
+     const interval = setInterval(fetchCounts, 5000);
+
+     // Cleanup function to clear interval when component unmounts
+     return () => clearInterval(interval);
   }, []);
   
    // Logout function

@@ -4,19 +4,27 @@ import { router } from "expo-router";
 import { useState, useRef, useEffect } from "react";
 import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { useLocalSearchParams } from "expo-router"; 
+import { useLocalSearchParams } from "expo-router";
 import axios from "axios";
 
-
-const apiUrl = process.env.EXPO_PUBLIC_API_URL; 
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 const OTPPage = () => {
-  const { email } = useLocalSearchParams();
-  console.log("Email from params:", email);
-  const [otp, setOtp] = useState(["", "", "", ""]);
-  const inputs = [useRef<TextInput>(null), useRef<TextInput>(null), useRef<TextInput>(null), useRef<TextInput>(null)];
+  /* const { email } = useLocalSearchParams();
+  console.log("Email from params:", email); */
 
-    
+  const { email, userType } = useLocalSearchParams(); // Added userType
+  console.log("Email from params:", email);
+  console.log("User type from params:", userType); // Logging userType for debugging
+
+  const [otp, setOtp] = useState(["", "", "", ""]);
+  const [loading, setLoading] = useState(false); // Add loading state
+  const inputs = [
+    useRef<TextInput>(null),
+    useRef<TextInput>(null),
+    useRef<TextInput>(null),
+    useRef<TextInput>(null),
+  ];
 
   const handleOtpChange = (index: number, value: string) => {
     value = value.trim(); // Trim spaces
@@ -41,32 +49,53 @@ const OTPPage = () => {
     }
 
     try {
-     
       console.log("Verifying OTP for email:", email);
-      console.log("API URL:", apiUrl);
-     
-      const response = await axios.post(`${apiUrl}/api/user/verify-otp`, {
+      //console.log("API URL:", apiUrl);
+      console.log("User Type:", userType);
+
+      setLoading(true); // Set loading state
+      let endpoint = "";
+      if (userType === "organization") {
+        endpoint = "/api/organization/verify-otp";
+      } else if (userType === "admin") {
+        endpoint = "/api/user/verify-otp";
+      } else {
+        endpoint = "/api/user/verify-otp";
+      }
+
+      console.log("API Endpoint:", endpoint);
+
+      /*   const response = await axios.post(`${apiUrl}/api/user/verify-otp`, {
         email, // Send email and OTP to backend
         otp: otpCode,
       });
-     
+ */
+
+      const response = await axios.post(`${apiUrl}${endpoint}`, {
+        email, // Send email and OTP to backend
+        otp: otpCode,
+        userType,
+      });
 
       if (response.status === 200) {
         Alert.alert("Success", "OTP verified successfully!");
         router.push({
           pathname: "/resetPassword",
-          params:{email, otpCode}
+          params: { email, otpCode, userType },
         }); // Navigate to reset password page
       }
     } catch (error: any) {
       console.error("OTP verification error:", error.response?.data || error);
-      Alert.alert("Error", error.response?.data?.message || "Failed to verify OTP.");
+      Alert.alert(
+        "Error",
+        error.response?.data?.message || "Failed to verify OTP."
+      );
       setOtp(["", "", "", ""]); // Clear OTP inputs on failure
       inputs[0].current?.focus(); // Focus back on the first input
-    };
-  }
+    }
+  };
 
-/*   const markError = (inputRef) => {
+  /*   const markError = (inputRef) => {
     inputRef?.current?.setNativeProps({
       style: {
         borderColor: "tomato",
@@ -75,7 +104,7 @@ const OTPPage = () => {
     });
   }; */
 
-/*   const handleInputFocus = (index) => {
+  /*   const handleInputFocus = (index) => {
     if (!otp[index]) {
       markError(inputs[index]);
     }

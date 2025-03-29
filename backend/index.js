@@ -17,6 +17,7 @@ import methodOverride from 'method-override';
 import  path  from 'path';
 import { fileURLToPath } from 'url';
 import morgan from 'morgan';
+import feedbackRouter from './routes/feedbackRoute.js';
 
 
 
@@ -40,6 +41,7 @@ app.use(session({
 
 
 app.use("/uploads", express.static("uploads"));
+app.use("/qrcodes", express.static("public/qrcodes"));
 
 
 
@@ -74,8 +76,10 @@ app.use((req, res, next) => {
 
 app.use("/api/user", userRouter);
 app.use("/api/project", projectRouter);
-app.use('/api/post', postRoute);
+app.use('/api/post', postRoute)
+app.use ('/api/feedback', feedbackRouter)
 app.use('/api/organization',organizationRoute)
+
 
 
 
