@@ -104,16 +104,26 @@ export const deleteFeedback = async (req, res) => {
 
 
 // Get Approved Feedback
+
 export const getApprovedFeedback = async (req, res) => {
     try {
-        const approvedFeedback = await Feedback.find({ approved: true });
-        res.status(200).json(approvedFeedback);
+        const approvedFeedback = await Feedback.find({ 
+            status: "approved" 
+        }).sort({ createdAt: -1 }); // Sort by newest first
+        
+        res.status(200).json({
+            success: true,
+            count: approvedFeedback.length,
+            feedback: approvedFeedback
+        });
     } catch (error) {
         console.error('Error fetching approved feedback:', error);
-        res.status(500).json({ message: 'Error fetching approved feedback' });
+        res.status(500).json({ 
+            success: false,
+            message: 'Error fetching approved feedback' 
+        });
     }
 };
-
 
 export const getAllFeedback = async (req, res) => {
     try {
