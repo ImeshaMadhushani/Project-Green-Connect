@@ -183,3 +183,34 @@ export const search = async (req, res) => {
     });
   }
 };
+
+// controllers/postController.js
+export const getUserPosts = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const posts = await Post.find({ username })
+      .sort({ createdAt: -1 })
+      .select('_id title content image username category likes likedBy comments createdAt');
+
+    if (!posts || posts.length === 0) {
+      return res.status(200).send({
+        success: true,
+        message: "No posts found for this user",
+        posts: []
+      });
+    }
+
+    res.status(200).send({
+      success: true,
+      message: "User posts retrieved successfully",
+      posts
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({
+      success: false,
+      message: "Server Error",
+      error: err.message
+    });
+  }
+};

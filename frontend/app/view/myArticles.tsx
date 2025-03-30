@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,38 +6,61 @@ import {
   StyleSheet,
   Pressable,
   Alert,
+  ActivityIndicator,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import Card from "@/components/Card"; // Ensure correct import path
+import Card from "@/components/Card";
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 const MyArticles = () => {
-  const navigation = useNavigation();
+  const [articles, setArticles] = useState<
+    { _id: string; title: string; content: string; image?: string; category?: string }[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const [username, setUsername] = useState("");
+  const router = useRouter();
 
-  // Sample data (Replace with API call to fetch logged-in user's articles)
-  const [articles, setArticles] = useState([
-    {
-      id: "1",
-      title: "Saving Energy at Home",
-      content: "Lower your bills and protect the environment...",
-      image: require("@/assets/images/bg.jpg"), // Ensure correct path
-    },
-    {
-      id: "2",
-      title: "The Future of Solar Energy",
-      content: "How solar power is changing the world...",
-      image: require("@/assets/images/bg.jpg"),
-    },
-    {
-      id: "3",
-      title: "Eco-Friendly Lifestyle Tips",
-      content: "Simple changes to make your lifestyle more eco-friendly...",
-      image: require("@/assets/images/bg.jpg"),
-    },
-  ]);
+  useEffect(() => {
+    const fetchUserAndPosts = async () => {
+      try {
+        const token = await AsyncStorage.getItem("authToken");
+        if (!token) {
+          Alert.alert("Error", "Please login to view your articles");
+          return;
+        }
 
-  // Handle delete article
-  const handleDelete = (articleId: string) => {
+        const userResponse = await axios.get(`${apiUrl}/api/user/getUser`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const currentUsername = userResponse.data.user.username;
+        setUsername(currentUsername);
+
+        const postsResponse = await axios.get(`${apiUrl}/api/post/user/${currentUsername}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (postsResponse.data.success) {
+          setArticles(postsResponse.data.posts || []);
+        } else {
+          setArticles([]);
+        }
+      } catch (error) {
+        console.error("Error fetching articles:", error);
+        Alert.alert("Error", "Failed to load your articles");
+        setArticles([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserAndPosts();
+  }, []);
+
+  const handleDelete = async (articleId: string) => {
     Alert.alert(
       "Delete Article",
       "Are you sure you want to delete this article?",
@@ -46,68 +69,95 @@ const MyArticles = () => {
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => {
-            setArticles((prevArticles) =>
-              prevArticles.filter((article) => article.id !== articleId)
-            );
+          onPress: async () => {
+            try {
+              const token = await AsyncStorage.getItem("authToken");
+              await axios.delete(`${apiUrl}/api/post/${articleId}/delete`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              setArticles((prevArticles) =>
+                prevArticles.filter((article) => article._id !== articleId)
+              );
+            } catch (error) {
+              Alert.alert("Error", "Failed to delete article");
+            }
           },
         },
       ]
     );
   };
 
+  const handleEdit = (article: {
+    _id: string;
+    title: string;
+    content: string;
+    image?: string;
+    category?: string;
+  }) => {
+    router.push({
+      pathname: "/createArticles",
+      params: { postToEdit: JSON.stringify(article) },
+    });
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4682B4" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()}>
+        <Pressable onPress={() => router.back()}>
           <MaterialCommunityIcons name="arrow-left" size={28} color="black" />
         </Pressable>
         <Text style={styles.headerTitle}>My Articles</Text>
-        <View style={{ width: 28 }} /> {/* Placeholder to balance layout */}
+        <View style={{ width: 28 }} />
       </View>
 
-      {/* Articles List */}
       <FlatList
         data={articles}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <Card
             heading={item.title}
             bgColor="#f4f4e4"
-            image={item.image}
+            image={item.image ? { uri: `${apiUrl}/${item.image}` } : undefined}
             content={
               <View>
                 <Text numberOfLines={2}>{item.content}</Text>
-                {/* Delete Button inside Card */}
-                <Pressable
-                  style={styles.deleteButton}
-                  onPress={() => handleDelete(item.id)}
-                >
-                  <MaterialCommunityIcons name="trash-can-outline" size={20} color="white" />
-                </Pressable>
+                <View style={styles.buttonContainer}>
+                  <Pressable style={styles.editButton} onPress={() => handleEdit(item)}>
+                    <MaterialCommunityIcons name="pencil" size={20} color="white" />
+                  </Pressable>
+                  <Pressable style={styles.deleteButton} onPress={() => handleDelete(item._id)}>
+                    <MaterialCommunityIcons name="trash-can-outline" size={20} color="white" />
+                  </Pressable>
+                </View>
               </View>
             }
-            // onPress={() =>
-            //   navigation.navigate("ArticleSingleView", { article: item })
-            // }
           />
         )}
         ListEmptyComponent={
-          <Text style={styles.noArticlesText}>
-            You haven't posted any articles yet.
-          </Text>
+          <Text style={styles.noArticlesText}>You haven't posted any articles yet.</Text>
         }
       />
     </View>
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   header: {
     flexDirection: "row",
@@ -123,22 +173,31 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: 600,
+    fontWeight: "600",
   },
-  cardContainer: {
+  buttonContainer: {
     flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 20,
+  },
+  editButton: {
+    backgroundColor: "#4682B4",
+    padding: 10,
+    borderRadius: 10,
+    marginRight: 10,
+    width: 40,
+    height: 40,
     alignItems: "center",
-    paddingHorizontal: 15,
-    paddingVertical: 5,
+    justifyContent: "center",
   },
   deleteButton: {
     backgroundColor: "#ff5047",
     padding: 10,
     borderRadius: 10,
-    marginLeft: 180,
-    marginTop: 20,
     width: 40,
     height: 40,
+    alignItems: "center",
+    justifyContent: "center",
   },
   noArticlesText: {
     textAlign: "center",
