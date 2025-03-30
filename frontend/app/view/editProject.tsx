@@ -22,13 +22,14 @@ import MapView, { Marker } from "react-native-maps";
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 const API_KEY = process.env.EXPO_PUBLIC_LOCATIONIQ_API_KEY;
 
-const projectTypes = [
+/* const projectTypes = [
   "Waste Reduction",
   "Plantation",
   "Disaster Preparedness",
   "Environmental Awareness Campaigns",
   "Sustainable Gardening & Agriculture",
 ];
+ */
 
 const EditProject = () => {
   const { id } = useLocalSearchParams(); // Get project ID from route params
@@ -36,7 +37,7 @@ const EditProject = () => {
 
   const [project, setProject] = useState({
     title: "",
-    type: "",
+  /*   type: "", */
     location: "",
     date: "",
     time: "",
@@ -55,7 +56,7 @@ const EditProject = () => {
         const data = response.data;
         setProject({
           title: data.projectName,
-          type: data.type,
+        /*   type: data.projectType, */
           location: data.location,
           date: data.date,
           time: data.time,
@@ -137,7 +138,7 @@ const handleSaveLocation = async (selectedLocation: {
   const handleUpdate = async () => {
     if (
       !project.title ||
-      !project.type ||
+      /* !project.type || */
       !project.location ||
       !project.date ||
       !project.time ||
@@ -159,7 +160,7 @@ const handleSaveLocation = async (selectedLocation: {
           date: project.date,
           time: project.time,
           location: project.location,
-          type: project.type,
+         /*  projectType: project.type, */
           latitude: project.latitude,
           longitude: project.longitude,
         },
@@ -208,7 +209,7 @@ const handleSaveLocation = async (selectedLocation: {
         />
 
         {/* Project Type Dropdown */}
-        <Text style={styles.label}>Project Type</Text>
+        {/*  <Text style={styles.label}>Project Type</Text>
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={project.type}
@@ -221,11 +222,11 @@ const handleSaveLocation = async (selectedLocation: {
               <Picker.Item key={index} label={type} value={type} />
             ))}
           </Picker>
-        </View>
+        </View> */}
 
         {/* Location */}
         <Text style={styles.label}>Location</Text>
-       {/*  <TextInput
+        {/*  <TextInput
           style={styles.input}
           value={project.location}
           onChangeText={(text) => setProject({ ...project, location: text })}
@@ -312,6 +313,18 @@ const handleSaveLocation = async (selectedLocation: {
 
         {/* Save Button */}
         <ButtonSuccess label="Save Changes" onPress={handleUpdate} />
+
+        {/* Message to contact admin */}
+        <Text style={styles.contactMessage}>
+          If you want to delete the project, contact admin via email{" "}
+          <Text
+            style={styles.email}
+            onPress={() => Linking.openURL("mailto:savealife.ngo@gmail.com")}
+          >
+            savealife.ngo@gmail.com
+          </Text>
+        </Text>
+
       </ScrollView>
     </View>
   );
@@ -382,6 +395,16 @@ const styles = StyleSheet.create({
   map: {
     width: "100%",
     height: "80%",
+  },
+  contactMessage: {
+    fontSize: 14,
+    color: "#555",
+    marginTop: 20,
+    textAlign: "center",
+  },
+  email: {
+    color: "#2E7D32", // You can use any color for the email
+    textDecorationLine: "underline",
   },
 });
 
