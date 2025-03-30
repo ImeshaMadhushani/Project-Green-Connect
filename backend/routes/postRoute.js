@@ -8,7 +8,7 @@ import {
   getPost,
   updatePost,
   search,
-  getUserPosts
+  getUserPosts,
 } from "../controllers/postController/postController.js";
 import {
   addComment,
@@ -19,7 +19,8 @@ import {
   /* toggleLike */
 } from "../controllers/postController/likeController.js";
 import {
-  getLeaderboard
+  getLeaderboard,
+  getTopPosts,
 } from "../controllers/postController/leaderboardController.js";
 
 
@@ -66,6 +67,7 @@ router.post("/:postId/like", likeController);
 router.get('/leaderboard', getLeaderboard);
 router.get('/search', search);
 router.get('/user/:username', getUserPosts);
+router.get('/getTopPosts', getTopPosts);
 
 
 

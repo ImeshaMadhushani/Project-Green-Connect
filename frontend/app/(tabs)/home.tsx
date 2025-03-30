@@ -1,142 +1,4 @@
-// import Card from "@/components/Card";
-// import Title from "@/components/Title";
-// import { router } from "expo-router";
-// import { Alert, ScrollView, StyleSheet, Text, View, Pressable } from "react-native";
-// import { Image } from "react-native-elements";
-// import MapView from "react-native-maps";
-// import { Ionicons } from "@expo/vector-icons";
-
-// const calender = require("../../assets/images/calender.png");
-// const clock = require("../../assets/images/clock.png");
-// const pin = require("../../assets/images/pin.png");
-
-// const Home = () => {
-//   return (
-//     <ScrollView contentContainerStyle={styles.contentContainer}>
-//       <View style={styles.container}>
-        
-        
-//         <View
-//           style={{
-//             width: "100%",
-//             height: 350,
-//             marginBottom:10
-//           }}
-//         >
-//             <MapView style={styles.map} />
-//         </View>
-
-
-//         <Pressable
-//           onPress={() => router.push("/projects")}
-//           style={styles.sectionHeader}
-//         >
-//           <Text style={styles.sectionTitle}>Upcoming Events</Text>
-//           <Ionicons name="chevron-forward-outline" size={24} color="#333" />
-//         </Pressable>
-
-//         <Card
-//           bgColor="#dce8d6"
-//           heading="Plastic - free market campaign"
-//           content={
-//             <View style={styles.cardContent}>
-//               <View style={styles.infoRow}>
-//                 <Image source={calender} style={styles.icon} />
-//                 <Text>November 10, 2024</Text>
-//               </View>
-
-//               <View style={styles.infoRow}>
-//                 <Image source={clock} style={styles.icon} />
-//                 <Text>9.00 a.m.</Text>
-//               </View>
-
-//               <View style={styles.infoRow}>
-//                 <Image source={pin} style={styles.icon} />
-//                 <Text>Vavunia, Market</Text>
-//               </View>
-//             </View>
-//           }
-//         />
-        
-//         <Pressable 
-//           onPress={() => router.push("/news")} 
-//           style={styles.sectionHeader}
-//         >
-//           <Text style={styles.sectionTitle}>What's New</Text>
-//           <Ionicons name="chevron-forward-outline" size={24} color="#333" />
-//         </Pressable>
-
-//         <Card
-//           heading="Energy - Saving Tips for an eco-Friendly Home"
-//           bgColor="#d6e4e8"
-//           content={
-//             <View style={styles.cardTextContent}>
-//               <Text style={styles.cardText}>
-//                 Reducing energy consumption at home not only lowers utility
-//                 bills but also helps protect the environment. Simple changes...
-//               </Text>
-//             </View>
-//           }
-//         />
-//       </View>
-//     </ScrollView>
-    
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     width: "100%",
-//     alignItems: "center",
-//     paddingVertical: 10,
-//   },
-//   contentContainer: {
-//     paddingBottom: 20,
-//   },
-//   cardContent: {
-//     margin: 15,
-//   },
-//   map: {
-//     width: '100%',
-//     height: '100%',
-//   },
-//   sectionHeader: {
-//     width: "95%",
-//     flexDirection: "row",
-//     alignItems: "center",
-//     justifyContent: "space-between",
-//     backgroundColor: "lightgray",
-//     paddingVertical: 13,
-//     paddingHorizontal: 15,
-//     borderRadius: 15,
-//     marginVertical: 10,
-//   },
-//   sectionTitle: {
-//     fontSize: 20,
-//     fontWeight: 600,
-//     color: "#333",
-//   },
-//   infoRow: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     marginBottom: 10,
-//   },
-//   icon: {
-//     width: 30,
-//     height: 30,
-//     marginRight: 10,
-//   },
-//   cardTextContent: {
-//     marginTop: 10,
-//   },
-//   cardText: {
-//     fontSize: 16,
-//   },
-// });
-
-// export default Home;
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { router } from "expo-router";
 import {
   Alert,
@@ -147,50 +9,56 @@ import {
   View,
   Pressable,
   ActivityIndicator,
+  Dimensions,
+  TouchableOpacity,
 } from "react-native";
 import { Image } from "react-native-elements";
 import MapView, { Marker } from "react-native-maps";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Feather } from "@expo/vector-icons";
 import Card from "@/components/Card";
 import * as Location from "expo-location";
-
-
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage"; 
 
 const calender = require("../../assets/images/calender.png");
 const clock = require("../../assets/images/clock.png");
 const pin = require("../../assets/images/pin.png");
 
-const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+const apiUrl = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000";
+const { width: screenWidth } = Dimensions.get("window");
+
+interface Event {
+  id: string;
+  projectName: string;
+  projectType: string;
+  date: string;
+  time: string;
+  location: string;
+  latitude: number;
+  longitude: number;
+  createdAt: Date;
+}
+
+interface Post {
+  _id: string;
+  title: string;
+  image?: string;
+  username: string;
+  content: string;
+  category: string;
+  points: number;
+  createdAt: Date;
+}
+
+interface Feedback {
+  id: string;
+  username: string;
+  rating: number;
+  comment: string;
+  createdAt: Date;
+}
 
 const Home = () => {
-  // Dummy data for events and news
-  /*   const [events] = useState([
-    {
-      id: "1",
-      title: "Plastic-Free Market Campaign",
-      date: "November 10, 2024",
-      time: "9.00 a.m.",
-      location: "Vavunia, Market",
-    },
-    {
-      id: "2",
-      title: "Tree Planting Drive",
-      date: "November 15, 2024",
-      time: "10.00 a.m.",
-      location: "Colombo Park",
-    },
-    {
-      id: "3",
-      title: "Eco-Friendly Fair",
-      date: "December 5, 2024",
-      time: "11.30 a.m.",
-      location: "Kandy Town Hall",
-    },
-  ]); */
-
-  const projectIcons: { [key: string]: string } = {
+  const projectIcons = {
     "Waste Reduction": "recycle",
     Plantation: "tree",
     "Disaster Preparedness": "alert-circle-outline",
@@ -198,281 +66,333 @@ const Home = () => {
     "Sustainable Gardening & Agriculture": "sprout",
   };
 
-  interface Event {
-    id: string;
-    projectName: string;
-    projectType: string;
-    date: string;
-    time: string;
-    location: string;
-    latitude: number;
-    longitude: number;
-  }
-
   const [events, setEvents] = useState<Event[]>([]);
-  const [news] = useState([
-    {
-      id: "1",
-      title: "Energy-Saving Tips for an Eco-Friendly Home",
-      content:
-        "Reducing energy consumption at home not only lowers utility bills but also helps protect the environment...",
-    },
-    {
-      id: "2",
-      title: "Sustainable Fashion Trends",
-      content:
-        "Explore how the fashion industry is adopting sustainable practices to reduce waste and pollution...",
-    },
-    {
-      id: "3",
-      title: "Benefits of Urban Gardening",
-      content:
-        "Urban gardening is a great way to grow your own food, reduce carbon footprint, and improve mental health...",
-    },
-  ]);
-
-  interface Location {
-    latitude: number;
-    longitude: number;
-  }
-
-  const [userLocation, setUserLocation] = useState<Location | null>(null);
+  const [articles, setArticles] = useState<Post[]>([]);
+  const [feedback, setFeedback] = useState<Feedback[]>([]);
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [loading, setLoading] = useState(true);
-  const [feedback, setFeedback] = useState([]);
+  const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>({});
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/project/`); // Replace with your API URL
-        setEvents(response.data);
-      } catch (error) {
-        console.error(error);
-        Alert.alert("Error fetching projects.");
-      } finally {
-        setLoading(false);
+  const fetchProjects = useCallback(async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/project/`);
+      setEvents(response.data || []);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      Alert.alert("Error", "Failed to fetch upcoming events");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchTopPosts = useCallback(async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/post/getTopPosts`);
+      if (response.data.success) {
+        const topPosts = response.data.posts.map((post: any) => ({
+          _id: post._id || "",
+          title: post.title || "Untitled",
+          image: post.image || undefined,
+          username: post.username || "Anonymous",
+          content: post.content || "",
+          category: post.category || "General",
+          points: post.points || 0,
+          createdAt: new Date(post.createdAt || Date.now()),
+        }));
+        setArticles(topPosts);
+        setExpandedPosts(topPosts.reduce((acc: Record<string, boolean>, post: Post) => {
+          acc[post._id] = false;
+          return acc;
+        }, {}));
       }
-    };
+    } catch (error) {
+      console.error("Error fetching top posts:", error);
+      Alert.alert("Error", "Failed to fetch trending posts");
+    }
+  }, []);
 
-    fetchProjects();
+  const fetchUserLocation = useCallback(async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permission Denied", "Location access is required for nearby events");
+        return;
+      }
+      const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      setUserLocation(location.coords);
+    } catch (error) {
+      console.error("Error fetching user location:", error);
+    }
+  }, []);
+
+  const fetchFeedback = useCallback(async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/feedback/feedback/approved`);
+      if (response.data.success) {
+        setFeedback(response.data.feedback.map((item: any) => ({
+          id: item._id || "",
+          username: item.username || "Anonymous",
+          rating: item.rating || 0,
+          comment: item.comment || "No comment",
+          createdAt: new Date(item.createdAt || Date.now()),
+        })));
+      }
+    } catch (error) {
+      console.error("Error fetching feedback:", error);
+      setFeedback([]);
+    }
   }, []);
 
   useEffect(() => {
-    // Fetch user's current location using Expo Location API
-    const fetchUserLocation = async () => {
-      try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          Alert.alert("Permission to access location was denied");
-          return;
-        }
+    Promise.all([fetchProjects(), fetchTopPosts(), fetchUserLocation(), fetchFeedback()]);
+  }, [fetchProjects, fetchTopPosts, fetchUserLocation, fetchFeedback]);
 
-        let location = await Location.getCurrentPositionAsync({});
-        setUserLocation(location.coords);
-      } catch (error) {
-        console.error("Error fetching user location:", error);
-        Alert.alert("Error fetching user location.");
-      }
-    };
-    fetchUserLocation();
-  }, []);
-
-  useEffect(() => {
-    const fetchFeedback = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/feedback/feedback/approved`);
-        setFeedback(response.data);
-      } catch (error) {
-        console.error("Error fetching feedback:", error);
-      }
-    };
-
-    fetchFeedback();
-  }, []);
-
-  // Haversine formula to calculate distance between two points (in kilometers)
-  const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Radius of the Earth in kilometers
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371;
     const dLat = (lat2 - lat1) * (Math.PI / 180);
     const dLon = (lon2 - lon1) * (Math.PI / 180);
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * (Math.PI / 180)) *
-        Math.cos(lat2 * (Math.PI / 180)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distance in kilometers
+      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
   };
 
-  // Filter events based on proximity to the user's location (within 50 km)
-  const filteredProjects = events.filter((project) => {
-    if (!userLocation) return false; // Ensure userLocation is available
-    const distance = calculateDistance(
-      userLocation.latitude,
-      userLocation.longitude,
-      project.latitude,
-      project.longitude
-    );
-    return distance <= 50; // Adjust the value as needed (50 km in this case)
-  });
+  const filteredProjects = userLocation
+    ? events.filter((project) =>
+        calculateDistance(userLocation.latitude, userLocation.longitude, project.latitude, project.longitude) <= 50
+      )
+    : [];
+
+  const togglePostExpansion = (postId: string) => {
+    setExpandedPosts((prev) => ({ ...prev, [postId]: !prev[postId] }));
+  };
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={styles.loadingText}>Loading your experience...</Text>
+      </View>
+    );
   }
+
   return (
-    <ScrollView contentContainerStyle={styles.contentContainer}>
+    <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
       <View style={styles.container}>
-        {/* Map Section */}
         <View style={styles.mapContainer}>
           <MapView
             style={styles.map}
-            region={{
-              latitude: userLocation ? userLocation.latitude : 7.8731,
-              longitude: userLocation ? userLocation.longitude : 80.7718,
-              latitudeDelta: 2, // Adjusted to zoom out to fit the whole island
-              longitudeDelta: 2, // Adjusted for a better zoom level for Sri Lanka
+            initialRegion={{
+              latitude: userLocation?.latitude || 7.8731,
+              longitude: userLocation?.longitude || 80.7718,
+              latitudeDelta: 2,
+              longitudeDelta: 2,
             }}
+            showsUserLocation={true}
+            followsUserLocation={true}
           >
             {filteredProjects.map((item) => (
               <Marker
                 key={item.id}
-                coordinate={{
-                  latitude: item.latitude,
-                  longitude: item.longitude,
-                }}
+                coordinate={{ latitude: item.latitude, longitude: item.longitude }}
                 title={item.projectName}
-                description={item.location}
+                description={`${item.date} - ${item.location}`}
               />
             ))}
           </MapView>
         </View>
 
-        {/* Upcoming Events Section */}
-        <Pressable
-          onPress={() => router.push("/(tabs)/projects")}
-          style={styles.sectionHeader}
-        >
-          <Text style={styles.sectionTitle}>Upcoming Events</Text>
-          <Ionicons name="chevron-forward-outline" size={24} color="#333" />
-        </Pressable>
-
+        <SectionHeader title="Upcoming Events" onPress={() => router.push("/(tabs)/projects")} />
         <FlatList
           data={events}
           keyExtractor={(item) => item.id}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.slider}
-          style={{ height: 250 }}
           renderItem={({ item }) => (
-            <View style={{ width: 350, marginRight: 10 }}>
-              <Card
-                bgColor="#dce8d6"
-                heading={item.projectName}
-                iconName={projectIcons[item.projectType as keyof typeof projectIcons] || "help-circle"}
-                content={
-                  <View style={styles.cardContent}>
-                    <View style={styles.infoRow}>
-                      <Image source={calender} style={styles.icon} />
-                      <Text>{item.date}</Text>
-                    </View>
-                    <View style={styles.infoRow}>
-                      <Image source={clock} style={styles.icon} />
-                      <Text>{item.time}</Text>
-                    </View>
-                    <View style={styles.infoRow}>
-                      <Image source={pin} style={styles.icon} />
-                      <Text>{item.location}</Text>
-                    </View>
-                  </View>
-                }
-              />
-            </View>
+            <EventCard key={item.id} item={item} projectIcons={projectIcons} />
           )}
         />
 
-        {/* What's New Section */}
-        <Pressable
-          onPress={() => router.push("/news")}
-          style={styles.sectionHeader}
-        >
-          <Text style={styles.sectionTitle}>What's New</Text>
-          <Ionicons name="chevron-forward-outline" size={24} color="#333" />
-        </Pressable>
-
-        <FlatList
-          data={news}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.slider}
-          style={{ height: 250 }}
-          renderItem={({ item }) => (
-            <View style={{ width: 350, marginRight: 10 }}>
-              <Card
-                bgColor="#d6e4e8"
-                heading={item.title}
-                content={
-                  <View style={styles.cardTextContent}>
-                    <Text style={styles.cardText}>{item.content}</Text>
-                  </View>
-                }
+        <SectionHeader title="What’s Trending" onPress={() => router.push("/news")} />
+        {articles.length > 0 ? (
+          <FlatList
+            data={articles}
+            keyExtractor={(item) => item._id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.slider}
+            renderItem={({ item }) => (
+              <TrendingCard
+                key={item._id}
+                item={item}
+                expanded={expandedPosts[item._id]}
+                toggleExpansion={togglePostExpansion}
+                apiUrl={apiUrl}
               />
-            </View>
-          )}
-        />
+            )}
+          />
+        ) : (
+          <EmptyState icon="file-text" message="No trending articles available" />
+        )}
 
-        {/* Approved Feedback Section */}
-        <Pressable style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>User Feedback</Text>
-        </Pressable>
-
-        <FlatList
-          data={feedback}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.slider}
-          style={{ height: 200 }}
-          renderItem={({ item }) => (
-            <View style={styles.cardWrapper}>
-              <Card
-                bgColor="#f7e6c3"
-                heading={`⭐ ${item.rating} - ${item.username}`}
-                content={
-                  <View style={styles.cardTextContent}>
-                    <Text style={styles.cardText}>"{item.comment}"</Text>
-                  </View>
-                }
-              />
-            </View>
-          )}
-        />
+        <SectionHeader title="User Feedback" />
+        {feedback.length > 0 ? (
+          <FlatList
+            data={feedback}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.slider}
+            renderItem={({ item }) => (
+              <FeedbackCard key={item.id} item={item} />
+            )}
+          />
+        ) : (
+          <EmptyState icon="message-square" message="No feedback available yet" />
+        )}
       </View>
     </ScrollView>
   );
 };
 
+// Reusable Components
+const SectionHeader = ({ title, onPress }: { title: string; onPress?: () => void }) => (
+  <Pressable onPress={onPress} style={styles.sectionHeader}>
+    <Text style={styles.sectionTitle}>{title}</Text>
+    {onPress && <Ionicons name="chevron-forward-outline" size={24} color="#333" />}
+  </Pressable>
+);
+
+const EventCard = ({ item, projectIcons }: { item: any; projectIcons: any }) => (
+  <View style={styles.cardWrapper}>
+    <Card
+      bgColor="#dce8d6"
+      heading={item.projectName}
+      iconName={projectIcons[item.projectType] || "help-circle"}
+      content={
+        <View style={styles.cardContent}>
+          <InfoRow icon={calender} text={item.date} />
+          <InfoRow icon={clock} text={item.time} />
+          <InfoRow icon={pin} text={item.location} />
+        </View>
+      }
+    />
+  </View>
+);
+
+const InfoRow = ({ icon, text }: { icon: any; text: string }) => (
+  <View style={styles.infoRow}>
+    <Image source={icon} style={styles.icon} />
+    <Text style={styles.infoText}>{text}</Text>
+  </View>
+);
+
+const TrendingCard = ({
+  item,
+  expanded,
+  toggleExpansion,
+  apiUrl,
+}: {
+  item: Post;
+  expanded: boolean;
+  toggleExpansion: (id: string) => void;
+  apiUrl: string;
+}) => (
+  <View style={styles.cardWrapper}>
+    <Pressable onPress={() => toggleExpansion(item._id)}>
+      <View style={styles.trendingCard}>
+        <Text style={styles.trendingCardTitle}>{item.title}</Text>
+        {item.image && (
+          <Image
+            source={{ uri: `${apiUrl}/${item.image}` }}
+            style={styles.articleImage}
+            PlaceholderContent={<ActivityIndicator />}
+          />
+        )}
+        <View style={styles.articleMeta}>
+          <Text style={styles.articleAuthor}>By {item.username}</Text>
+          <Text style={styles.pointsText}>⭐ {item.points}</Text>
+        </View>
+        <Text
+          style={styles.articlePreview}
+          numberOfLines={expanded ? undefined : 3}
+          ellipsizeMode="tail"
+        >
+          {item.content}
+        </Text>
+        {item.content.length > 150 && (
+          <TouchableOpacity
+            onPress={() => toggleExpansion(item._id)}
+            style={styles.readMoreButton}
+          >
+            <Text style={styles.readMoreText}>
+              {expanded ? "Read Less" : "Read More"}
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </Pressable>
+  </View>
+);
+
+const FeedbackCard = ({ item }: { item: any }) => (
+  <View style={styles.cardWrapper}>
+    <View style={styles.feedbackCard}>
+      <Text style={styles.feedbackHeader}>{`⭐ ${item.rating} - ${item.username}`}</Text>
+      <Text style={styles.feedbackText} numberOfLines={4} ellipsizeMode="tail">
+        "{item.comment}"
+      </Text>
+    </View>
+  </View>
+);
+
+const EmptyState = ({
+  icon,
+  message,
+}: {
+  icon: string;
+  message: string;
+}) => (
+  <View style={styles.emptyStateContainer}>
+    <Feather
+      name={icon as keyof typeof Feather.glyphMap}
+      size={30}
+      color="#888"
+    />
+    <Text style={styles.emptyStateText}>{message}</Text>
+  </View>
+);
+
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
-    alignItems: "center",
+    flex: 1,
     paddingVertical: 10,
   },
   contentContainer: {
     paddingBottom: 20,
+  },
+  loadingContainer: {
+    flex: 1,
     justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#0000ff",
   },
   mapContainer: {
     width: "100%",
-    height: 350,
+    aspectRatio: 16 / 9,
     marginBottom: 10,
+    borderRadius: 12,
+    overflow: "hidden",
   },
   map: {
-    width: "100%",
-    height: "100%",
+    flex: 1,
   },
   sectionHeader: {
-    width: "95%",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -481,25 +401,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 15,
     marginVertical: 10,
+    marginHorizontal: 10,
+  },
+  sectionHeaderPressed: {
+    opacity: 0.8,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "600",
     color: "#333",
   },
   slider: {
-    paddingLeft: 5,
-    paddingRight: 5,
+    paddingHorizontal: 10,
+    paddingBottom: 10,
   },
-  // cardStyle: {
-  //   marginRight: 15,
-  // },
-
   cardWrapper: {
-    width: 350,
-    marginRight: 10,
-    borderRadius: 10,
-    overflow: "hidden", // Ensures the shadow stays within the rounded corners
+    width: screenWidth * 0.90,
+    marginRight: 15,
   },
   cardContent: {
     margin: 15,
@@ -510,20 +428,108 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   icon: {
-    width: 30,
-    height: 30,
+    width: 24,
+    height: 24,
     marginRight: 10,
+    tintColor: "#555",
   },
-  cardTextContent: {
-    marginTop: 10,
-    padding: 10,
-  },
-  cardText: {
-    fontSize: 16,
-    fontStyle: "italic",
+  infoText: {
+    fontSize: 14,
     color: "#333",
+    flex: 1,
+  },
+  trendingCard: {
+    backgroundColor: "#fff8e1",
+    borderRadius: 12,
+    padding: 15,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    width: "100%",
+  },
+  trendingCardTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#2c3e50",
+    marginBottom: 8,
+  },
+  articleImage: {
+    width: "100%",
+    height: 250,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  articleMeta: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  articleAuthor: {
+    fontSize: 13,
+    color: "#4682B4",
+    fontWeight: "500",
+  },
+  pointsText: {
+    fontSize: 13,
+    color: "#FFA500",
+    fontWeight: "bold",
+  },
+  articlePreview: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: "#444",
+    marginBottom: 5,
+  },
+  readMoreButton: {
+    alignSelf: "flex-start",
+  },
+  readMoreText: {
+    color: "#4682B4",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  feedbackCard: {
+    backgroundColor: "#f7e6c3",
+    borderRadius: 12,
+    padding: 15,
+    height: 100,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    justifyContent: "space-between",
+  },
+  feedbackHeader: {
+    fontSize: 15,
+    fontWeight: "bold",
+    color: "#2c3e50",
+  },
+  feedbackText: {
+    fontSize: 13,
+    color: "#444",
+    fontStyle: "italic",
+    marginTop: 8,
+  },
+  emptyStateContainer: {
+    height: 120,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 10,
+    marginHorizontal: 15,
+    padding: 20,
+  },
+  emptyStateText: {
+    marginTop: 10,
+    fontSize: 14,
+    color: "#888",
+    textAlign: "center",
   },
 });
 
 export default Home;
-
