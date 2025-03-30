@@ -48,6 +48,10 @@ const AdminHome = () => {
         const userResponse = await axios.get(`${apiUrl}/api/user/counts`);
         console.log("API URL:", `${apiUrl}/api/user/counts`);
 
+        const organizationResponse = await axios.get(
+          `${apiUrl}/api/organization/counts`
+        );
+
          const projectsResponse = await axios.get(
            `${apiUrl}/api/project/approved/count`
         );
@@ -57,7 +61,7 @@ const AdminHome = () => {
         
         setCounts({
           volunteerCount: userResponse.data.volunteerCount,
-          organizationCount: userResponse.data.organizationCount,
+          organizationCount: organizationResponse.data.organizationCount,
           approvedProjects: projectsResponse.data.totalApprovedProjects,
           approvedFeedback: feedbackResponse.data.approvedCount,
         });

@@ -319,3 +319,17 @@ export async function resetPassword(req, res) {
         res.status(500).json({ message: "Error resetting password", error: error.message });
     }
 }
+
+
+//get organization count
+export async function getOrganizationCount(req, res) {
+  try {
+    const organizationCount = await organizationModel.countDocuments({ role: "organization" });
+    res.status(200).json({
+      message: "Counts fetched successfully!",
+     organizationCount
+    });
+  } catch (error) {
+    console.error("Error during getting organization count:", error);
+  }
+}

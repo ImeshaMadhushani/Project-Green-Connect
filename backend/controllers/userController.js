@@ -285,16 +285,16 @@ export async function deleteUser(req, res) {
     }
 }
 
-// Get counts of volunteers and organizations
+// Get counts of volunteers 
 export async function getCounts(req, res) {
     try {
         const volunteerCount = await User.countDocuments({ role: 'volunteer' });
-        const organizationCount = await organizationModel.countDocuments({ role: 'organization' });
+       // const organizationCount = await organizationModel.countDocuments({ role: 'organization' });
 
         res.status(200).json({
             message: "Counts fetched successfully!",
             volunteerCount,
-            organizationCount
+            //organizationCount
         });
     } catch (error) {
         console.error("Error fetching counts:", error);
