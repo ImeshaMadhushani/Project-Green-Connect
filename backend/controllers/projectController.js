@@ -529,6 +529,7 @@ export async function getEnrolledUsersCount(req, res) {
 export const markAttendance = async (req, res) => {
     try {
         const { qrCodeData } = req.body;  // The scanned QR code data
+
         // Find the project using the QR code data
         const project = await Project.findOne({ qrCode: qrCodeData });
         console.log('Project found:', project);
