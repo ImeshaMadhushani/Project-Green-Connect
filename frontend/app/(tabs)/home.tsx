@@ -368,7 +368,10 @@ const Home = () => {
               <Card
                 bgColor="#dce8d6"
                 heading={item.projectName}
-                iconName={projectIcons[item.projectType as keyof typeof projectIcons] || "help-circle"}
+                iconName={
+                  projectIcons[item.projectType as keyof typeof projectIcons] ||
+                  "help-circle"
+                }
                 content={
                   <View style={styles.cardContent}>
                     <View style={styles.infoRow}>
@@ -435,15 +438,14 @@ const Home = () => {
           style={{ height: 200 }}
           renderItem={({ item }) => (
             <View style={styles.cardWrapper}>
-              <Card
-                bgColor="#f7e6c3"
-                heading={`⭐ ${item.rating} - ${item.username}`}
-                content={
-                  <View style={styles.cardTextContent}>
-                    <Text style={styles.cardText}>"{item.comment}"</Text>
-                  </View>
-                }
-              />
+              <View style={[styles.card, { backgroundColor: "#f7e6c3" }]}>
+                <Text style={styles.cardHeading}>
+                  ⭐ {item.rating} - {item.username}
+                </Text>
+                <View style={styles.cardTextContent}>
+                  <Text style={styles.cardText}>"{item.comment}"</Text>
+                </View>
+              </View>
             </View>
           )}
         />
@@ -514,14 +516,28 @@ const styles = StyleSheet.create({
     height: 30,
     marginRight: 10,
   },
+  card: {
+    padding: 16,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    marginBottom: 10,
+  },
+  cardHeading: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
   cardTextContent: {
-    marginTop: 10,
-    padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
   },
   cardText: {
-    fontSize: 16,
+    fontSize: 14,
     fontStyle: "italic",
-    color: "#333",
   },
 });
 
