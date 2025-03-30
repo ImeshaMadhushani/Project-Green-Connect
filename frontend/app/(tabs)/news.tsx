@@ -895,11 +895,12 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   errorContainer: { 
-    flex: 1, 
+     
     justifyContent: "center", 
     alignItems: "center",
     padding: 20,
-    backgroundColor: '#f5f7fa'
+    backgroundColor: '#f5f7fa',
+    flex: 1,
   },
   errorText: { 
     color: "#d9534f", 
