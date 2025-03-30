@@ -210,7 +210,36 @@ const Home = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.slider}
           renderItem={({ item }) => (
+
+            <View style={{ width: 350, marginRight: 10 }}>
+              <Card
+                bgColor="#dce8d6"
+                heading={item.projectName}
+                iconName={
+                  projectIcons[item.projectType as keyof typeof projectIcons] ||
+                  "help-circle"
+                }
+                content={
+                  <View style={styles.cardContent}>
+                    <View style={styles.infoRow}>
+                      <Image source={calender} style={styles.icon} />
+                      <Text>{item.date}</Text>
+                    </View>
+                    <View style={styles.infoRow}>
+                      <Image source={clock} style={styles.icon} />
+                      <Text>{item.time}</Text>
+                    </View>
+                    <View style={styles.infoRow}>
+                      <Image source={pin} style={styles.icon} />
+                      <Text>{item.location}</Text>
+                    </View>
+                  </View>
+                }
+              />
+            </View>
+
             <EventCard key={item.id} item={item} projectIcons={projectIcons} />
+
           )}
         />
 
@@ -230,27 +259,37 @@ const Home = () => {
                 toggleExpansion={togglePostExpansion}
                 apiUrl={apiUrl}
               />
-            )}
-          />
-        ) : (
-          <EmptyState icon="file-text" message="No trending articles available" />
-        )}
 
-        <SectionHeader title="User Feedback" />
-        {feedback.length > 0 ? (
-          <FlatList
-            data={feedback}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.slider}
-            renderItem={({ item }) => (
-              <FeedbackCard key={item.id} item={item} />
-            )}
-          />
-        ) : (
-          <EmptyState icon="message-square" message="No feedback available yet" />
-        )}
+            </View>
+          )}
+        />
+
+        {/* Approved Feedback Section */}
+        <Pressable style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>User Feedback</Text>
+        </Pressable>
+
+        <FlatList
+          data={feedback}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.slider}
+          style={{ height: 200 }}
+          renderItem={({ item }) => (
+            <View style={styles.cardWrapper}>
+              <View style={[styles.card, { backgroundColor: "#f7e6c3" }]}>
+                <Text style={styles.cardHeading}>
+                  ⭐ {item.rating} - {item.username}
+                </Text>
+                <View style={styles.cardTextContent}>
+                  <Text style={styles.cardText}>"{item.comment}"</Text>
+                </View>
+              </View>
+            </View>
+          )}
+        />
+
       </View>
     </ScrollView>
   );
@@ -433,6 +472,30 @@ const styles = StyleSheet.create({
     marginRight: 10,
     tintColor: "#555",
   },
+
+  card: {
+    padding: 16,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    marginBottom: 10,
+  },
+  cardHeading: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  cardTextContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  cardText: {
+    fontSize: 14,
+    fontStyle: "italic",
+
   infoText: {
     fontSize: 14,
     color: "#333",
@@ -529,6 +592,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#888",
     textAlign: "center",
+
   },
 });
 
