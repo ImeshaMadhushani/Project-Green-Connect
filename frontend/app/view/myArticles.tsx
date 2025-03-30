@@ -202,8 +202,9 @@ const styles = StyleSheet.create({
   noArticlesText: {
     textAlign: "center",
     marginTop: 20,
-    fontSize: 16,
     color: "#777",
+    fontSize: 16,
+    
   },
 });
 

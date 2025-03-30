@@ -394,9 +394,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   postButtonText: {
-    color: "white",
+    
     fontWeight: "bold",
     fontSize: 16,
+    color: "white",
   },
   discardButton: {
     backgroundColor: "#fff",
