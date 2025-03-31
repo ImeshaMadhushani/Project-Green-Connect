@@ -220,7 +220,7 @@ const MyProjects = () => {
   //Edit Project for organization
   const handleEditProject = (id: string) => {
     router.push({
-      pathname: "/view/projectEdit",
+      pathname: "/view/editProject",
       params: { id },
     });
   };

@@ -69,9 +69,14 @@ const Home = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [articles, setArticles] = useState<Post[]>([]);
   const [feedback, setFeedback] = useState<Feedback[]>([]);
-  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [userLocation, setUserLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
-  const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>({});
+  const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>(
+    {}
+  );
 
   const fetchProjects = useCallback(async () => {
     try {
@@ -100,10 +105,12 @@ const Home = () => {
           createdAt: new Date(post.createdAt || Date.now()),
         }));
         setArticles(topPosts);
-        setExpandedPosts(topPosts.reduce((acc: Record<string, boolean>, post: Post) => {
-          acc[post._id] = false;
-          return acc;
-        }, {}));
+        setExpandedPosts(
+          topPosts.reduce((acc: Record<string, boolean>, post: Post) => {
+            acc[post._id] = false;
+            return acc;
+          }, {})
+        );
       }
     } catch (error) {
       console.error("Error fetching top posts:", error);
@@ -115,10 +122,15 @@ const Home = () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert("Permission Denied", "Location access is required for nearby events");
+        Alert.alert(
+          "Permission Denied",
+          "Location access is required for nearby events"
+        );
         return;
       }
-      const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
       setUserLocation(location.coords);
     } catch (error) {
       console.error("Error fetching user location:", error);
@@ -127,15 +139,19 @@ const Home = () => {
 
   const fetchFeedback = useCallback(async () => {
     try {
-      const response = await axios.get(`${apiUrl}/api/feedback/feedback/approved`);
+      const response = await axios.get(
+        `${apiUrl}/api/feedback/feedback/approved`
+      );
       if (response.data.success) {
-        setFeedback(response.data.feedback.map((item: any) => ({
-          id: item._id || "",
-          username: item.username || "Anonymous",
-          rating: item.rating || 0,
-          comment: item.comment || "No comment",
-          createdAt: new Date(item.createdAt || Date.now()),
-        })));
+        setFeedback(
+          response.data.feedback.map((item: any) => ({
+            id: item._id || "",
+            username: item.username || "Anonymous",
+            rating: item.rating || 0,
+            comment: item.comment || "No comment",
+            createdAt: new Date(item.createdAt || Date.now()),
+          }))
+        );
       }
     } catch (error) {
       console.error("Error fetching feedback:", error);
@@ -144,22 +160,41 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    Promise.all([fetchProjects(), fetchTopPosts(), fetchUserLocation(), fetchFeedback()]);
+    Promise.all([
+      fetchProjects(),
+      fetchTopPosts(),
+      fetchUserLocation(),
+      fetchFeedback(),
+    ]);
   }, [fetchProjects, fetchTopPosts, fetchUserLocation, fetchFeedback]);
 
-  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+  const calculateDistance = (
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ) => {
     const R = 6371;
     const dLat = (lat2 - lat1) * (Math.PI / 180);
     const dLon = (lon2 - lon1) * (Math.PI / 180);
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      Math.cos(lat1 * (Math.PI / 180)) *
+        Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
     return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
   };
 
   const filteredProjects = userLocation
-    ? events.filter((project) =>
-        calculateDistance(userLocation.latitude, userLocation.longitude, project.latitude, project.longitude) <= 50
+    ? events.filter(
+        (project) =>
+          calculateDistance(
+            userLocation.latitude,
+            userLocation.longitude,
+            project.latitude,
+            project.longitude
+          ) <= 50
       )
     : [];
 
@@ -177,7 +212,10 @@ const Home = () => {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.container}>
         <View style={styles.mapContainer}>
           <MapView
@@ -194,7 +232,10 @@ const Home = () => {
             {filteredProjects.map((item) => (
               <Marker
                 key={item.id}
-                coordinate={{ latitude: item.latitude, longitude: item.longitude }}
+                coordinate={{
+                  latitude: item.latitude,
+                  longitude: item.longitude,
+                }}
                 title={item.projectName}
                 description={`${item.date} - ${item.location}`}
               />
@@ -202,7 +243,10 @@ const Home = () => {
           </MapView>
         </View>
 
-        <SectionHeader title="Upcoming Events" onPress={() => router.push("/(tabs)/projects")} />
+        <SectionHeader
+          title="Upcoming Events"
+          onPress={() => router.push("/(tabs)/projects")}
+        />
         <FlatList
           data={events}
           keyExtractor={(item) => item.id}
@@ -214,7 +258,10 @@ const Home = () => {
           )}
         />
 
-        <SectionHeader title="What’s Trending" onPress={() => router.push("/news")} />
+        <SectionHeader
+          title="What’s Trending"
+          onPress={() => router.push("/news")}
+        />
         {articles.length > 0 ? (
           <FlatList
             data={articles}
@@ -233,7 +280,10 @@ const Home = () => {
             )}
           />
         ) : (
-          <EmptyState icon="file-text" message="No trending articles available" />
+          <EmptyState
+            icon="file-text"
+            message="No trending articles available"
+          />
         )}
 
         <SectionHeader title="User Feedback" />
@@ -249,7 +299,10 @@ const Home = () => {
             )}
           />
         ) : (
-          <EmptyState icon="message-square" message="No feedback available yet" />
+          <EmptyState
+            icon="message-square"
+            message="No feedback available yet"
+          />
         )}
       </View>
     </ScrollView>
@@ -257,14 +310,28 @@ const Home = () => {
 };
 
 // Reusable Components
-const SectionHeader = ({ title, onPress }: { title: string; onPress?: () => void }) => (
+const SectionHeader = ({
+  title,
+  onPress,
+}: {
+  title: string;
+  onPress?: () => void;
+}) => (
   <Pressable onPress={onPress} style={styles.sectionHeader}>
     <Text style={styles.sectionTitle}>{title}</Text>
-    {onPress && <Ionicons name="chevron-forward-outline" size={24} color="#333" />}
+    {onPress && (
+      <Ionicons name="chevron-forward-outline" size={24} color="#333" />
+    )}
   </Pressable>
 );
 
-const EventCard = ({ item, projectIcons }: { item: any; projectIcons: any }) => (
+const EventCard = ({
+  item,
+  projectIcons,
+}: {
+  item: any;
+  projectIcons: any;
+}) => (
   <View style={styles.cardWrapper}>
     <Card
       bgColor="#dce8d6"
@@ -339,7 +406,9 @@ const TrendingCard = ({
 const FeedbackCard = ({ item }: { item: any }) => (
   <View style={styles.cardWrapper}>
     <View style={styles.feedbackCard}>
-      <Text style={styles.feedbackHeader}>{`⭐ ${item.rating} - ${item.username}`}</Text>
+      <Text
+        style={styles.feedbackHeader}
+      >{`⭐ ${item.rating} - ${item.username}`}</Text>
       <Text style={styles.feedbackText} numberOfLines={4} ellipsizeMode="tail">
         "{item.comment}"
       </Text>
@@ -347,13 +416,7 @@ const FeedbackCard = ({ item }: { item: any }) => (
   </View>
 );
 
-const EmptyState = ({
-  icon,
-  message,
-}: {
-  icon: string;
-  message: string;
-}) => (
+const EmptyState = ({ icon, message }: { icon: string; message: string }) => (
   <View style={styles.emptyStateContainer}>
     <Feather
       name={icon as keyof typeof Feather.glyphMap}
@@ -416,7 +479,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   cardWrapper: {
-    width: screenWidth * 0.90,
+    width: screenWidth * 0.9,
     marginRight: 15,
   },
   cardContent: {

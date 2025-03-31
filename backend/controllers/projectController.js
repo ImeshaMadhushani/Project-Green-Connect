@@ -122,7 +122,7 @@ export const getProjectById = async (req, res) => {
 // Update a project (only an organization can update its own projects)
 export const updateProject = async (req, res) => {
     try {
-        const { projectName, description, date, time, location } = req.body;
+        const { projectName, description, date, time, location,latitude,longitude } = req.body;
 
         // Check if the project exists
         const project = await Project.findById(req.params.id);
@@ -141,11 +141,13 @@ export const updateProject = async (req, res) => {
         project.date = date || project.date;
         project.time = time || project.time;
         project.location = location || project.location;
+        project.latitude = latitude || project.latitude;
+        project.longitude = longitude || project.longitude;
 
 
         // Generate a new QR Code for the updated project data
         const qrData = JSON.stringify({
-            organizationId: user._id,
+            organizationId: project.organizationId,
             projectName: project.projectName,
             description: project.description,
             date: project.date,
@@ -485,7 +487,7 @@ export async function getEnrolledUsers(req, res) {
 
 //count of approved project
 
-/* export const getApprovedProjectsCount = async (req, res) => {
+export const getApprovedProjectsCount = async (req, res) => {
     try {
         const approvedProjectsCount = await Project.countDocuments({ isApproved: true });
         res.status(200).json({ totalApprovedProjects: approvedProjectsCount });
@@ -494,7 +496,7 @@ export async function getEnrolledUsers(req, res) {
         res.status(500).json({ message: "Internal server error" });
     }
 };
- */
+ 
 
 //get count of enrolling users for a specific project
 export async function getEnrolledUsersCount(req, res) {
@@ -527,7 +529,7 @@ export async function getEnrolledUsersCount(req, res) {
 export const markAttendance = async (req, res) => {
     try {
         const { qrCodeData } = req.body;  // The scanned QR code data
-        
+
         // Find the project using the QR code data
         const project = await Project.findOne({ qrCode: qrCodeData });
         console.log('Project found:', project);
