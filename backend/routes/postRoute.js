@@ -9,6 +9,8 @@ import {
   updatePost,
   search,
   getUserPosts,
+  getPostById,
+  getPostCount,
 } from "../controllers/postController/postController.js";
 import {
   addComment,
@@ -59,6 +61,7 @@ const upload = multer({
 // Routes
 router.post("/create-post", upload.single("image"), createPost);
 router.get('/get-posts', getPost);
+router.get("/count", getPostCount);
 router.delete("/:id/delete", deletePost);
 router.post("/:id/update", upload.single("image"), updatePost);
 router.post("/:id/comment", addComment);
@@ -68,6 +71,8 @@ router.get('/leaderboard', getLeaderboard);
 router.get('/search', search);
 router.get('/user/:username', getUserPosts);
 router.get('/getTopPosts', getTopPosts);
+router.get("/:id", getPostById);
+
 
 
 
