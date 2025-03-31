@@ -2,6 +2,7 @@ import Post from "../../models/Post.js";
 import path from "path";
 import fs from "fs";
 import User from "../../models/User.js";
+import mongoose from "mongoose";
 
 
 export const createPost = async (req, res) => {
@@ -212,5 +213,52 @@ export const getUserPosts = async (req, res) => {
       message: "Server Error",
       error: err.message
     });
+  }
+};
+
+// controllers/postController/postController.js
+export const getPostById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate the ID format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid post ID",
+      });
+    }
+
+    const post = await Post.findById(id);
+
+    if (!post) {
+      return res.status(404).send({
+        success: false,
+        message: "Post not found",
+      });
+    }
+
+    res.status(200).send({
+      success: true,
+      message: "Post fetched successfully",
+      post,
+    });
+  } catch (err) {
+    console.error("Error fetching post by ID:", err);
+    res.status(500).send({
+      success: false,
+      message: "Server Error",
+      error: err.message,
+    });
+  }
+};
+
+
+export const getPostCount = async (req, res) => {
+  try {
+    const count = await Post.countDocuments({});
+    res.status(200).send({ success: true, count });
+  } catch (error) {
+    res.status(500).send({ success: false, message: "Server Error" });
   }
 };
