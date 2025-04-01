@@ -85,7 +85,11 @@ const Projects = () => {
   const fetchProjects = async () => {
     try {
       const response = await axios.get(`${apiUrl}/api/project/`);
-      setProjects(response.data);
+       const sortedProjects = response.data.sort((a: Project, b: Project) => {
+         return new Date(b.date).getTime() - new Date(a.date).getTime();
+       });
+
+      setProjects(sortedProjects);
     } catch (error) {
       Alert.alert("Error", "Failed to fetch projects.");
       console.error(error);
