@@ -69,7 +69,7 @@ const AdminHome = () => {
           const userResponse = await axios.get(`${apiUrl}/api/user/counts`, config);
           console.log("User counts response:", userResponse.data);
           newCounts.volunteerCount = userResponse.data.volunteerCount || 0;
-          newCounts.organizationCount = userResponse.data.organizationCount || 0;
+          //newCounts.organizationCount = userResponse.data.organizationCount || 0;
         } catch (userError) {
           console.error("Error fetching user counts:", userError);
         }
@@ -99,6 +99,15 @@ const AdminHome = () => {
           newCounts.articlesCount = postsResponse.data.count || 0;
         } catch (postError) {
           console.error("Error fetching post count:", postError);
+        }
+
+        // Fetch org count
+        try {
+          const orgResponse = await axios.get(`${apiUrl}/api/organization/counts`, config);
+          console.log("Org count response:", orgResponse.data);
+          newCounts.organizationCount = orgResponse.data.organizationCount || 0;
+        } catch (orgError) {
+          console.error("Error fetching organization count:", orgError);
         }
 
         setCounts(newCounts);
