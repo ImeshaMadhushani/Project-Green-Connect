@@ -21,7 +21,15 @@ const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 const Tab = createBottomTabNavigator();
 
 // Overview Cards
-const OverviewCard = ({ title, value, icon }: { title: string; value: string; icon: keyof typeof MaterialCommunityIcons.glyphMap }) => (
+const OverviewCard = ({
+  title,
+  value,
+  icon,
+}: {
+  title: string;
+  value: string;
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+}) => (
   <Card style={styles.card}>
     <Card.Content style={styles.cardContent}>
       <MaterialCommunityIcons name={icon} size={50} color="#388E3C" />
@@ -45,91 +53,52 @@ const AdminHome = () => {
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        const token = await AsyncStorage.getItem("authToken");
-        if (!token) {
-          console.error("No token found");
-          return;
-        }
+        const userResponse = await axios.get(`${apiUrl}/api/user/counts`);
+        console.log("API URL:", `${apiUrl}/api/user/counts`);
 
-        const config = {
-          headers: { Authorization: `Bearer ${token}` },
-        };
+        const organizationResponse = await axios.get(
+          `${apiUrl}/api/organization/counts`
+        );
 
-        // Initialize counts with defaults
-        const newCounts = {
-          volunteerCount: 0,
-          organizationCount: 0,
-          approvedProjects: 0,
-          approvedFeedback: 0,
-          articlesCount: 0,
-        };
+        const projectsResponse = await axios.get(
+          `${apiUrl}/api/project/approved/count`
+        );
+        const feedbackResponse = await axios.get(
+          `${apiUrl}/api/feedback/feedback/approved/count`
+        );
 
-        // Fetch user counts
-        try {
-          const userResponse = await axios.get(`${apiUrl}/api/user/counts`, config);
-          console.log("User counts response:", userResponse.data);
-          newCounts.volunteerCount = userResponse.data.volunteerCount || 0;
-          //newCounts.organizationCount = userResponse.data.organizationCount || 0;
-        } catch (userError) {
-          console.error("Error fetching user counts:", userError);
-        }
+        const postsResponse = await axios.get(`${apiUrl}/api/post/count`);
 
-        // Fetch approved projects count
-        try {
-          const projectsResponse = await axios.get(`${apiUrl}/api/project/approved/count`, config);
-          console.log("Projects response:", projectsResponse.data);
-          newCounts.approvedProjects = projectsResponse.data.totalApprovedProjects || 0;
-        } catch (projectError) {
-          console.error("Error fetching project count:", projectError);
-        }
-
-        // Fetch approved feedback count
-        try {
-          const feedbackResponse = await axios.get(`${apiUrl}/api/feedback/feedback/approved/count`, config);
-          console.log("Feedback response:", feedbackResponse.data);
-          newCounts.approvedFeedback = feedbackResponse.data.approvedCount || 0;
-        } catch (feedbackError) {
-          console.error("Error fetching feedback count:", feedbackError);
-        }
-
-        // Fetch post count
-        try {
-          const postsResponse = await axios.get(`${apiUrl}/api/post/count`, config);
-          console.log("Posts count response:", postsResponse.data);
-          newCounts.articlesCount = postsResponse.data.count || 0;
-        } catch (postError) {
-          console.error("Error fetching post count:", postError);
-        }
-
-        // Fetch org count
-        try {
-          const orgResponse = await axios.get(`${apiUrl}/api/organization/counts`, config);
-          console.log("Org count response:", orgResponse.data);
-          newCounts.organizationCount = orgResponse.data.organizationCount || 0;
-        } catch (orgError) {
-          console.error("Error fetching organization count:", orgError);
-        }
-
-        setCounts(newCounts);
+        setCounts({
+          volunteerCount: userResponse.data.volunteerCount,
+          organizationCount: organizationResponse.data.organizationCount,
+          approvedProjects: projectsResponse.data.totalApprovedProjects,
+          approvedFeedback: feedbackResponse.data.approvedCount,
+          articlesCount: postsResponse.data.count,
+        });
       } catch (error) {
-        console.error("Error in fetchCounts:", error);
+        console.error("Error fetching counts:", error);
       }
     };
-
     fetchCounts();
     const interval = setInterval(fetchCounts, 5000);
+
+    // Cleanup function to clear interval when component unmounts
     return () => clearInterval(interval);
   }, []);
 
   // Logout function
   const handleLogout = async () => {
     try {
+      // Get the token from AsyncStorage
       const token = await AsyncStorage.getItem("authToken");
+
       if (!token) {
         console.error("No token found!");
         return;
       }
 
+      // Log out user
       await axios.post(
         `${apiUrl}/api/user/logout`,
         {},
@@ -140,8 +109,11 @@ const AdminHome = () => {
         }
       );
 
+      // Clear token after logging out
       await AsyncStorage.removeItem("authToken");
+
       router.replace("/logIn");
+
       console.log("Logged out successfully");
     } catch (error) {
       console.error("Error logging out:", error);
@@ -191,12 +163,15 @@ const AdminDashboard = () => {
           if (route.name === "Dashboard") iconName = "view-dashboard";
           else if (route.name === "Users") iconName = "account-group";
           else if (route.name === "Projects") iconName = "folder-multiple";
-          else if (route.name === "Articles") iconName = "file-document-multiple";
+          else if (route.name === "Articles")
+            iconName = "file-document-multiple";
           else if (route.name === "Feedback") iconName = "alert-circle-outline";
           else if (route.name === "Settings") iconName = "cog-outline";
           else iconName = "help-circle";
 
-          return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
+          return (
+            <MaterialCommunityIcons name={iconName} size={size} color={color} />
+          );
         },
         tabBarActiveTintColor: "#66BB6A", // Light Green for selected
         tabBarInactiveTintColor: "#2E7D32", // Dark Green for unselected
@@ -224,7 +199,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 25,
-    fontWeight: "900",
+    fontWeight: 900,
     color: "#2E7D32",
     marginBottom: 15,
     textAlign: "center",

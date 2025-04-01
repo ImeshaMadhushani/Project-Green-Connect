@@ -38,6 +38,7 @@ const ManageUsers = () => {
       role: string;
       status?: string;
       isApproved?: boolean;
+      NameOfOrganization?: string;
      /*  legalDocument?: string; */
     }>
   >([]);
@@ -51,41 +52,61 @@ const ManageUsers = () => {
   /* const [legalDocument, setLegalDocument] = useState(""); */
 
   // Fetch users from backend
-  const fetchUsers = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/api/user/getAllUsers`);
-      setUsers(response.data.users);
-    } catch (error) {
-      Alert.alert("Error", "Failed to fetch users!");
-      console.error("Fetch users error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+const fetchUsersAndOrganizations = async () => {
+  try {
+    const usersResponse = await axios.get(`${apiUrl}/api/user/getAllUsers`);
+    console.log('Users:', usersResponse.data.users); // Log users data
+    const organizationsResponse = await axios.get(`${apiUrl}/api/organization/all`);
+    console.log('Organizations:', organizationsResponse.data.org); // Log organizations data
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+    // Process the response as before
+    const users = Array.isArray(usersResponse.data.users) ? usersResponse.data.users : [];
+    const organizations = Array.isArray(organizationsResponse.data.org) ? organizationsResponse.data.org : [];
+
+    const combinedData = [
+      ...users.map((user) => ({ ...user, role: "Volunteer" })),
+      ...organizations.map((org) => ({
+        ...org,
+        role: "Organization",
+        
+      })),
+    ];
+
+    console.log('Combined Data:', combinedData); // Check combined data
+
+    setUsers(combinedData);
+  } catch (error) {
+    Alert.alert("Error", "Failed to fetch users and organizations!");
+    console.error("Fetch error:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+useEffect(() => {
+  fetchUsersAndOrganizations();
+}, []);
+
+
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchUsers();
+     fetchUsersAndOrganizations();
   }, []);
 
   // Filter users based on selected role and status
-  const filteredUsers = users.filter((user) => {
+   const filteredUsers = users.filter((user) => {
     const matchesRole =
       roleFilter === "All" ||
       user.role.toLowerCase() === roleFilter.toLowerCase();
 
     let matchesStatus = true;
     if (statusFilter !== "All") {
-      if (user.role === "organization") {
+      if (user.role === "Organization") {
         if (statusFilter === "Active") {
           matchesStatus = user.isApproved === true;
-        } else if (statusFilter === "Pending") {
-          matchesStatus = user.isApproved === undefined;
-        } else if (statusFilter === "Rejected") {
+        } else if (statusFilter === "Suspended") {
           matchesStatus = user.isApproved === false;
         }
       } else {
@@ -95,7 +116,7 @@ const ManageUsers = () => {
 
     return matchesRole && matchesStatus;
   });
-
+ 
   const handleAction = (
     id: string,
     action: "Suspend" | "Delete" | "Approve"
@@ -135,7 +156,7 @@ const ManageUsers = () => {
                   { headers: { Authorization: `Bearer ${token}` } }
                 );
               }
-              fetchUsers();
+              fetchUsersAndOrganizations();
               Alert.alert(
                 "Success",
                 `User ${action.toLowerCase()}ed successfully.`
@@ -195,9 +216,9 @@ const ManageUsers = () => {
         >
           <Picker.Item label="All Statuses" value="All" />
           <Picker.Item label="Active" value="Active" />
-          <Picker.Item label="Pending" value="Pending" />
+          {/*  <Picker.Item label="Pending" value="Pending" /> */}
           {/*  <Picker.Item label="Approved" value="Approved" /> */}
-          <Picker.Item label="Rejected" value="Rejected" />
+          <Picker.Item label="Suspended" value="Suspended" />
         </Picker>
       </View>
 
@@ -210,12 +231,16 @@ const ManageUsers = () => {
         renderItem={({ item }) => (
           <View style={styles.card}>
             <View>
-              <Text style={styles.userName}>{item.name}</Text>
+              <Text style={styles.userName}>
+                {item.role === "Organization"
+                  ? item.NameOfOrganization || "No Organization Name"
+                  : item.name}
+              </Text>
               <Text style={styles.role}>Role: {item.role}</Text>
               <Text
                 style={[
                   styles.status,
-                  item.role === "organization"
+                  item.role === "Organization"
                     ? item.isApproved === true
                       ? { color: "green" }
                       : item.isApproved === false
@@ -225,11 +250,11 @@ const ManageUsers = () => {
                 ]}
               >
                 Status:{" "}
-                {item.role === "organization"
+                {item.role === "Organization"
                   ? item.isApproved === true
                     ? "Approved"
                     : item.isApproved === false
-                    ? "Rejected"
+                    ? "Suspended"
                     : "Pending"
                   : "Active"}
               </Text>
@@ -248,7 +273,7 @@ const ManageUsers = () => {
                 />
               </Pressable> */}
 
-              {item.role === "organization" && (
+              {/*        {item.role === "Organization" && (
                 <Pressable onPress={() => handleAction(item._id, "Approve")}>
                   <MaterialCommunityIcons
                     name="check-circle"
@@ -256,10 +281,10 @@ const ManageUsers = () => {
                     color="green"
                   />
                 </Pressable>
-              )}
+              )} */}
 
               {/* Suspend Button */}
-              {item.role === "organization" && (
+              {item.role === "Organization" && (
                 <Pressable onPress={() => handleAction(item._id, "Suspend")}>
                   <MaterialCommunityIcons
                     name="block-helper"
@@ -288,7 +313,7 @@ const ManageUsers = () => {
         )}
       />
 
-     {/*  <Modal
+      {/*  <Modal
         visible={isModalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
@@ -307,33 +332,55 @@ const ManageUsers = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 20, backgroundColor: "#fff", flex: 1 },
+  container: {
+    padding: 20,
+    backgroundColor: "#fff",
+    flex: 1,
+  },
   title: {
-    fontSize: 23,
+    fontSize: 24,
     fontWeight: "bold",
     color: "#2E7D32",
     marginBottom: 20,
     textAlign: "center",
   },
-  card: {
+  filters: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginBottom: 15,
+  },
+  filter: {
+    width: "45%",
+    height: 40,
+  },
+  card: {
+    flexDirection: "column", // Change direction to column to stack content vertically
+    justifyContent: "space-between", // Distribute space between text and actions
     padding: 15,
     backgroundColor: "#E8F6D8",
     marginBottom: 10,
     borderRadius: 8,
     elevation: 4,
+    height: 120, // Set a height to ensure enough space for the actions to be at the bottom
   },
-  userName: { fontSize: 18, fontWeight: "bold" },
-  role: { fontSize: 14, color: "#555" },
-  status: { fontSize: 14 },
-  actions: { flexDirection: "row", gap: 15 },
-  /*  filterContainer: {
+  userName: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  role: {
+    fontSize: 14,
+    color: "#555",
+  },
+  status: {
+    fontSize: 14,
+  },
+  actions: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 15,
+    justifyContent: "space-between", // Distributes the icons evenly
+    alignItems: "center", // Align icons vertically in the center
+    gap: 15, // Adjusts the space between icons
+    marginTop: "auto", // This ensures the actions are pushed to the bottom
   },
-  filter: { width: 150, height: 40 }, */
   modalContent: {
     backgroundColor: "white",
     padding: 20,

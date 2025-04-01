@@ -55,6 +55,10 @@ const organizationSchema = new mongoose.Schema({
     profile_picture: { type: String, required: false },
     passwordResetOtp: String, // Store OTP here
     passwordResetOtpExpires: Date, // OTP expiration time
+    isApproved: {
+        type: Boolean,
+        required: function () { return this.role === "organization"; }, default: true
+    },
 })
 
 export default mongoose.model("Organization",organizationSchema);
