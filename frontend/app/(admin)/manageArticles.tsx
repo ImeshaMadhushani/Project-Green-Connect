@@ -1,47 +1,116 @@
-import React, { useState } from "react";
-import { View, Text, FlatList, StyleSheet, Pressable, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, FlatList, StyleSheet, Pressable, Alert, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const articlesData = [
-  { id: "1", title: "Eco-Friendly Living", author: "John Doe", status: "Pending", content: "This article discusses sustainable living practices..." },
-  { id: "2", title: "Climate Change Awareness", author: "Jane Smith", status: "Approved", content: "Climate change is a pressing issue..." },
-];
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 const ManageArticles = () => {
   const router = useRouter();
-  const [articles, setArticles] = useState(articlesData);
+  interface Article {
+    _id: string;
+    title: string;
+    username?: string;
+  }
+  
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleAction = (id, action) => {
-    Alert.alert(`${action} Article`, `Are you sure you want to ${action} this article?`);
+  useEffect(() => {
+    const fetchAllPosts = async () => {
+      try {
+        const token = await AsyncStorage.getItem("authToken");
+        if (!token) {
+          Alert.alert("Error", "Please login to view articles");
+          return;
+        }
+
+        const postsResponse = await axios.get(`${apiUrl}/api/post/get-posts`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        // Assuming the response structure is { success: true, posts: [...] }
+        if (postsResponse.data.success) {
+          setArticles(postsResponse.data.posts || []);
+        } else {
+          setArticles([]);
+        }
+      } catch (error) {
+        console.error("Error fetching articles:", error);
+        Alert.alert("Error", "Failed to load articles");
+        setArticles([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAllPosts();
+  }, []);
+
+  const handleDelete = (articleId: string) => {
+    Alert.alert(
+      "Delete Article",
+      "Are you sure you want to delete this article?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const token = await AsyncStorage.getItem("authToken");
+              await axios.delete(`${apiUrl}/api/post/${articleId}/delete`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              setArticles((prevArticles) =>
+                prevArticles.filter((article) => article._id !== articleId)
+              );
+            } catch (error) {
+              Alert.alert("Error", "Failed to delete article");
+            }
+          },
+        },
+      ]
+    );
   };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#2E7D32" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Manage Articles</Text>
       <FlatList
         data={articles}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <Pressable 
-            onPress={() => router.push({ pathname: "/view/articleView", params: item })} 
+            onPress={() => router.push({ pathname: "/view/articleView", params: { id: item._id }})} 
             style={styles.card}
           >
             <View>
               <Text style={styles.articleTitle}>{item.title}</Text>
-              <Text>Author: {item.author}</Text>
-              <Text>Status: {item.status}</Text>
+              <Text>Author: {item.username || "Unknown"}</Text>
             </View>
             <View style={styles.actions}>
-              <Pressable onPress={() => handleAction(item.id, "Approve")}>
-                <MaterialCommunityIcons name="check-circle-outline" size={25} color="green" />
-              </Pressable>
-              <Pressable onPress={() => handleAction(item.id, "Delete")}>
+              <Pressable onPress={() => handleDelete(item._id)}>
                 <MaterialCommunityIcons name="delete" size={25} color="red" />
               </Pressable>
             </View>
           </Pressable>
         )}
+        ListEmptyComponent={
+          <Text style={{ textAlign: "center", marginTop: 20, color: "#777", fontSize: 16 }}>
+            No articles available.
+          </Text>
+        }
       />
     </View>
   );
