@@ -222,7 +222,9 @@ const ManageProjects = () => {
             >
               <View>
                 <Text style={styles.projectTitle}>{item.projectName}</Text>
-                <Text>Organization: {item.organizationId?.name}</Text>
+                <Text>
+                  Organization: {item.organizationId?.NameOfOrganization}
+                </Text>
                 <Text>Enrolled: {item.enrolled} volunteers</Text>
                 <Text>Status: {item.status}</Text>
               </View>
