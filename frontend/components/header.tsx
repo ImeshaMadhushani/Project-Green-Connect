@@ -11,10 +11,10 @@ const bell = require("../assets/images/bell.png");
 type props = {
   onBackPress?: () => void;
   noBack?: boolean;
-  notificationOnPress?:()=>void;
+  // notificationOnPress?:()=>void;
 };
 
-const CustomHeader = ({ onBackPress, noBack, notificationOnPress }: props) => (
+const CustomHeader = ({ onBackPress, noBack }: props) => (
   <View style={styles.headerContainer}>
     {!noBack ? (<TouchableOpacity
       onPress={() => {
@@ -31,23 +31,10 @@ const CustomHeader = ({ onBackPress, noBack, notificationOnPress }: props) => (
         }}
       />
     </TouchableOpacity>):null}
-    <Image
-      source={logo}
-      style={{
-        width: 200,
-        height: 50,
-      }}
-    />
-    <TouchableOpacity onPress={() => notificationOnPress?notificationOnPress():""}>
-      <Image
-        source={bell}
-        style={{
-          width: 25,
-          height: 25,
-          marginRight: 10,
-        }}
-      />
-    </TouchableOpacity>
+    <View style={styles.logoContainer}>
+      <Image source={logo} style={styles.logo} />
+    </View>
+    
   </View>
 );
 
@@ -57,7 +44,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
     paddingVertical: 10,
     paddingHorizontal: 20,
     backgroundColor: "#fff",
@@ -68,7 +55,8 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   backButton: {
-    marginRight: 10,
+    position: "absolute",
+    left: 20,
   },
   backText: {
     fontSize: 24,
@@ -78,5 +66,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "#000",
+  },
+  logoContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
+  logo: {
+    width: 180,
+    height: 45,
   },
 });

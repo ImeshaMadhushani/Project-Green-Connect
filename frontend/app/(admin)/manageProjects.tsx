@@ -220,7 +220,7 @@ const ManageProjects = () => {
                 })
               }
             >
-              <View>
+              <View style={styles.textContainer}>
                 <Text style={styles.projectTitle}>{item.projectName}</Text>
                 <Text>
                   Organization: {item.organizationId?.NameOfOrganization}
@@ -260,13 +260,17 @@ const ManageProjects = () => {
 const styles = StyleSheet.create({
   container: { padding: 20, backgroundColor: "#fff", flex: 1 },
   title: { fontSize: 23, fontWeight: "bold", color: "#2E7D32", marginBottom: 20, textAlign: "center" },
-  card: { flexDirection: "row", justifyContent: "space-between", padding: 15, backgroundColor: "#E8F6D8", marginBottom: 10, borderRadius: 8, elevation: 4 },
+  card: { flexDirection: "row", justifyContent: "space-between",  alignItems: "center",padding: 15, backgroundColor: "#E8F6D8", marginBottom: 10, borderRadius: 8, elevation: 4, minHeight: 80 },
   projectTitle: { fontSize: 18, fontWeight: "bold" },
-  actions: { flexDirection: "row", gap: 15 },
+  actions: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, minWidth: 100  },
    filterContainer: { flexDirection: "row", justifyContent: "space-between", marginBottom: 20 },
   filterInput: { borderWidth: 1, borderColor: "#ccc", padding: 8, flex: 1, marginRight: 10 },
   filterButton: { padding: 10, backgroundColor: "#2E7D32", borderRadius: 5, alignItems: "center" },
   filterButtonText: { color: "#fff", fontWeight: "bold" },
+  textContainer: {
+    flex: 1, 
+    marginRight: 10, 
+  },
 });
 
 export default ManageProjects;

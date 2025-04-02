@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 15,
-    backgroundColor: "#009688",
+    backgroundColor: "#009689",
     elevation: 4,
   },
   logo: {
