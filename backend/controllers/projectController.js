@@ -28,6 +28,10 @@ export const createProject = async (req, res) => {
             return res.status(403).json({ message: "Only organizations can create projects." });
         }
 
+        if (!user.isApproved) {
+            return res.status(403).json({ message: "Your organization is not approved to create projects." });
+        }
+
         // Create the project
         const newProject = new Project({
             organizationId: user._id,
