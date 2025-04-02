@@ -32,7 +32,7 @@ const OrganizationsScreen = () => {
           return;
         }
 
-        const response = await axios.get(`${apiUrl}/api/organization/all`, {
+        const response = await axios.get(`${apiUrl}/api/organization/allapp`, {
           headers: {
             Authorization: `Bearer ${token}`, // Add the token here
           },
