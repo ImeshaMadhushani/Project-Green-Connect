@@ -333,3 +333,17 @@ export async function getOrganizationCount(req, res) {
     console.error("Error during getting organization count:", error);
   }
 }
+
+//get all approve organizations
+export async function getAllApprovedOrganizations(req, res) {
+  try {
+    const approvedOrganizations = await organizationModel.find({ isApproved: true });
+    res.status(200).json({
+      message: "Approved organizations fetched successfully!",
+      org:approvedOrganizations
+    });
+  } catch (error) {
+    console.error("Error during getting approved organizations:", error);
+  }
+}
+
