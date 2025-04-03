@@ -14,7 +14,7 @@ const ManageArticles = () => {
     title: string;
     username?: string;
   }
-  
+
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -91,11 +91,11 @@ const ManageArticles = () => {
         data={articles}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <Pressable 
-            onPress={() => router.push({ pathname: "/view/articleView", params: { id: item._id }})} 
+          <Pressable
+            onPress={() => router.push({ pathname: "/view/articleView", params: { id: item._id } })}
             style={styles.card}
           >
-            <View>
+            <View style={styles.textContainer}>
               <Text style={styles.articleTitle}>{item.title}</Text>
               <Text>Author: {item.username || "Unknown"}</Text>
             </View>
@@ -119,9 +119,17 @@ const ManageArticles = () => {
 const styles = StyleSheet.create({
   container: { padding: 20, backgroundColor: "#fff", flex: 1 },
   title: { fontSize: 23, fontWeight: "bold", color: "#2E7D32", marginBottom: 20, textAlign: "center" },
-  card: { flexDirection: "row", justifyContent: "space-between", padding: 15, backgroundColor: "#E8F6D8", marginBottom: 10, borderRadius: 8, elevation: 4 },
+  card: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 15, backgroundColor: "#E8F6D8", marginBottom: 10, borderRadius: 8, elevation: 4, minHeight: 80 },
   articleTitle: { fontSize: 18, fontWeight: "bold" },
-  actions: { flexDirection: "row", gap: 15 },
+  actions: {
+    justifyContent: "center",
+    alignItems: "center",
+    minWidth: 40
+  },
+  textContainer: {
+    flex: 1,
+    marginRight: 10,
+  },
 });
 
 export default ManageArticles;
